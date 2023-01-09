@@ -1,10 +1,12 @@
 package com.tfg.entities;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "medicos")
+@Entity
 public class Medicos {
 	
 	@Id

@@ -1,14 +1,16 @@
 package com.tfg.entities;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "administradores")
+@Entity
 public class Administradores {
 	
 	@Id
-	private long id;
+	private Long id;
 	
 	@Column(name = "dni", nullable = false)
 	private String dni;

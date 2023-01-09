@@ -2,6 +2,7 @@ package com.tfg.controllers;
 
 import com.tfg.entities.Administradores;
 import com.tfg.repositories.AdministradoresRepository;
+import com.tfg.services.AdministradoresService;
 
 import java.util.List;
 
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdministradoresController {
 
 	@Autowired
-	private AdministradoresRepository repos;
+	private AdministradoresService service;
 	
 	@GetMapping("/administradores")
 	public List<Administradores> getAdministradores(){
-		return repos.findAll();
+		return service.getAdmins();
 	}
+	
 }
