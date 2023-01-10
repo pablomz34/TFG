@@ -2,15 +2,20 @@ package com.tfg.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name = "medicos")
+import org.hibernate.annotations.GenericGenerator;
+
 @Entity
+@Table(name = "medicos")
 public class Medicos {
 	
 	@Id
-	private long id;
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
+	private Long id;
 	
 	@Column(name = "dni", nullable = false)
 	private String dni;

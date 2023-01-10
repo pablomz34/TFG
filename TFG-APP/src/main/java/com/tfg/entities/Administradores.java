@@ -1,15 +1,27 @@
 package com.tfg.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Table(name = "administradores")
+import org.hibernate.annotations.GenericGenerator;
+
+import lombok.Data;
+
 @Entity
-public class Administradores {
+@Table(name = "administradores")
+@Data
+public class Administradores implements Serializable{
 	
+	private static final long serialVersionUID = 3953939996652288459L;
+
 	@Id
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	private Long id;
 	
 	@Column(name = "dni", nullable = false)
@@ -23,5 +35,8 @@ public class Administradores {
 	
 	@Column(name = "password", nullable = false)
 	private String password;
+
+	
+	
 	
 }
