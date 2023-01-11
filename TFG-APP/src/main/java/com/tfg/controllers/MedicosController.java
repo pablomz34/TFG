@@ -1,7 +1,11 @@
 package com.tfg.controllers;
 
+import com.tfg.dto.AdministradoresDto;
+import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
 import com.tfg.repositories.MedicosRepository;
+import com.tfg.services.IAdministradoresService;
+import com.tfg.services.IMedicosService;
 
 import java.util.List;
 
@@ -15,10 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class MedicosController {
 
 	@Autowired
-	private MedicosRepository repos;
+	private IMedicosService service;
 	
-	@GetMapping("/medicos")
-	public List<Medicos> getMedicos(){
-		return repos.findAll();
+	
+	@GetMapping("/getAll")
+	public List<MedicosDto> getAll(){
+		List<MedicosDto> admins= service.findAll();
+		return admins;
 	}
 }
