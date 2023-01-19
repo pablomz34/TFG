@@ -52,6 +52,7 @@ new Vue({
 	                </form>     
 	            </div>
 	        </div>
+	        <a class="btn btn-primary" href="./login.html">Link</a>
     	</div>
    
 		<div v-if="lines.length" class="col align-center" style="padding-left:10%; padding-right:10%">

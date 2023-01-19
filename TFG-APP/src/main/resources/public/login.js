@@ -1,27 +1,43 @@
+Vue.component('register',{
+	data: function(){
+		
+	}
+	
+});
+
+
 new Vue({
 	el: '#login',
 	data: function() {
 		return {
-			mensaje: 'hola'
+			showRegister: false,
 		};
+	},
+	
+	methods: {
+		changeSel(){
+			const THIZ = this;
+			THIZ.showRegister = ! this.showRegister;
+		}
 	},
 
 	template: `
     <div>
     	<div class="login-page">
 		  <div class="form">
-		    <form class="register-form">
+		    <form v-if="showRegister" class="register-form">
 		      <input type="dni" placeholder="Dni"/>
 		      <input type="password" placeholder="Password"/>
-		      <input type="text" placeholder="email address"/>
+		      <input type="text" placeholder="Correo electronico"/>
 		      <button>create</button>
-		      <p class="message">Already registered? <a href="#">Sign In</a></p>
+		      <p class="message">Already registered? <a class="button" @click="changeSel()">Sign In</a></p>
 		    </form>
-		    <form class="login-form">
+		  
+		    <form v-else class="login-form">
 		      <input type="text" placeholder="Dni"/>
 		      <input type="password" placeholder="Password"/>
 		      <button>login</button>
-		      <p class="message">Not registered? <a href="#">Create an account</a></p>
+		      <p class="message">Not registered? <a class="btn btn-primary" @click="changeSel()">Create an account</a></p>
 		    </form>
 		  </div>
 		</div>
