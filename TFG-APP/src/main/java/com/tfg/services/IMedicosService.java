@@ -9,9 +9,11 @@ import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
 
 @Service
-public interface IMedicosService extends UserDetailsService{
+public interface IMedicosService {
 	
-	public Medicos guardar(MedicosDto medico);
+	public void guardarMedico(MedicosDto medico);
 	
-	public List<MedicosDto> findAll();
+	public Medicos findMedicosByCorreo(String correo);
+	
+	public List<MedicosDto> findAllMedicos();
 }

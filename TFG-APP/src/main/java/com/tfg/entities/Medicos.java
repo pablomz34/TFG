@@ -1,28 +1,27 @@
 package com.tfg.entities;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "medicos")
 public class Medicos {
 	
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name = "increment", strategy = "increment")
-	private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 	
 	@Column(name = "dni", nullable = false)
 	private String dni;
@@ -34,10 +33,10 @@ public class Medicos {
 	private String apellidos;
 	
 	/*@Column(name = "telefono", nullable = false, length = 9)
-	private String telefono;
+	private String telefono; */
 	
 	@Column(name  = "correo", nullable = false)
-	private String correo; */
+	private String correo; 
 	
 	@Column(name = "password", nullable = false)
 	private String password;
@@ -60,7 +59,10 @@ public class Medicos {
 	@Column(name = "dado_alta")
 	private Boolean dadoAlta;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-	@JoinColumn(name = "rol")
-	private Rol rol;
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+    @JoinTable(
+            name="users_roles",
+            joinColumns={@JoinColumn(name="USER_ID", referencedColumnName="ID")},
+            inverseJoinColumns={@JoinColumn(name="ROLE_ID", referencedColumnName="ID")})
+    private List<Roles> roles = new ArrayList<>();
 }

@@ -1,92 +1,84 @@
 package com.tfg.services;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.dto.MedicosDto;
 
 import com.tfg.entities.Medicos;
-import com.tfg.entities.Rol;
-
+import com.tfg.entities.Roles;
 import com.tfg.repositories.MedicosRepository;
-import com.tfg.repositories.RolRepository;
+import com.tfg.repositories.RolesRepository;
 
 @Service
 @Transactional
 public class MedicosService implements IMedicosService {
 
 	@Autowired
-	private RolRepository rolRepos;
-	
-	@Autowired
-	private MedicosRepository medRepos;
+	private RolesRepository rolesRep;
 
-	@Override
-	public List<MedicosDto> findAll() {
-		/*
-		 * List<Medicos> list = repos.findAll(); List<Medicos> listDto = new
-		 * ArrayList<>(); for(Medicos a : list) { MedicosDto dto = new
-		 * AdministradoresDto();
-		 * 
-		 * 
-		 * listDto.add(dto); } return listDto;
-		 */
-		return null;
+	@Autowired
+	private MedicosRepository medicosRep;
+
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	public MedicosService(MedicosRepository medicosRep, RolesRepository rolesRep, PasswordEncoder passwordEncoder) {
+		this.medicosRep = medicosRep;
+		this.rolesRep = rolesRep;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
-	public Medicos guardar(MedicosDto medicoDto) {
+	public void guardarMedico(MedicosDto medicoDto) {
+		// TODO Auto-generated method stub
 		Medicos medico = new Medicos();
-		medico.setDni(medicoDto.getDni());
 		medico.setNombre(medicoDto.getNombre());
 		medico.setApellidos(medicoDto.getApellidos());
-		medico.setPassword(medicoDto.getPassword());
-		medico.setDadoAlta(false);
-		Rol rol = rolRepos.findFirstByNombre("ROLE_MEDICO");
-//		if(rol == null) {
-//			Rol rolNuevo=new Rol();
-//			rolNuevo.setNombre("ROLE_ADMIN");
-//			rolRepos.save(rolNuevo);
-//		}
-		medico.setRol(rol);
+		medico.setDni(medicoDto.getDni());
+		medico.setCorreo(medicoDto.getCorreo());
+		medico.setPassword(passwordEncoder.encode(medicoDto.getPassword()));
 
-		return medRepos.save(medico);
-
-	}
-	
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Medicos medico = medRepos.findByDni(username);
-		if(medico == null) {
-			throw new UsernameNotFoundException("Usuario o contraseña inválidos");
+		Roles rol = rolesRep.findByNombre("ROLE_ADMIN");
+		if (rol == null) {
+			rol = checkRolExist();
 		}
-		GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(medico.getRol().getNombre());
-		Collection<GrantedAuthority> granList = new ArrayList<>();
-		granList.add(grantedAuthority);	
-		return new User(medico.getDni(),medico.getPassword(),granList);
+		medico.setRoles(Arrays.asList(rol));
+		medicosRep.save(medico);
+	}
+
+
+	@Override
+	public Medicos findMedicosByCorreo(String correo) {
+		return medicosRep.findByCorreo(correo);
+	}
+
+	@Override
+	public List<MedicosDto> findAllMedicos() {
+		List<Medicos> medicos = medicosRep.findAll();
+		return medicos.stream().map((medico) -> mapToMedicosDto(medico)).collect(Collectors.toList());
+	}
+
+	private MedicosDto mapToMedicosDto(Medicos medico) {
+		MedicosDto medicoDto = new MedicosDto();
+		medicoDto.setNombre(medico.getNombre());
+		medicoDto.setApellidos(medico.getApellidos());
+		medicoDto.setCorreo(medico.getCorreo());
+		medicoDto.setDni(medico.getDni());
+		return medicoDto;
 	}
 	
 
-	// @Override
-	// public MedicosDto findByDni(String dni) {
-	/*
-	 * Administradores admin = repos.findByDni(dni); return new
-	 * AdministradoresDto(admin.getNombre(), admin.getApellidos(), admin.getDni(),
-	 * admin.getPassword());
-	 */
-	// return null;
-	// }
+	private Roles checkRolExist() {
+		Roles rol = new Roles();
+		rol.setNombre("ROLE_ADMIN");
+		return rolesRep.save(rol);
+	}
 
 }

@@ -1,6 +1,7 @@
 package com.tfg.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,5 +14,5 @@ import com.tfg.entities.Medicos;
 public interface MedicosRepository extends JpaRepository<Medicos, Long> {
 	public List<Medicos> findAll();
 	
-	public Medicos findByDni(String dni);
+	Medicos findByCorreo(String correo);
 }
