@@ -3,9 +3,12 @@ package com.tfg;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+
 
 @SpringBootApplication
 public class TfgAppApplication {
@@ -14,9 +17,9 @@ public class TfgAppApplication {
 		SpringApplication.run(TfgAppApplication.class, args);
 
 		try {
+			Integer x = 1, y = 2;
 			// Se lanza el ejecutable.
-			String ruta = "cmd /c " + System.getProperty("user.dir") + "\\src\\main\\resources\\python\\HolaMundo.py";
-			
+			String ruta = "cmd /c " + System.getProperty("user.dir") + "\\src\\main\\resources\\python\\HolaMundo.py " + x + " " + y;
 			Process p = Runtime.getRuntime().exec(ruta);
 
 			// Se obtiene el stream de salida del programa
