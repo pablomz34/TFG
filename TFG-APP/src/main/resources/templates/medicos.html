@@ -67,7 +67,25 @@
 		Vue.component('fase1', {
 			data: function () {
 				return {
-					mes: 'Fase1',
+					mensaje: 'Fase1',
+				}
+			},
+
+			
+
+			template: `
+			<div>
+				<p>{{mensaje}}</p>
+			</div>
+			
+			`
+
+		});
+		
+		Vue.component('fase2', {
+			data: function () {
+				return {
+					mensaje: 'Fase2',
 					list: [],
 					headers: [{header: "Nombre", pos: 0}, {header: "Apellidos", pos: 1}, {header: "Correo", pos: 2}, {header: "Dni", pos: 3}]
 				}
@@ -90,7 +108,7 @@
 
 			template: `
 			<div>
-				<p>{{mes}}</p>
+				<p>{{mensaje}}</p>
 				<table class="table table-bordered table-hover">
 					<thead class="table-dark">
 						<tr>
@@ -114,34 +132,56 @@
 
 		});
 		
-		Vue.component('fase2', {
+		Vue.component('fase3', {
 			data: function () {
 				return {
-					mes: 'Fase1',
-					list: [],
-					headers: [{header: "Nombre", pos: 0}, {header: "Apellidos", pos: 1}, {header: "Correo", pos: 2}, {header: "Dni", pos: 3}]
+					mensaje: 'Fase3',
 				}
 			},
 
-			created() {
-				const THIZ = this;
-				$.ajax({
-					type: 'GET',
-					url: window.location.origin + '/fases/getMedicos',
-					success: function (data) {
-						for (let i = 0; i < data.length; i++) THIZ.list.push(data[i]);
-
-					},
-					error: function (error) {
-						console.log("error");
-					}
-				});
-			},
+			
 
 			template: `
 			<div>
-				<p>{{mes}}</p>
+				<p>{{mensaje}}</p>
 			</div>
+			
+			`
+
+		});
+		
+		Vue.component('fase4', {
+			data: function () {
+				return {
+					mensaje: 'Fase4',
+				}
+			},
+
+			
+
+			template: `
+			<div>
+				<p>{{mensaje}}</p>
+			</div>
+			
+			`
+
+		});
+		
+		Vue.component('fase5', {
+			data: function () {
+				return {
+					mensaje: 'Fase5',
+				}
+			},
+
+			
+
+			template: `
+			<div>
+				<p>{{mensaje}}</p>
+			</div>
+			
 			`
 
 		});
