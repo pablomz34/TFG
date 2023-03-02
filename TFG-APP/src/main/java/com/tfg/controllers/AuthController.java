@@ -24,12 +24,12 @@ public class AuthController {
 
     // handler method to handle home page request
     @GetMapping("/index")
-    public String home(){
+    public String index(){
         return "index";
     }
     
     @GetMapping("/")
-    public String home2(){
+    public String index2(){
     	return "index";
     }
     
@@ -66,6 +66,11 @@ public class AuthController {
         List<MedicosDto> medicos = medicosService.findAllMedicos();
         model.addAttribute("medicos", medicos);
         return "medicos";
+    }
+    
+    @GetMapping("/fases")
+    public String fases(){
+        return "fases";
     }
     
     @GetMapping("/login")
