@@ -36,10 +36,12 @@
 			</div>
 		</div>
 	</nav>
-	
+
 	<div id="fases"></div>
 
 	<script>
+
+
 		Vue.component('fase1', {
 			data: function () {
 				return {
@@ -51,30 +53,48 @@
 				}
 			},
 
+			methods: {
+				asincHolaMundo: function () {
+					
+					$.ajax({
+					  type: "GET",
+					  url: "https://ad54-83-61-234-144.eu.ngrok.io/clustering/getHello",
+					  success: function(data){
+						  console.log(data)
+					  },
+					  error: function(){
+						  console.log("Error");
+					  }
+					})
+				}
+			},
+
 
 			template: `
 			<div>
 				<p>{{nombreFase}}</p>
-				<form>				
-				 	<div class="form-group col-md-6 pb-4">
+				
+<!--				<form>				-->
+				 	<!--<div class="form-group col-md-6 pb-4">
 						<label class="form-label" for="algoritmo">Tipo de algoritmo</label>
 						<select v-model="algoritmo" class="form-control" id="algoritmo">
 							<option value="" disabled selected>Selecciona un tipo de algoritmo</option>
 							<option v-for="a in algoritmos">{{a}}</option>
 						</select>
-					</div>
+					</div>-->
 					
 					<div class="form-group col-md-6 pb-4">
 						<label class="form-label" for="nClusters">Numero de clusters</label>
 					    <input type="number" class="form-control" v-model="nClusters" id="nClusters">
 					</div>
 					
-					<!-- <div class="form-group">
-						<label for="csv">Archivo csv</label>
-						<input type="file" class="form-control-file" v-model="csv" id="csv">
-					</div> -->
-					<button type="submit" class="btn btn-primary">Ejecutar</button>
-				</form>
+					<div class="form-group col-md-6 pb-4">
+						<input type="file" class="form-control-file" id="csv">
+					</div>
+					
+					<button v-on:click="asincHolaMundo" class="btn btn-primary">Ejecutar</button>
+					
+<!--				</form>-->
 			</div>
 			`
 
@@ -88,6 +108,8 @@
 					headers: [{header: "Nombre", pos: 0}, {header: "Apellidos", pos: 1}, {header: "Correo", pos: 2}, {header: "Dni", pos: 3}]
 				}
 			},
+
+
 
 			created() {
 				const THIZ = this;

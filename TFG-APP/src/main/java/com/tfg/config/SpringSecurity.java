@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -45,6 +47,20 @@ public class SpringSecurity {
                 );
         return http.build();
     }
+    
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+      return new WebMvcConfigurer() {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+          registry.addMapping("/**")
+            .allowedOrigins("*") // permitir solicitudes solo desde estos orígenes
+            .allowedMethods("GET", "POST", "PUT", "DELETE") // permitir métodos HTTP específicos
+            .allowedHeaders("*"); // permitir encabezados específicos
+        }
+      };
+    }
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
