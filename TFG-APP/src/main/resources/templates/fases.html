@@ -55,18 +55,22 @@
 
 			methods: {
 				asincHolaMundo: function () {
-					
-					$.ajax({
-					  type: "GET",
-					  url: "https://ad54-83-61-234-144.eu.ngrok.io/clustering/getHello",
-					  success: function(data){
-						  console.log(data)
-					  },
-					  error: function(){
-						  console.log("Error");
-					  }
-					})
+					fetch(window.location.origin + "/fases/getHelloApi")
+						.then(response => response.json())
+						.then(data => console.log(data))
+						.catch(error => console.error(error));
+					/*$.ajax({
+						url: window.location.origin + '/fases/getHelloApi',
+						type: 'GET',
+						success: function (response) {
+							console.log(response);
+						},
+						error: function () {
+							alert('Failed!');
+						},
+					})*/
 				}
+
 			},
 
 
