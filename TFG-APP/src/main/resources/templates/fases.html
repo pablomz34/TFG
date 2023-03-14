@@ -50,6 +50,7 @@
 					algoritmo: '',
 					nClusters: '',
 					csv: '',
+					nClustersFile: ''
 				}
 			},
 
@@ -69,8 +70,27 @@
 							alert('Failed!');
 						},
 					})*/
+				},
+				
+				asyncGetNClusters: function(){
+					
+					const formData = new FormData();
+					
+					formData.append('max_clusters', this.nClusters);
+					formData.append('file', this.$refs.csvFile.files[0]);
+					
+					fetch(window.location.origin + "/fases/getNClusters", {
+						method: "POST",
+						body: formData
+					})
+					.then(res => function(res){
+						let image = document.getElementById("nClustersImage");
+						
+						image.setAttribute("src", "src/main/resources/images/imagen.png");
+						image.setAttribute("class", "d-block");
+					})
+					.catch(err => console.log(err));
 				}
-
 			},
 
 
@@ -78,7 +98,7 @@
 			<div>
 				<p>{{nombreFase}}</p>
 				
-<!--				<form>				-->
+					<form @submit.prevent="asyncGetNClusters">				
 				 	<!--<div class="form-group col-md-6 pb-4">
 						<label class="form-label" for="algoritmo">Tipo de algoritmo</label>
 						<select v-model="algoritmo" class="form-control" id="algoritmo">
@@ -89,16 +109,18 @@
 					
 					<div class="form-group col-md-6 pb-4">
 						<label class="form-label" for="nClusters">Numero de clusters</label>
-					    <input type="number" class="form-control" v-model="nClusters" id="nClusters">
+					    <input type="number" min=0 max=8 class="form-control" v-model="nClusters" id="nClusters">
 					</div>
 					
 					<div class="form-group col-md-6 pb-4">
-						<input type="file" class="form-control-file" id="csv">
+						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
 					</div>
 					
-					<button v-on:click="asincHolaMundo" class="btn btn-primary">Ejecutar</button>
+					<button type="submit" class="btn btn-primary">Ejecutar</button>
 					
-<!--				</form>-->
+				</form>
+				
+				<img id="nClustersImage" src="../images/imagen.png">
 			</div>
 			`
 
