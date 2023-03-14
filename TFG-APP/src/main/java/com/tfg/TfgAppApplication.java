@@ -19,7 +19,7 @@ public class TfgAppApplication {
 		try {
 			Integer x = 1, y = 2;
 			// Se lanza el ejecutable.
-			String ruta = "cmd /c " + System.getProperty("user.dir") + "\\src\\main\\resources\\python\\HolaMundo.py " + x + " " + y;
+			String ruta = "cmd /c " + System.getProperty("user.dir") + "\\src\\main\\resources\\static\\python\\HolaMundo.py " + x + " " + y;
 			Process p = Runtime.getRuntime().exec(ruta);
 
 			// Se obtiene el stream de salida del programa

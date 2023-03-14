@@ -86,7 +86,7 @@
 					.then(res => function(res){
 						let image = document.getElementById("nClustersImage");
 						
-						image.setAttribute("src", "src/main/resources/images/imagen.png");
+						image.setAttribute("src", "src/main/resources/static/images/imagen.png");
 						image.setAttribute("class", "d-block");
 					})
 					.catch(err => console.log(err));
@@ -119,8 +119,9 @@
 					<button type="submit" class="btn btn-primary">Ejecutar</button>
 					
 				</form>
-				
-				<img id="nClustersImage" src="../images/imagen.png">
+				<div class="col-md-6">
+					<img src="/images/imagen.png" id="nClustersImage"/>
+				</div>
 			</div>
 			`
 

@@ -31,12 +31,14 @@ public class SpringSecurity {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     
+    	
     	    
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/registro/**", "/", "/resources/js/**").permitAll()
+                        authorize.requestMatchers("/registro/**", "/", "/images/**", "/js/**", "/python/**").permitAll()
                                 .requestMatchers("/index").permitAll()
-                                .requestMatchers("/medicos", "/fases", "/fases/**").hasRole("ADMIN")
+                                .requestMatchers("/static/**").permitAll()
+                                .requestMatchers("/medicos", "/fases", "/fases/**", "/images/**").hasRole("ADMIN")
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
@@ -72,8 +74,7 @@ public class SpringSecurity {
                 .passwordEncoder(passwordEncoder());
     }
     
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
-//    }
+  
+    
+   
 }
