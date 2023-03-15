@@ -6,7 +6,9 @@ Vue.component('fase1', {
 			algoritmo: '',
 			nClusters: '',
 			csv: '',
-			nClustersFile: ''
+			nClustersFile: '',
+			imagenCreada: false,
+			imagenUrl: ''
 		}
 	},
 
@@ -29,7 +31,7 @@ Vue.component('fase1', {
 		},
 
 		asyncGetNClusters: function() {
-
+			const THIZ = this;
 			const formData = new FormData();
 
 			formData.append('max_clusters', this.nClusters);
@@ -41,12 +43,12 @@ Vue.component('fase1', {
 			})
 				.then(res => res.arrayBuffer())
 				.then(image_bytes => {
+					
 					const byteArray = new Uint8Array(image_bytes);
 				    const blob = new Blob([byteArray], { type: 'image/png' });
 				    const url = URL.createObjectURL(blob);
-				    const img = new Image();
-				    img.src = url;
-				    document.body.appendChild(img);
+				    THIZ.imagenCreada = true;
+				    THIZ.imagenUrl = url;
 				})	
 				.catch(err => console.log(err));
 				
@@ -78,6 +80,10 @@ Vue.component('fase1', {
 			</div>
 			
 			<button type="submit" class="btn btn-primary">Ejecutar</button>
+			
+			<div v-if="imagenCreada">
+				<img id="imagenFase1" v-bind:src="imagenUrl"/>
+			</div>
 			
 		</form>
 		
