@@ -39,13 +39,18 @@ Vue.component('fase1', {
 				method: "POST",
 				body: formData
 			})
-				.then(res => function(res) {
-					let image = document.getElementById("nClustersImage");
-
-					image.setAttribute("src", "src/main/resources/static/images/imagen.png");
-					image.setAttribute("class", "d-block");
-				})
+				.then(res => res.arrayBuffer())
+				.then(image_bytes => {
+					const byteArray = new Uint8Array(image_bytes);
+				    const blob = new Blob([byteArray], { type: 'image/png' });
+				    const url = URL.createObjectURL(blob);
+				    const img = new Image();
+				    img.src = url;
+				    document.body.appendChild(img);
+				})	
 				.catch(err => console.log(err));
+				
+				
 		}
 	},
 
@@ -75,9 +80,7 @@ Vue.component('fase1', {
 			<button type="submit" class="btn btn-primary">Ejecutar</button>
 			
 		</form>
-		<div class="col-md-6">
-			<img src="/images/imagen.png" id="nClustersImage"/>
-		</div>
+		
 	</div>
 	`
 

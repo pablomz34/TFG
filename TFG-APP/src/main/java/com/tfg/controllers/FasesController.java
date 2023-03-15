@@ -11,6 +11,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +25,11 @@ import jakarta.validation.Valid;
 import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,13 +57,17 @@ import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
 import com.tfg.services.IMedicosService;
 
+
+
 @RestController
 @RequestMapping("/fases")
 public class FasesController {
 
+	
 	@Autowired
 	private IMedicosService medicosService;
 
+	
 	@GetMapping("/getMedicos")
 	public List<MedicosDto> getMedicos() {
 		List<MedicosDto> medicos = medicosService.findAllMedicos();
@@ -90,14 +101,14 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
-	public void getNClusters(@RequestPart("max_clusters") String max_clusters,
+	public ResponseEntity<byte[]> getNClusters(@RequestPart("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				"https://df33-83-61-234-144.eu.ngrok.io/clustering/getOptimalNClusters?max_clusters="
+				"https://5665-81-41-170-93.eu.ngrok.io/clustering/getOptimalNClusters?max_clusters="
 						+ Integer.parseInt(max_clusters));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
@@ -131,27 +142,11 @@ public class FasesController {
 		InputStream responseInputStream = responseEntity.getContent();
 
 		byte[] imageBytes = responseInputStream.readAllBytes();
-		FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + "\\src\\main\\resources\\images\\imagen.png");
-		imgOutFile.write(imageBytes);
-		imgOutFile.close();
-
-//			 byte[] bytesImagen = Base64.getDecoder().decode(imageString);
-//
-//	        // Crear un objeto ByteArrayInputStream a partir del array de bytes
-//	        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytesImagen);
-//
-//	        // Leer la imagen desde el objeto ByteArrayInputStream y crear un objeto BufferedImage
-//	        BufferedImage imagen = ImageIO.read(inputStream);
-//	        
-//	        File archivoImagen = new File("C:\\Users\\omola\\OneDrive\\Documentos\\imagen.jpg");
-//	        
-//	        ImageIO.write(imagen, "jpg", archivoImagen);
-
-		// Manejar la respuesta
-		// ...
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
+		
+		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
 		
 	}
