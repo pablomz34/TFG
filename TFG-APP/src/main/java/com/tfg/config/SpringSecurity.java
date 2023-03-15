@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,10 +36,9 @@ public class SpringSecurity {
     	    
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/registro/**", "/", "/images/**", "/js/**", "/python/**").permitAll()
-                                .requestMatchers("/index").permitAll()
-                                .requestMatchers("/static/**").permitAll()
-                                .requestMatchers("/medicos", "/fases", "/fases/**", "/images/**").hasRole("ADMIN")
+                        authorize.requestMatchers("/images/**", "/js/**", "/python/**").permitAll()
+                                .requestMatchers("/registro/**", "/", "/index").permitAll()
+                                .requestMatchers("/medicos", "/fases", "/fases/**").hasRole("ADMIN")
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
@@ -73,8 +73,6 @@ public class SpringSecurity {
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
-    
-  
     
    
 }
