@@ -56,7 +56,6 @@ Vue.component('fase1', {
 
 	template: `
 	<div class="container col-md-12">
-		<button class="btn btn-primary" @click="asincHolaMundo"/>
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
