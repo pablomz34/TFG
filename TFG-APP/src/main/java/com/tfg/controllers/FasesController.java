@@ -24,10 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-
 import javax.imageio.ImageIO;
 
 import jakarta.validation.Valid;
@@ -167,7 +163,7 @@ public class FasesController {
 	}
 	
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
-	public ResponseEntity<List<Map<String,String>>> getVarianceMetrics(@RequestPart("file") MultipartFile multipartFile) 
+	public ResponseEntity<List<Map<String,Object>>> getVarianceMetrics(@RequestPart("file") MultipartFile multipartFile) 
 			throws IllegalStateException, IOException, JSONException {
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -212,10 +208,11 @@ public class FasesController {
 		while ((line = bufferedReader.readLine()) != null) {
 			res.append(line);
 		}
-		
 		String aux = res.substring(1, res.length()-1);
+		aux = aux.replaceAll("'", "\"");
 		
-		List<Map<String, String>> map = null;
+		
+		List<Map<String, Object>> map = null;
 		map = new ObjectMapper().readValue(aux, List.class);
 		
 		
