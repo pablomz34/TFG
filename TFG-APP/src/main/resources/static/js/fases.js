@@ -28,7 +28,7 @@ Vue.component('fase1', {
 			})*/
 		},
 
-		asyncGetNClusters() {
+		asyncGetOptimalNClusters() {
 			const THIZ = this;
 			const formData = new FormData();
 			$('#cargando').show();
@@ -56,6 +56,7 @@ Vue.component('fase1', {
 
 	template: `
 	<div class="container col-md-12">
+		<button class="btn btn-primary" @click="asincHolaMundo"/>
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
@@ -63,7 +64,7 @@ Vue.component('fase1', {
 		</span>
 		
 		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
-			<form @submit.prevent="asyncGetNClusters">				
+			<form @submit.prevent="asyncGetOptimalNClusters">				
 			 
 				<div class="form-group col-md-4 pb-4">
 					<label class="form-label" for="nClusters">Numero de clusters</label>
@@ -77,9 +78,14 @@ Vue.component('fase1', {
 				<button type="submit" class="btn btn-primary">Ejecutar</button>
 			</form>
 		</div>
-		<div v-if="imagenCreada" class="col-md-6 p-2 m-3">
-			<img id="imagenFase1" v-bind:src="imagenUrl"/>
+		<div v-if="imagenCreada" class="col-md-10 p-2 m-3">
+			<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+			<a v-bind:href="imagenUrl" download="nClustersImagen.png">
+				<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
+			</a>
+			
 		</div>
+		
 		
 	</div>
 	`
