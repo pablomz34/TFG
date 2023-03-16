@@ -151,13 +151,39 @@ Vue.component('fase3', {
 		}
 	},
 
+	methods: {
+		asyncGetVarianceMetrics: function() {
+			const formData = new FormData();
 
+			formData.append('file', this.$refs.csvFile.files[0]);
+
+			fetch(window.location.origin + "/fases/getVarianceMetrics", {
+				method: "POST",
+				body: formData
+			})
+				.then(response => response.json())
+				.then(data => console.log(data))
+				.catch(error => console.error(error));
+		}
+	},
 
 	template: `
 	<div>
 		<p>{{nombreFase}}</p>
+		
+			<form @submit.prevent="asyncGetVarianceMetrics">				
+			
+			<div class="form-group col-md-6 pb-4">
+				<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Ejecutar</button>
+			
+			
+			
+		</form>
+		
 	</div>
-	
 	`
 
 });
