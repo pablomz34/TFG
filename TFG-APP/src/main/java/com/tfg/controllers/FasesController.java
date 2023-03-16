@@ -2,15 +2,21 @@ package com.tfg.controllers;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,6 +59,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.CSVWriterBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
 import com.tfg.services.IMedicosService;
@@ -150,5 +161,84 @@ public class FasesController {
 
 		
 	}
+	
+	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
+	public ResponseEntity<byte[]> getSubPopulations(@RequestPart("nClusteresAglomerativo") String nClusteresAglomerativo,
+			@RequestPart("nClusteresKModes") String nClusteresKModes,
+			@RequestPart("file") MultipartFile multipartFile) throws IOException, CsvValidationException {
+		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+		HttpPost httpPost = new HttpPost(
+				"https://5665-81-41-170-93.eu.ngrok.io/clustering/getSubpopulations?n_agglomerative="
+						+ Integer.parseInt(nClusteresAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClusteresKModes));
+
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+		// Agregar el archivo al cuerpo de la petición
+
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+		// Copiar el contenido del objeto MultipartFile al objeto File
+		multipartFile.transferTo(file);
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+		
+		
+		HttpEntity responseEntity = response.getEntity();
+		
+//		Reader reader = new InputStreamReader(responseEntity.getContent());
+//
+//        // Create a CSVReader to read the CSV data
+//        CSVReader csvReader = new CSVReaderBuilder(reader)
+//                                .build();
+//
+//    	
+//        // Create a Writer to write the CSV data to a file
+//    	
+//        Writer writer = new FileWriter(csvFile);
+//
+//
+//        CSVWriter csvWriter = new CSVWriter(writer);
+//
+//        // Write the data rows
+//        String[] nextLine;
+//        while ((nextLine = csvReader.readNext()) != null) {
+//            csvWriter.writeNext(nextLine);
+//        }
+//
+//        // Close the CSVWriter and Writer objects
+//        csvWriter.close();
+//        writer.close();
+//
+//        // Close the CSVReader and Reader objects
+//        csvReader.close();
+//        reader.close();
+		File csvFile = new File("C:\\Users\\omola\\OneDrive\\Documentos\\OptimalNClusters_250.csv");
+		Path path = Paths.get(csvFile.getAbsolutePath());
+        byte[] csvBytes = Files.readAllBytes(path);
+		
+        // Devuelve la respuesta con el archivo adjunto.
+        return new ResponseEntity<>(csvBytes, HttpStatus.OK);
+	}
+	
+	
+	
 
 }
