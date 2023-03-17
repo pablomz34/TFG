@@ -171,7 +171,7 @@ public class FasesController {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				"https://5665-81-41-170-93.eu.ngrok.io/clustering/getSubpopulations?n_agglomerative="
+				"https://e616-81-41-170-93.eu.ngrok.io/clustering/getSubpopulations?n_agglomerative="
 						+ Integer.parseInt(nClusteresAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClusteresKModes));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
@@ -203,36 +203,7 @@ public class FasesController {
 		
 		HttpEntity responseEntity = response.getEntity();
 		
-//		Reader reader = new InputStreamReader(responseEntity.getContent());
-//
-//        // Create a CSVReader to read the CSV data
-//        CSVReader csvReader = new CSVReaderBuilder(reader)
-//                                .build();
-//
-//    	
-//        // Create a Writer to write the CSV data to a file
-//    	
-//        Writer writer = new FileWriter(csvFile);
-//
-//
-//        CSVWriter csvWriter = new CSVWriter(writer);
-//
-//        // Write the data rows
-//        String[] nextLine;
-//        while ((nextLine = csvReader.readNext()) != null) {
-//            csvWriter.writeNext(nextLine);
-//        }
-//
-//        // Close the CSVWriter and Writer objects
-//        csvWriter.close();
-//        writer.close();
-//
-//        // Close the CSVReader and Reader objects
-//        csvReader.close();
-//        reader.close();
-		File csvFile = new File("C:\\Users\\omola\\OneDrive\\Documentos\\OptimalNClusters_250.csv");
-		Path path = Paths.get(csvFile.getAbsolutePath());
-        byte[] csvBytes = Files.readAllBytes(path);
+		byte[] csvBytes = responseEntity.getContent().readAllBytes();
 		
         // Devuelve la respuesta con el archivo adjunto.
         return new ResponseEntity<>(csvBytes, HttpStatus.OK);
