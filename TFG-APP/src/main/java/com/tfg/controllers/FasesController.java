@@ -73,7 +73,8 @@ import com.tfg.services.IMedicosService;
 @RestController
 @RequestMapping("/fases")
 public class FasesController {
-
+	
+	static final String UrlServidor = "https://e616-81-41-170-93.eu.ngrok.io/";
 	
 	@Autowired
 	private IMedicosService medicosService;
@@ -119,7 +120,7 @@ public class FasesController {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				"https://e616-81-41-170-93.eu.ngrok.io/clustering/getOptimalNClusters?max_clusters="
+				UrlServidor + "clustering/getOptimalNClusters?max_clusters="
 						+ Integer.parseInt(max_clusters));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
@@ -172,7 +173,7 @@ public class FasesController {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				"https://e616-81-41-170-93.eu.ngrok.io/clustering/getSubpopulations?n_agglomerative="
+				UrlServidor+"clustering/getSubpopulations?n_agglomerative="
 						+ Integer.parseInt(nClusteresAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClusteresKModes));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
@@ -217,7 +218,7 @@ public class FasesController {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				"https://e616-81-41-170-93.eu.ngrok.io/clustering/getVarianceMetrics");
+				UrlServidor+"clustering/getVarianceMetrics");
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
