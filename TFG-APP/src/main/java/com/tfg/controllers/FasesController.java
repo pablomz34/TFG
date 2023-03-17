@@ -8,21 +8,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Array;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import jakarta.validation.Valid;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -48,8 +57,10 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -150,5 +161,65 @@ public class FasesController {
 
 		
 	}
+	
+	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
+	public ResponseEntity<List<Map<String,Object>>> getVarianceMetrics(@RequestPart("file") MultipartFile multipartFile) 
+			throws IllegalStateException, IOException, JSONException {
+		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+		HttpPost httpPost = new HttpPost(
+				"https://5665-81-41-170-93.eu.ngrok.io/clustering/getVarianceMetrics");
+
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+		// Agregar el archivo al cuerpo de la petición
+
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+		// Copiar el contenido del objeto MultipartFile al objeto File
+		multipartFile.transferTo(file);
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+		
+		
+		HttpEntity responseEntity = response.getEntity();
+		InputStream responseInputStream = responseEntity.getContent();
+		
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
+		String line;
+		StringBuffer res = new StringBuffer();
+		while ((line = bufferedReader.readLine()) != null) {
+			res.append(line);
+		}
+		String aux = res.substring(1, res.length()-1);
+		aux = aux.replaceAll("'", "\"");
+		
+		
+		List<Map<String, Object>> map = null;
+		map = new ObjectMapper().readValue(aux, List.class);
+		
+		
+		return new ResponseEntity<>(map, HttpStatus.OK);
+
+		
+	}
+
 
 }

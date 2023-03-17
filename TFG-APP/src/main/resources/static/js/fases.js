@@ -140,17 +140,71 @@ Vue.component('fase2', {
 Vue.component('fase3', {
 	data: function() {
 		return {
-			nombreFase: 'Fase3',
+			lista: [],
+			headers: [{ header: "Metric", pos: 0 }, { header: "Tss_value", pos: 1 }, { header: "Total_wc", pos: 2 }, { header: "Total_bc", pos: 3 }],
+			datosCargados: false
 		}
 	},
 
+	methods: {
+		asyncGetVarianceMetrics: function() {
+			const THIZ = this;
+			const formData = new FormData();
 
+			formData.append('file', this.$refs.csvFile.files[0]);
+
+			fetch(window.location.origin + "/fases/getVarianceMetrics", {
+				method: "POST",
+				body: formData
+			})
+				.then(response => response.json())
+				.then(data =>{
+					for(i=0, j=1; j<data.length; i++,j++) THIZ.lista[i] = data[j]
+					THIZ.datosCargados=true;
+					//THIZ.lista = data;
+				})
+				.catch(error => console.error(error));
+				
+				
+		
+		}
+	},
 
 	template: `
 	<div>
-		<p>{{nombreFase}}</p>
+		
+		<form @submit.prevent="asyncGetVarianceMetrics">				
+			
+			<div class="form-group col-md-6 pb-4">
+				<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Ejecutar</button>
+			
+				
+		</form>
+		
+		<table v-if="datosCargados" class="table table-bordered table-hover">
+			<thead class="table-dark">
+				<tr>
+					<th v-for="head in headers"> 
+					{{head.header}}
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="i in lista">
+					<td>{{i.metric}}</td>
+					<td>{{i.tss_value}}</td>
+					<td>{{i.total_wc}}</td>
+					<td>{{i.total_bc}}</td>
+				</tr>
+			</tbody>
+		</table>
+			
+		
+		
 	</div>
-	
 	`
 
 });
