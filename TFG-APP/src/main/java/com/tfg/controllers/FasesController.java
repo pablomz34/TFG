@@ -108,7 +108,7 @@ public class FasesController {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				"https://5665-81-41-170-93.eu.ngrok.io/clustering/getOptimalNClusters?max_clusters="
+				"https://e616-81-41-170-93.eu.ngrok.io/clustering/getOptimalNClusters?max_clusters="
 						+ Integer.parseInt(max_clusters));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
