@@ -17,12 +17,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.tfg.handlers.LoginSuccessHandler;
 @Configuration
 @EnableWebSecurity
 public class SpringSecurity {
 
     @Autowired
     private UserDetailsService userDetailsService;
+    
+    @Autowired
+	private LoginSuccessHandler loginSuccessHandler;
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
@@ -36,15 +40,15 @@ public class SpringSecurity {
     	    
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/images/**", "/js/**", "/python/**").permitAll()
+                        authorize.requestMatchers("/images/**", "/js/**", "/python/**", "/css/**").permitAll()
                                 .requestMatchers("/registro/**", "/", "/index").permitAll()
                                 .requestMatchers("/medicos", "/fases", "/fases/**").hasRole("ADMIN")
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .defaultSuccessUrl("/fases", true)
                                 .permitAll()
+                                .successHandler(loginSuccessHandler)
                 ).logout(
                         logout -> logout
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

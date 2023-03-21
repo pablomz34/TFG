@@ -2,6 +2,8 @@ package com.tfg.controllers;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ public class AuthController {
 	
 	@Autowired
 	private IMedicosService medicosService;
+	
 
     // handler method to handle home page request
     @GetMapping("/index")
@@ -77,4 +80,5 @@ public class AuthController {
     public String login(){
         return "login";
     }
+
 }
