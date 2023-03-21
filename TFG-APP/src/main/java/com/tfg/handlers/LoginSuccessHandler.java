@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.tfg.entities.Medicos;
+import com.tfg.services.IMedicosService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
@@ -27,7 +28,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 	private HttpSession session;
 	
 	@Autowired
-    private EntityManager entityManager; 
+    private IMedicosService medicosService;
 
 
 	@Override
@@ -37,13 +38,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		String correo = ((org.springframework.security.core.userdetails.User)
 				authentication.getPrincipal()).getUsername();
 		
+		Medicos medico = medicosService.findMedicosByCorreo(correo);
 		
-		Medicos m = entityManager.createNamedQuery("Medicos.getMedico", Medicos.class)
-					.setParameter("correo", correo)
-					.getSingleResult();
-		
-		
-		session.setAttribute("medico", m);
+		session.setAttribute("medico", medico);
 		
 		response.sendRedirect("/fases");
 	}

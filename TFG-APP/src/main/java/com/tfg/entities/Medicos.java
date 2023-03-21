@@ -17,18 +17,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "medicos")
-@NamedQuery(
-		name = "Medicos.getMedico",
-		query = "SELECT m FROM Medicos m "
-			  + "WHERE m.correo = :correo"
-	)
 public class Medicos {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name = "dni", nullable = false, unique=true)
+	@Column(name = "dni", nullable = false)
 	private String dni;
 	
 	@Column(name = "nombre", nullable = false)
@@ -40,7 +35,7 @@ public class Medicos {
 	/*@Column(name = "telefono", nullable = false, length = 9)
 	private String telefono; */
 	
-	@Column(name  = "correo", nullable = false, unique=true)
+	@Column(name  = "correo", nullable = false)
 	private String correo; 
 	
 	@Column(name = "password", nullable = false)
