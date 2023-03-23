@@ -1,10 +1,8 @@
 Vue.component('fase1', {
 	data: function() {
 		return {
-			nombreFase: 'Fase1',
 			nClusters: '',
 			csvFile: '',
-			nClustersFile: '',
 			imagenCreada: false,
 			imagenUrl: ''
 		}
@@ -56,6 +54,7 @@ Vue.component('fase1', {
 
 	template: `
 	<div class="container col-md-12">
+	
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
@@ -82,9 +81,7 @@ Vue.component('fase1', {
 			<a v-bind:href="imagenUrl" download="nClustersImagen.png">
 				<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
 			</a>
-			
 		</div>
-		
 		
 	</div>
 	`
@@ -93,7 +90,6 @@ Vue.component('fase1', {
 Vue.component('fase2', {
 	data: function() {
 		return {
-			nombreFase: 'Fase1',
 			nClusteresAglomerativo: '',
 			nClusteresKModes: '',
 			csvFile: ''
@@ -151,6 +147,7 @@ Vue.component('fase2', {
 
 	template: `
 		<div class="container col-md-12">
+		
 			<span>
 				<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
 	        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
@@ -180,7 +177,6 @@ Vue.component('fase2', {
 			
 		</div>
 	`
-
 });
 
 Vue.component('fase3', {
@@ -217,20 +213,18 @@ Vue.component('fase3', {
 	},
 
 	template: `
-	<div>
+	<div class="container col-md-12">
+	
+		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
+			<form @submit.prevent="asyncGetVarianceMetrics">						
+				<div class="form-group col-md-6 pb-4">
+					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
+				</div>	
+				<button type="submit" class="btn btn-primary">Ejecutar</button>
+			</form>
+		</div>
 		
-		<form @submit.prevent="asyncGetVarianceMetrics">				
-			
-			<div class="form-group col-md-6 pb-4">
-				<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
-			</div>
-			
-			<button type="submit" class="btn btn-primary">Ejecutar</button>
-			
-				
-		</form>
-		
-		<table v-if="datosCargados" class="table table-bordered table-hover">
+		<table v-if="datosCargados" class="table table-bordered table-hover p-2 m-3">
 			<thead class="table-dark">
 				<tr>
 					<th v-for="head in headers"> 
@@ -247,12 +241,9 @@ Vue.component('fase3', {
 				</tr>
 			</tbody>
 		</table>
-			
-		
 		
 	</div>
 	`
-
 });
 
 Vue.component('fase4', {
