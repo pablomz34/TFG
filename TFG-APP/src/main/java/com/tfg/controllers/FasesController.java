@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -70,14 +71,22 @@ import com.tfg.services.IMedicosService;
 
 
 
-@RestController
-@RequestMapping("/fases")
+@Controller
+@RequestMapping("/admin/fases")
 public class FasesController {
 	
 	static final String UrlServidor = "https://e616-81-41-170-93.eu.ngrok.io/";
 	
 	@Autowired
 	private IMedicosService medicosService;
+	
+	@Autowired
+	private HttpSession session;
+	
+	@GetMapping()
+    public String fases(){
+        return "fases";
+    }
 
 	
 	@GetMapping("/getMedicos")
