@@ -9,22 +9,6 @@ Vue.component('fase1', {
 	},
 
 	methods: {
-		asincHolaMundo: function() {
-			fetch(window.location.origin + "/fases/getHelloApi")
-				.then(response => response.json())
-				.then(data => console.log(data))
-				.catch(error => console.error(error));
-			/*$.ajax({
-				url: window.location.origin + '/fases/getHelloApi',
-				type: 'GET',
-				success: function (response) {
-					console.log(response);
-				},
-				error: function () {
-					alert('Failed!');
-				},
-			})*/
-		},
 
 		asyncGetOptimalNClusters() {
 			const THIZ = this;
@@ -33,7 +17,7 @@ Vue.component('fase1', {
 			formData.append('max_clusters', this.nClusters);
 			formData.append('file', this.$refs.csvFile.files[0]);
 
-			fetch(window.location.origin + "/fases/getNClusters", {
+			fetch(window.location.origin + "/admin/fases/getNClusters", {
 				method: "POST",
 				body: formData
 			})
@@ -106,7 +90,7 @@ Vue.component('fase2', {
 			formData.append('nClusteresKModes', this.nClusteresKModes);
 			formData.append('file', this.$refs.csvFile.files[0]);
 
-			fetch(window.location.origin + "/fases/getSubPopulations", {
+			fetch(window.location.origin + "/admin/fases/getSubPopulations", {
 				method: "POST",
 				headers: {
 					"Accept": "text/csv"
@@ -195,7 +179,7 @@ Vue.component('fase3', {
 
 			formData.append('file', this.$refs.csvFile.files[0]);
 
-			fetch(window.location.origin + "/fases/getVarianceMetrics", {
+			fetch(window.location.origin + "/admin/fases/getVarianceMetrics", {
 				method: "POST",
 				body: formData
 			})
@@ -279,7 +263,7 @@ Vue.component('fase5', {
 		const THIZ = this;
 		$.ajax({
 			type: 'GET',
-			url: window.location.origin + '/fases/getMedicos',
+			url: window.location.origin + "/admin/fases/getMedicos",
 			success: function(data) {
 				for (let i = 0; i < data.length; i++) THIZ.list.push(data[i]);
 
