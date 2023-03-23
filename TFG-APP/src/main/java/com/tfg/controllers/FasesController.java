@@ -70,8 +70,7 @@ import com.tfg.entities.Medicos;
 import com.tfg.services.IMedicosService;
 
 
-
-@Controller
+@RestController
 @RequestMapping("/admin/fases")
 public class FasesController {
 	
@@ -83,11 +82,6 @@ public class FasesController {
 	@Autowired
 	private HttpSession session;
 	
-	@GetMapping()
-    public String fases(){
-        return "fases";
-    }
-
 	
 	@GetMapping("/getMedicos")
 	public List<MedicosDto> getMedicos() {

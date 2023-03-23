@@ -29,6 +29,13 @@ public class AuthController {
 	@Autowired 
 	private HttpSession session;
 
+	
+	@GetMapping("/admin/fases")
+    public String fases(){
+        return "fases";
+    }
+	
+	
     // handler method to handle home page request
     @GetMapping("/index")
     public String index(){

@@ -47,7 +47,6 @@ Vue.component('fase1', {
 		
 		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
 			<form @submit.prevent="asyncGetOptimalNClusters">				
-			 
 				<div class="form-group col-md-4 pb-4">
 					<label class="form-label" for="nClusters">Numero de clusters</label>
 				    <input type="number" min=0 max=8 class="form-control" v-model="nClusters" id="nClusters">
@@ -60,6 +59,7 @@ Vue.component('fase1', {
 				<button type="submit" class="btn btn-primary">Ejecutar</button>
 			</form>
 		</div>
+		
 		<div v-if="imagenCreada" class="col-md-10 p-2 m-3">
 			<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
 			<a v-bind:href="imagenUrl" download="nClustersImagen.png">
@@ -140,7 +140,6 @@ Vue.component('fase2', {
 			
 			<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
 				<form @submit.prevent="asyncGetSubPopulations">				
-				 
 					<div class="form-group col-md-4 pb-4">
 						<label class="form-label" for="nClusters">Numero de clústeres del algoritmo aglomerativo</label>
 					    <input type="number" min=0 max=4 class="form-control" v-model="nClusteresAglomerativo" id="nClusteresAglomerativo">
@@ -176,34 +175,39 @@ Vue.component('fase3', {
 		asyncGetVarianceMetrics: function() {
 			const THIZ = this;
 			const formData = new FormData();
-
+			$('#cargando').show();
 			formData.append('file', this.$refs.csvFile.files[0]);
 
 			fetch(window.location.origin + "/admin/fases/getVarianceMetrics", {
 				method: "POST",
 				body: formData
 			})
-				.then(response => response.json())
-				.then(data =>{
-					for(i=0, j=1; j<data.length; i++,j++) THIZ.lista[i] = data[j]
-					THIZ.datosCargados=true;
-					//THIZ.lista = data;
-				})
-				.catch(error => console.error(error));
-				
-				
-		
+			.then(response => response.json())
+			.then(data =>{
+				for(i=0, j=1; j<data.length; i++,j++) THIZ.lista[i] = data[j]
+				THIZ.datosCargados=true;
+				$('#cargando').hide();
+			})
+			.catch(error => console.error(error));
+
 		}
 	},
 
 	template: `
 	<div class="container col-md-12">
 	
+		<span>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+   			 </div>
+		</span>
+	
 		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
 			<form @submit.prevent="asyncGetVarianceMetrics">						
 				<div class="form-group col-md-6 pb-4">
 					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
 				</div>	
+				
 				<button type="submit" class="btn btn-primary">Ejecutar</button>
 			</form>
 		</div>
@@ -216,6 +220,7 @@ Vue.component('fase3', {
 					</th>
 				</tr>
 			</thead>
+			
 			<tbody>
 				<tr v-for="i in lista">
 					<td>{{i.metric}}</td>
@@ -251,7 +256,6 @@ Vue.component('fase4', {
 Vue.component('fase5', {
 	data: function() {
 		return {
-			nombreFase: 'Fase5',
 			list: [],
 			headers: [{ header: "Nombre", pos: 0 }, { header: "Apellidos", pos: 1 }, { header: "Correo", pos: 2 }, { header: "Dni", pos: 3 }]
 		}
@@ -263,20 +267,19 @@ Vue.component('fase5', {
 		const THIZ = this;
 		$.ajax({
 			type: 'GET',
-			url: window.location.origin + "/admin/fases/getMedicos",
+			url: window.location.origin + '/admin/fases/getMedicos',
 			success: function(data) {
 				for (let i = 0; i < data.length; i++) THIZ.list.push(data[i]);
 
 			},
 			error: function(error) {
-				console.log("error");
+				console.log(error);
 			}
 		});
 	},
 
 	template: `
-	<div>
-		<p>{{nombreFase}}</p>
+	<div class="pt-2">
 		<table class="table table-bordered table-hover">
 			<thead class="table-dark">
 				<tr>
@@ -320,31 +323,36 @@ new Vue({
 		},
 
 		colorBoton(seleccion) {
-			if (seleccion === this.seleccion) return '#5bc0de';
-
+			if (seleccion === this.seleccion) return '#0D6EFD';
+			else return '#AACDFF'
+		},
+		
+		linea(seleccion) {
+			if (seleccion === this.seleccion) return '2px solid';
+			else return '1px solid';
 		},
 	},
 
 
 	template: `
-		<div class="container" style="padding-top:1%">		
+		<div class="container pt-2">		
 		    <div class="row col-md-10">
 				<h2>Fases</h2>
 			</div>
         	<div class="form-group col-md-12">
-                <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase1')}" style="border-color: #FAFAFA; border: 1px solid">
+                <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}">
                     <span :style="{color: colorTexto('Fase1')}">Fase 1</span> 
                 </button>
-                <button @click="cambiarSeleccion('Fase2')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase2')}" style="border-color: #FAFAFA; border: 1px solid">
+                <button @click="cambiarSeleccion('Fase2')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase2'), border: linea('Fase2')}">
                     <span :style="{color: colorTexto('Fase2')}">Fase 2</span>
                 </button>
-                <button @click="cambiarSeleccion('Fase3')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase3')}" style="border-color: #FAFAFA; border: 1px solid">
+                <button @click="cambiarSeleccion('Fase3')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase3'), border: linea('Fase3')}">
                     <span :style="{color: colorTexto('Fase3')}">Fase 3</span>
                 </button>
-                <button @click="cambiarSeleccion('Fase4')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase4')}" style="border-color: #FAFAFA; border: 1px solid">
+                <button @click="cambiarSeleccion('Fase4')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase4'), border: linea('Fase4')}">
                     <span :style="{color: colorTexto('Fase4')}">Fase 4</span>
                 </button>
-                <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5')}" style="border-color: #FAFAFA; border: 1px solid">
+                <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}">
                     <span :style="{color: colorTexto('Fase5')}">Fase 5</span>
                 </button>
         	</div>	    
