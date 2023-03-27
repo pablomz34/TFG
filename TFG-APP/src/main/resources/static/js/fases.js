@@ -267,7 +267,7 @@ Vue.component('fase5', {
 				{nombre: 'Target median', fila:3, valor:''},
 				{nombre: 'Target third quantile', fila:4, valor:''},
 			],
-			variables: ['GENDER', 'EDUCATION', 'ETHCAT', 'WORK_INCOME_TCR', 'PRI_PAYMENT_TCR_KI', 'AGE_RANGE'],
+			variables: [{feature:'GENDER', GENDER:[]}, {feature: 'EDUCATION'}, 'ETHCAT', 'WORK_INCOME_TCR', 'PRI_PAYMENT_TCR_KI', 'AGE_RANGE'],
 			variableSeleccionada: '',
 			datosCargados: false,
 			M: 100,
