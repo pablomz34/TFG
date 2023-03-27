@@ -9,12 +9,16 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
 import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
 import com.tfg.entities.Roles;
@@ -46,35 +50,19 @@ public class AuthController {
     @GetMapping("/")
     public String index2(){
     	
-    	
-    	System.out.println(session.getId());
-    	
-    	Iterator<String> it = session.getAttributeNames().asIterator();
-    	
-    	while(it.hasNext()) {
-    		System.out.println(it.next());
-    	}
-    	
-//    	Medicos m = (Medicos) session.getAttribute("medico");
-//    	
-//    	if(session.getAttribute("medico")!=null) {
-//    		
-//    		System.out.println(m);
-//    		for(Roles r: m.getRoles()) {
-//    			if(r.getNombre()=="ROLE_ADMIN") {
-//    				System.out.println("Roooool");
-//    			}
-//    		}
-//    	}
-    	
     	return "index";
     }
     
     @GetMapping("/registro")
     public String showRegistrationForm(Model model){
         // create model object to store form data
-        MedicosDto medico = new MedicosDto();
-        model.addAttribute("medico", medico);
+    	
+    	if(RedirectLoginRegistro()) {
+    		return "redirect:/";
+    	}
+    	
+        MedicosDto medicoDto = new MedicosDto();
+        model.addAttribute("medico", medicoDto);
         return "registro";
     }
     
@@ -101,7 +89,25 @@ public class AuthController {
     
     @GetMapping("/login")
     public String login(){
+    	
+    	if(RedirectLoginRegistro()) {
+    		return "redirect:/";
+    	}
+        
         return "login";
+    }
+    
+    
+    private boolean RedirectLoginRegistro() {
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	
+    	Medicos medico = medicosService.findMedicosByCorreo(auth.getName());
+    	
+        if (medico != null) {
+            return true;
+        }
+        
+        return false;
     }
 
 }

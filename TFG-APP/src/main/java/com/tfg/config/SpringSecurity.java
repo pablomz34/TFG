@@ -48,7 +48,7 @@ public class SpringSecurity {
     	http
     	.csrf().disable()
     	.authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/images/**", "/js/**", "/python/**", "/css/**").permitAll()
+                        authorize.requestMatchers("/images/**", "/js/**", "/python/**", "/css/**", "/sass/**").permitAll()
                                 .requestMatchers("/registro/**", "/login/**", "/", "/index").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 ).formLogin(
