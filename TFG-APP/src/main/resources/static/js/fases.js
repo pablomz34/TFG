@@ -238,20 +238,114 @@ Vue.component('fase3', {
 Vue.component('fase4', {
 	data: function() {
 		return {
-			nombreFase: 'Fase4',
+			clusterNumber: '',
+			csvFile: '',
+			datasetStatistics:[
+				{nombre: 'Id Prediction', fila:0}, 
+				{nombre: 'Number of variables', fila:1}, 
+				{nombre: 'Number of observations', fila:2},
+				{nombre: 'Target median', fila:3},
+				{nombre: 'Target third quantile', fila:4},
+			],
+			variables: ['GENDER', 'EDUCATION', 'ETHCAT', 'WORK_INCOME_TCR', 'PRI_PAYMENT_TCR_KI', 'AGE_RANGE'],
+			variableSeleccionada: '',
+			M: 100,
+			F: 80,
+		}
+	},
+	
+	methods: {
+		asyncCreateClusterProfile() {
+			const THIZ = this;
+			const formData = new FormData();
+			$('#cargando').show();
+			formData.append('cluster_number', this.clusterNumber);
+			formData.append('file', this.$refs.csvFile.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/createClusterProfile", {
+				method: "POST",
+				body: formData
+			})
+				.then(data => {
+					console.log(data);
+					$('#cargando').hide();
+				})
+				.catch(err => console.log(err));
+		},
+		
+		anchura(anchura){
+			var maximo = Math.max(this.M, this.F);
+			return anchura/maximo*90 + '%';
+		},
+		
+		color(){
+			return '#AACDFF'
 		}
 	},
 
 
 
 	template: `
-	<div>
-		<p>{{nombreFase}}</p>
-	</div>
+	<div class="container col-md-12">
+		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px">
+			<form @submit.prevent="asyncCreateClusterProfile">				
+				<div class="form-group col-md-4 pb-4">
+					<label class="form-label" for="clusterNumber">Numero de cluster</label>
+				    <input type="number" min=0 class="form-control" v-model="clusterNumber" id="clusterNumber">
+				</div>
+				
+				<div class="form-group col-md-6 pb-4">
+					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
+				</div>
+				
+				<button type="submit" class="btn btn-primary">Ejecutar</button>
+			</form>
+		</div>
+		
+		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+			<h2>Overview</h2>
+			<table class="table table-condensed stats">
+				<h5>Dataset statistics</h5>
+				<tbody>
+					<tr v-for="estadistica in datasetStatistics">
+						<th>{{estadistica.nombre}}</th>
+						<td>{{estadistica.fila}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="col-md-5 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+			<h2>Variables</h2>
+			<select name="Variables" v-model="variableSeleccionada">
+				<option value="" disabled selected>Select columns</option>
+				<option v-for="variable in variables" :value="variable">{{variable}}</option>
+			</select>
+			<variables :variable="this.variableSeleccionada"/>
+			<div class="row p-2">
+				<div class="col-md-1">
+					<span style="display: flex; justify-content: center">M</span>
+				</div>
+				<div class="col-md-3" :style="{width:anchura(M), backgroundColor:color()}" style="border-radius:3px;">
+					<span style="display: flex; justify-content: center">{{M}}</span>
+				</div>
+			</div>	
+			<div class="row p-2">
+				<div class="col-md-1">
+					<span style="display: flex; justify-content: center">F</span>
+				</div>
+				<div class="col-md-3" :style="{width:anchura(F), backgroundColor:color()}" style="border-radius:3px;">
+					<span style="display: flex; justify-content: center">{{F}}</span>
+				</div>
+			</div>	
+    	</div>
+ 	</div>	
+				
 	
 	`
 
 });
+
 
 Vue.component('fase5', {
 	data: function() {
@@ -302,6 +396,28 @@ Vue.component('fase5', {
 	`
 
 });
+
+Vue.component('variables', {
+	props: ['variable'],
+	data: function() {
+		
+		return {
+			
+		}
+	},
+
+
+
+	template: `
+	<div class="pt-2">
+		<p>{{this.variable}}</p>
+	</div>
+	
+	`
+
+});
+
+
 
 new Vue({
 	el: "#fases",
