@@ -238,6 +238,26 @@ Vue.component('fase3', {
 Vue.component('fase4', {
 	data: function() {
 		return {
+			
+		}
+	},
+
+
+
+	
+
+	template: `
+	<div class="pt-2">
+		<p>Aqui se meterán los createAllSurvivalCurves y cratePopulationProfile</p>
+	</div>
+	
+	`
+
+});
+
+Vue.component('fase5', {
+	data: function() {
+		return {
 			clusterNumber: '',
 			csvFile: '',
 			datasetStatistics:[
@@ -266,12 +286,12 @@ Vue.component('fase4', {
 				method: "POST",
 				body: formData
 			})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data);
-					$('#cargando').hide();
-				})
-				.catch(err => console.log(err));
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				$('#cargando').hide();
+			})
+			.catch(err => console.log(err));
 		},
 		
 		anchura(anchura){
@@ -348,55 +368,7 @@ Vue.component('fase4', {
 });
 
 
-Vue.component('fase5', {
-	data: function() {
-		return {
-			list: [],
-			headers: [{ header: "Nombre", pos: 0 }, { header: "Apellidos", pos: 1 }, { header: "Correo", pos: 2 }, { header: "Dni", pos: 3 }]
-		}
-	},
 
-
-
-	created() {
-		const THIZ = this;
-		$.ajax({
-			type: 'GET',
-			url: window.location.origin + '/admin/fases/getMedicos',
-			success: function(data) {
-				for (let i = 0; i < data.length; i++) THIZ.list.push(data[i]);
-
-			},
-			error: function(error) {
-				console.log(error);
-			}
-		});
-	},
-
-	template: `
-	<div class="pt-2">
-		<table class="table table-bordered table-hover">
-			<thead class="table-dark">
-				<tr>
-					<th v-for="head in headers"> 
-					{{head.header}}
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="i in list">
-					<td>{{i.nombre}}</td>
-					<td>{{i.apellidos}}</td>
-					<td>{{i.correo}}</td>
-					<td>{{i.dni}}</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	
-	`
-
-});
 
 Vue.component('variables', {
 	props: ['variable'],
