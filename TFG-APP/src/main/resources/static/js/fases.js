@@ -261,14 +261,15 @@ Vue.component('fase5', {
 			clusterNumber: '',
 			csvFile: '',
 			datasetStatistics:[
-				{nombre: 'Id Prediction', fila:0}, 
-				{nombre: 'Number of variables', fila:1}, 
-				{nombre: 'Number of observations', fila:2},
-				{nombre: 'Target median', fila:3},
-				{nombre: 'Target third quantile', fila:4},
+				{nombre: 'Id Prediction', fila:0, valor:''}, 
+				{nombre: 'Number of variables', fila:1, valor:''}, 
+				{nombre: 'Number of observations', fila:2, valor:''},
+				{nombre: 'Target median', fila:3, valor:''},
+				{nombre: 'Target third quantile', fila:4, valor:''},
 			],
 			variables: ['GENDER', 'EDUCATION', 'ETHCAT', 'WORK_INCOME_TCR', 'PRI_PAYMENT_TCR_KI', 'AGE_RANGE'],
 			variableSeleccionada: '',
+			datosCargados: false,
 			M: 100,
 			F: 80,
 		}
@@ -288,7 +289,13 @@ Vue.component('fase5', {
 			})
 			.then(response => response.json())
 			.then(data => {
+				THIZ.datasetStatistics[0].valor=data.id_prediction;
+				THIZ.datasetStatistics[1].valor=data.number_of_variables;
+				THIZ.datasetStatistics[2].valor=data.number_of_observations;
+				THIZ.datasetStatistics[3].valor=data.target_median;
+				THIZ.datasetStatistics[4].valor=data.target_third_quantile;
 				console.log(data);
+				THIZ.datosCargados=true;
 				$('#cargando').hide();
 			})
 			.catch(err => console.log(err));
@@ -308,6 +315,12 @@ Vue.component('fase5', {
 
 	template: `
 	<div class="container col-md-12">
+		<span>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+   			 </div>
+		</span>
+		
 		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px">
 			<form @submit.prevent="asyncCreateClusterProfile">				
 				<div class="form-group col-md-4 pb-4">
@@ -323,20 +336,20 @@ Vue.component('fase5', {
 			</form>
 		</div>
 		
-		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+		<div v-if="datosCargados" class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
 			<h2>Overview</h2>
 			<table class="table table-condensed stats">
 				<h5>Dataset statistics</h5>
 				<tbody>
 					<tr v-for="estadistica in datasetStatistics">
 						<th>{{estadistica.nombre}}</th>
-						<td>{{estadistica.fila}}</td>
+						<td>{{estadistica.valor}}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 		
-		<div class="col-md-5 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+		<div v-if="datosCargados" class="col-md-5 p-2 m-3" style="border:1px solid black; border-radius:10px;">
 			<h2>Variables</h2>
 			<select name="Variables" v-model="variableSeleccionada">
 				<option value="" disabled selected>Select columns</option>
