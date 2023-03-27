@@ -266,6 +266,7 @@ Vue.component('fase4', {
 				method: "POST",
 				body: formData
 			})
+				.then(response => response.json())
 				.then(data => {
 					console.log(data);
 					$('#cargando').hide();
