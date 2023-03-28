@@ -8,11 +8,9 @@ import jakarta.servlet.http.HttpSession;
 
 import jakarta.validation.Valid;
 
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -48,19 +46,20 @@ public class AuthController {
     
     
     @GetMapping("/")
-    public String index2(){
-    	
+    public String index2(){    	
     	return "index";
     }
     
     @GetMapping("/registro")
     public String showRegistrationForm(Model model){
+        // create model object to store form data
+    	
     	if(RedirectLoginRegistro()) {
     		return "redirect:/";
     	}
     	
-        MedicosDto medicoDto = new MedicosDto();
-        model.addAttribute("medico", medicoDto);
+        MedicosDto medico = new MedicosDto();
+        model.addAttribute("medico", medico);
         return "registro";
     }
     
@@ -87,9 +86,11 @@ public class AuthController {
     
     @GetMapping("/login")
     public String login(){
+    	
     	if(RedirectLoginRegistro()) {
     		return "redirect:/";
     	}
+    	
         return "login";
     }
     
