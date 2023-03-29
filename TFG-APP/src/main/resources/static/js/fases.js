@@ -350,7 +350,7 @@ Vue.component('fase5', {
 			</table>
 		</div>
 		
-		<div v-if="datosCargados" class="col-md-5 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+		<div v-if="datosCargados" class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
 			<h2>Variables</h2>
 			<select name="Variables" v-model="variableSeleccionada">
 				<option value="" disabled selected>Select columns</option>
@@ -378,6 +378,7 @@ Vue.component('variables', {
 			maximo: '',
 			maxFeatures:[],
 			datosCargados:false,
+			featuresHeaders:[]
 		}
 	},
 	
@@ -386,23 +387,43 @@ Vue.component('variables', {
 			const THIZ = this;
 			let l = Object.values(this.variable)[1].length;
 			
-			let array=[];
+			let array= new Array(l);
 			array= Object.values(this.variable)[1];
-			
+			THIZ.maximo=0;
+			THIZ.maxFeatures=[];
 			for(i=0;i<l;i++){
-				THIZ.maxFeatures[i]= Object.values(array[i]);
+				THIZ.maxFeatures[i]= parseInt(Object.values(array[i]));
 			}
 			THIZ.maximo = Math.max(...this.maxFeatures);
-			console.log(this.maxFeatures);
-			console.log(this.maximo);
 			THIZ.datosCargados=true;
+			
+			switch(this.variable.feature){
+				case 'GENDER':
+					THIZ.featuresHeaders = ['M', 'F'];
+					break;
+				case 'EDUCATION':
+					THIZ.featuresHeaders = ['ML', 'ME', 'LO', 'HI'];
+					break;
+				case 'ETHCAT':
+					THIZ.featuresHeaders = ['BLA'];
+					break;
+				case 'WORK_INCOME_TCR':
+					THIZ.featuresHeaders = ['N'];
+					break;
+				case 'PRI_PAYMENT_TCR_KI':
+					THIZ.featuresHeaders = ['MC', 'MA'];
+					break;
+				case 'AGE_RANGE':
+					THIZ.featuresHeaders = ['<60', '>=60'];
+					break;
+			}
 		}
 		
 	},
 
 	methods: {
 		anchura(anchura){
-			return anchura/this.maxFeatures*90 + '%';
+			return anchura/this.maximo*80 + '%';
 		},
 		
 	},
@@ -410,45 +431,17 @@ Vue.component('variables', {
 
 	template: `
 	<div class="pt-2">
-		<p>{{Object.values(this.variable)[1]}}</p>
 		<p>{{this.variable.feature}}</p>
-		<!-- div class="row p-2">
-			<div class="col-md-1">
-				<span style="display: flex; justify-content: center">M</span>
+		<div v-for="(header,index) in featuresHeaders" class="row p-1">
+			<div class="col-md-2">
+				<span style="display: flex; justify-content: center">{{header}}</span>
 			</div>
-			<div class="col-md-3" :style="{width:anchura(M), backgroundColor:color()}" style="border-radius:3px;">
-				<span style="display: flex; justify-content: center">{{M}}</span>
-			</div>
-		</div>	
-		<div class="row p-2">
-			<div class="col-md-1">
-				<span style="display: flex; justify-content: center">F</span>
-			</div>
-			<div class="col-md-1">
-				<span style="display: flex; justify-content: center">M</span>
-			</div>
-		</div>	-->
-		
-		<div v-for="feature in variable[1]" class="row p-2">
-			<div class="col-md-1">
-				<span style="display: flex; justify-content: center">{{Object.keys(feature)}}</span>
-			</div>
-			<div class="col-md-3" :style="{width:anchura(feature), backgroundColor:'#AACDFF'}" style="border-radius:3px;">
-				<span style="display: flex; justify-content: center">{{Object.values(feature)}}</span>
+			<div class="col-md-3" :style="{width:anchura(maxFeatures[index]), backgroundColor:'#AACDFF'}" style="border-radius:3px;">
+				<span style="display: flex; justify-content: center">{{maxFeatures[index]}}</span>
 			</div>
 		</div>
 		
 		
-		<table v-if="datosCargados" class="mini freq table-0">
-			<tbody>
-				<tr class>
-					<th v-for="feature in Object.values(this.variable)[1]">{{Object.keys(feature)}}</th>
-					<td>
-						<div class="bar" style="background-color:#AACDFF" data-toogle="tooltip" data-placement="center" data-html="true" data-delay="500" data-original-tile title>{{Object.values(feature)}}</div>
-					</td>	
-				</tr>
-			</tbody>
-		</table>
 	</div>
 	
 	`
