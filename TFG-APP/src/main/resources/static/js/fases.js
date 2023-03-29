@@ -271,6 +271,14 @@ Vue.component('fase5', {
 			variableSeleccionada: '',
 			M: 100,
 			F: 80,
+			
+			
+			//--------------------------------------------------------------------->
+			
+			clusterNumberSurvivalCurve: '',
+			csvFile: '',
+			imagenCreada: false,
+			imagenUrl: ''
 		}
 	},
 	
@@ -301,6 +309,29 @@ Vue.component('fase5', {
 		
 		color(){
 			return '#AACDFF'
+		},
+		asyncCreateClusterSurvivalCurve() {
+			const THIZ = this;
+			const formData = new FormData();
+			$('#cargando').show();
+			formData.append('max_clusters', this.clusterNumberSurvivalCurve);
+			formData.append('file', this.$refs.csvFile.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/createClusterSurvivalCurve", {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.arrayBuffer())
+				.then(image_bytes => {
+
+					const byteArray = new Uint8Array(image_bytes);
+					const blob = new Blob([byteArray], { type: 'image/png' });
+					const url = URL.createObjectURL(blob);
+					THIZ.imagenCreada = true;
+					THIZ.imagenUrl = url;
+					$('#cargando').hide();
+				})
+				.catch(err => console.log(err));
 		}
 	},
 
@@ -360,7 +391,34 @@ Vue.component('fase5', {
 				</div>
 			</div>	
     	</div>
+    	
+    	
+    	<!---------------------------------------------------------------------------------------------->
+    	
+    	
+    	<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px">
+			<form @submit.prevent="asyncCreateClusterSurvivalCurve">				
+				<div class="form-group col-md-4 pb-4">
+					<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
+				    <input type="number" min=0 class="form-control" v-model="SurvivalCurve" id="SurvivalCurve">
+				</div>
+				
+				<div class="form-group col-md-6 pb-4">
+					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
+				</div>
+				
+				<button type="submit" class="btn btn-primary">Ejecutar</button>
+			</form>
+		</div>
+		
+		<div v-if="imagenCreada" class="col-md-10 p-2 m-3">
+			<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+			<a v-bind:href="imagenUrl" download="nClustersImagen.png">
+				<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
+			</a>
+		</div>
  	</div>	
+ 	
 				
 	
 	`
