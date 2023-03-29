@@ -250,7 +250,6 @@ Vue.component('fase4', {
 	<div class="pt-2">
 		<p>Aqui se meterán los createAllSurvivalCurves y cratePopulationProfile</p>
 	</div>
-	
 	`
 
 });
@@ -258,8 +257,14 @@ Vue.component('fase4', {
 Vue.component('fase5', {
 	data: function() {
 		return {
-			clusterNumber: '',
-			csvFile: '',
+			clusterNumberSurvivalCurve: '',
+			csvFileSurvivalCurve: '',
+			imagenCreada: false,
+			imagenUrl: '',
+			//--------------------------------------------------------------------->
+			
+			clusterNumberProfile: '',
+			csvFileProfile: '',
 			datasetStatistics:[
 				{nombre: 'Id Prediction', fila:0, valor:''}, 
 				{nombre: 'Number of variables', fila:1, valor:''}, 
@@ -271,15 +276,7 @@ Vue.component('fase5', {
 				{feature:'WORK_INCOME_TCR',WORK_INCOME_TCR:[]}, {feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI:[]}, {feature:'AGE_RANGE', AGE_RANGE: []}],
 			variableSeleccionada: '',
 			datosCargados: false,
-
 			
-			//--------------------------------------------------------------------->
-			
-			clusterNumberSurvivalCurve: '',
-			csvFile: '',
-			imagenCreada: false,
-			imagenUrl: ''
-
 		}
 	},
 	
@@ -288,12 +285,36 @@ Vue.component('fase5', {
 
 	
 	methods: {
+		asyncCreateClusterSurvivalCurve() {
+			const THIZ = this;
+			const formData = new FormData();
+			$('#cargando').show();
+			formData.append('max_clusters', this.clusterNumberSurvivalCurve);
+			formData.append('file', this.$refs.csvFileSurvivalCurve.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/createClusterSurvivalCurve", {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.arrayBuffer())
+				.then(image_bytes => {
+
+					const byteArray = new Uint8Array(image_bytes);
+					const blob = new Blob([byteArray], { type: 'image/png' });
+					const url = URL.createObjectURL(blob);
+					THIZ.imagenCreada = true;
+					THIZ.imagenUrl = url;
+					$('#cargando').hide();
+				})
+				.catch(err => console.log(err));
+		},
+		
 		asyncCreateClusterProfile() {
 			const THIZ = this;
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('cluster_number', this.clusterNumber);
-			formData.append('file', this.$refs.csvFile.files[0]);
+			formData.append('file', this.$refs.csvFileProfile.files[0]);
 
 			fetch(window.location.origin + "/admin/fases/createClusterProfile", {
 				method: "POST",
@@ -318,31 +339,6 @@ Vue.component('fase5', {
 			.catch(err => console.log(err));
 		},
 		
-
-		asyncCreateClusterSurvivalCurve() {
-			const THIZ = this;
-			const formData = new FormData();
-			$('#cargando').show();
-			formData.append('max_clusters', this.clusterNumberSurvivalCurve);
-			formData.append('file', this.$refs.csvFile.files[0]);
-
-			fetch(window.location.origin + "/admin/fases/createClusterSurvivalCurve", {
-				method: "POST",
-				body: formData
-			})
-				.then(res => res.arrayBuffer())
-				.then(image_bytes => {
-
-					const byteArray = new Uint8Array(image_bytes);
-					const blob = new Blob([byteArray], { type: 'image/png' });
-					const url = URL.createObjectURL(blob);
-					THIZ.imagenCreada = true;
-					THIZ.imagenUrl = url;
-					$('#cargando').hide();
-				})
-				.catch(err => console.log(err));
-		},
-		
 		
 		color(){
 			return '#AACDFF'
@@ -353,79 +349,79 @@ Vue.component('fase5', {
 
 
 	template: `
-	<div class="container col-md-12">
+	
+	<div class="container">
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
    			 </div>
 		</span>
-		
-		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px">
-			<form @submit.prevent="asyncCreateClusterProfile">				
-				<div class="form-group col-md-4 pb-4">
-					<label class="form-label" for="clusterNumber">Numero de cluster</label>
-				    <input type="number" min=0 class="form-control" v-model="clusterNumber" id="clusterNumber">
-				</div>
-				
-				<div class="form-group col-md-6 pb-4">
-					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
-				</div>
-				
-				<button type="submit" class="btn btn-primary">Ejecutar</button>
-			</form>
-		</div>
-		
-		<div v-if="datosCargados" class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
-			<h2>Overview</h2>
-			<table class="table table-condensed stats">
-				<h5>Dataset statistics</h5>
-				<tbody>
-					<tr v-for="estadistica in datasetStatistics">
-						<th>{{estadistica.nombre}}</th>
-						<td>{{estadistica.valor}}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		
-		<div v-if="datosCargados" class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
-			<h2>Variables</h2>
-			<select name="Variables" v-model="variableSeleccionada">
-				<option value="" disabled selected>Select columns</option>
-				<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-			</select>
+		<div class="row">
 			
-			<variables :variable="this.variableSeleccionada"/>
+			<div class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px">
+				<form @submit.prevent="asyncCreateClusterSurvivalCurve">				
+					<div class="form-group col-md-4 pb-4">
+						<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
+					    <input type="number" min=0 class="form-control" v-model="SurvivalCurve" id="SurvivalCurve">
+					</div>
+					
+					<div class="form-group col-md-6 pb-4">
+						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFileSurvivalCurve">
+					</div>
+					
+					<button type="submit" class="btn btn-primary">Ejecutar</button>
+				</form>
+			</div>
 			
-			
-    	</div>
-    	
-    	
-    	<!---------------------------------------------------------------------------------------------->
-    	
-    	
-    	<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px">
-			<form @submit.prevent="asyncCreateClusterSurvivalCurve">				
-				<div class="form-group col-md-4 pb-4">
-					<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
-				    <input type="number" min=0 class="form-control" v-model="SurvivalCurve" id="SurvivalCurve">
-				</div>
-				
-				<div class="form-group col-md-6 pb-4">
-					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
-				</div>
-				
-				<button type="submit" class="btn btn-primary">Ejecutar</button>
-			</form>
-		</div>
+			<div class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px">
+				<form @submit.prevent="asyncCreateClusterProfile">				
+					<div class="form-group col-md-4 pb-4">
+						<label class="form-label" for="clusterNumber">Numero de cluster</label>
+					    <input type="number" min=0 class="form-control" v-model="clusterNumber" id="clusterNumber">
+					</div>
+					
+					<div class="form-group col-md-6 pb-4">
+						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFileProfile">
+					</div>
+					
+					<button type="submit" class="btn btn-primary">Ejecutar</button>
+				</form>
+			</div>
 		
-		<div v-if="imagenCreada" class="col-md-10 p-2 m-3">
-			<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-			<a v-bind:href="imagenUrl" download="nClustersImagen.png">
-				<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
-			</a>
 		</div>
- 	</div>	
+		<div class="row">	
+			<div v-if="imagenCreada" class="col-md-5 p-2 m-3">
+				<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+				<a v-bind:href="imagenUrl" download="nClustersImagen.png">
+					<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
+				</a>
+			</div>
+			
+			
+			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
+				<h2>Overview</h2>
+				<table class="table table-condensed stats">
+					<h5>Dataset statistics</h5>
+					<tbody>
+						<tr v-for="estadistica in datasetStatistics">
+							<th>{{estadistica.nombre}}</th>
+							<td>{{estadistica.valor}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div v-if="datosCargados" class="col-md-6 p-2 m-1" style="border:1px solid black; border-radius:10px;">
+				<h2>Variables</h2>
+				<select name="Variables" v-model="variableSeleccionada">
+					<option value="" disabled selected>Select columns</option>
+					<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+				</select>
+				
+				<variables :variable="this.variableSeleccionada"/>	
+	    	</div>
+	 	</div>	
+	 </div>
  	
 				
 	
@@ -551,7 +547,7 @@ new Vue({
 		    <div class="row col-md-10">
 				<h2>Fases</h2>
 			</div>
-        	<div class="form-group col-md-12">
+        	<div class="col-md-12">
                 <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}">
                     <span :style="{color: colorTexto('Fase1')}">Fase 1</span> 
                 </button>
