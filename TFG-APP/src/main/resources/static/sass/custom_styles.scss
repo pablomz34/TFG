@@ -1,0 +1,32 @@
+
+
+$nav-link-font-size: 18px;
+$nav-link-font-weight: bold;
+
+$navbar-light-color: #fff;
+$navbar-light-hover-color: rgb(232, 248, 245);
+
+
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/variables-dark";
+
+//#7B68EE
+$custom-colors: (
+  "custom-color": rgb(72, 201, 176)
+);
+
+// Merge the maps
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+
+//.nav-link {
+//	color: white;
+//}
+//.nav-link:hover{
+//	
+//}
+

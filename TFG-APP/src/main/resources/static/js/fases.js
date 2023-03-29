@@ -261,17 +261,17 @@ Vue.component('fase5', {
 			clusterNumber: '',
 			csvFile: '',
 			datasetStatistics:[
-				{nombre: 'Id Prediction', fila:0}, 
-				{nombre: 'Number of variables', fila:1}, 
-				{nombre: 'Number of observations', fila:2},
-				{nombre: 'Target median', fila:3},
-				{nombre: 'Target third quantile', fila:4},
+				{nombre: 'Id Prediction', fila:0, valor:''}, 
+				{nombre: 'Number of variables', fila:1, valor:''}, 
+				{nombre: 'Number of observations', fila:2, valor:''},
+				{nombre: 'Target median', fila:3, valor:''},
+				{nombre: 'Target third quantile', fila:4, valor:''},
 			],
-			variables: ['GENDER', 'EDUCATION', 'ETHCAT', 'WORK_INCOME_TCR', 'PRI_PAYMENT_TCR_KI', 'AGE_RANGE'],
+			variables: [{feature:'GENDER', GENDER:[]}, {feature: 'EDUCATION',EDUCATION:[]}, {feature:'ETHCAT', ETHCAT:[]}, 
+				{feature:'WORK_INCOME_TCR',WORK_INCOME_TCR:[]}, {feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI:[]}, {feature:'AGE_RANGE', AGE_RANGE: []}],
 			variableSeleccionada: '',
-			M: 100,
-			F: 80,
-			
+			datosCargados: false,
+
 			
 			//--------------------------------------------------------------------->
 			
@@ -279,8 +279,13 @@ Vue.component('fase5', {
 			csvFile: '',
 			imagenCreada: false,
 			imagenUrl: ''
+
 		}
 	},
+	
+	
+	
+
 	
 	methods: {
 		asyncCreateClusterProfile() {
@@ -297,19 +302,23 @@ Vue.component('fase5', {
 			.then(response => response.json())
 			.then(data => {
 				console.log(data);
+	
+				THIZ.datasetStatistics[0].valor=data.id_prediction;
+				THIZ.datasetStatistics[1].valor=data.number_of_variables;
+				THIZ.datasetStatistics[2].valor=data.number_of_observations;
+				THIZ.datasetStatistics[3].valor=data.target_median;
+				THIZ.datasetStatistics[4].valor=data.target_third_quantile;
+				
+				for(i=0; i<data.features.length;i++){
+					THIZ.variables[i]=data.features[i];
+				}
+				THIZ.datosCargados=true;
 				$('#cargando').hide();
 			})
 			.catch(err => console.log(err));
 		},
 		
-		anchura(anchura){
-			var maximo = Math.max(this.M, this.F);
-			return anchura/maximo*90 + '%';
-		},
-		
-		color(){
-			return '#AACDFF'
-		},
+
 		asyncCreateClusterSurvivalCurve() {
 			const THIZ = this;
 			const formData = new FormData();
@@ -332,13 +341,25 @@ Vue.component('fase5', {
 					$('#cargando').hide();
 				})
 				.catch(err => console.log(err));
-		}
+		},
+		
+		
+		color(){
+			return '#AACDFF'
+		},
+
 	},
 
 
 
 	template: `
 	<div class="container col-md-12">
+		<span>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+   			 </div>
+		</span>
+		
 		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px">
 			<form @submit.prevent="asyncCreateClusterProfile">				
 				<div class="form-group col-md-4 pb-4">
@@ -354,42 +375,29 @@ Vue.component('fase5', {
 			</form>
 		</div>
 		
-		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+		<div v-if="datosCargados" class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
 			<h2>Overview</h2>
 			<table class="table table-condensed stats">
 				<h5>Dataset statistics</h5>
 				<tbody>
 					<tr v-for="estadistica in datasetStatistics">
 						<th>{{estadistica.nombre}}</th>
-						<td>{{estadistica.fila}}</td>
+						<td>{{estadistica.valor}}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 		
-		<div class="col-md-5 p-2 m-3" style="border:1px solid black; border-radius:10px;">
+		<div v-if="datosCargados" class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px;">
 			<h2>Variables</h2>
 			<select name="Variables" v-model="variableSeleccionada">
 				<option value="" disabled selected>Select columns</option>
-				<option v-for="variable in variables" :value="variable">{{variable}}</option>
+				<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
 			</select>
+			
 			<variables :variable="this.variableSeleccionada"/>
-			<div class="row p-2">
-				<div class="col-md-1">
-					<span style="display: flex; justify-content: center">M</span>
-				</div>
-				<div class="col-md-3" :style="{width:anchura(M), backgroundColor:color()}" style="border-radius:3px;">
-					<span style="display: flex; justify-content: center">{{M}}</span>
-				</div>
-			</div>	
-			<div class="row p-2">
-				<div class="col-md-1">
-					<span style="display: flex; justify-content: center">F</span>
-				</div>
-				<div class="col-md-3" :style="{width:anchura(F), backgroundColor:color()}" style="border-radius:3px;">
-					<span style="display: flex; justify-content: center">{{F}}</span>
-				</div>
-			</div>	
+			
+			
     	</div>
     	
     	
@@ -431,17 +439,74 @@ Vue.component('fase5', {
 Vue.component('variables', {
 	props: ['variable'],
 	data: function() {
-		
 		return {
-			
+			maximo: '',
+			maxFeatures:[],
+			datosCargados:false,
+			featuresHeaders:[]
 		}
 	},
+	
+	watch: {
+		variable(){
+			const THIZ = this;
+			let l = Object.values(this.variable)[1].length;
+			
+			let array= new Array(l);
+			array= Object.values(this.variable)[1];
+			THIZ.maximo=0;
+			THIZ.maxFeatures=[];
+			for(i=0;i<l;i++){
+				THIZ.maxFeatures[i]= parseInt(Object.values(array[i]));
+			}
+			THIZ.maximo = Math.max(...this.maxFeatures);
+			THIZ.datosCargados=true;
+			
+			switch(this.variable.feature){
+				case 'GENDER':
+					THIZ.featuresHeaders = ['M', 'F'];
+					break;
+				case 'EDUCATION':
+					THIZ.featuresHeaders = ['ML', 'ME', 'LO', 'HI'];
+					break;
+				case 'ETHCAT':
+					THIZ.featuresHeaders = ['BLA'];
+					break;
+				case 'WORK_INCOME_TCR':
+					THIZ.featuresHeaders = ['N'];
+					break;
+				case 'PRI_PAYMENT_TCR_KI':
+					THIZ.featuresHeaders = ['MC', 'MA'];
+					break;
+				case 'AGE_RANGE':
+					THIZ.featuresHeaders = ['<60', '>=60'];
+					break;
+			}
+		}
+		
+	},
 
+	methods: {
+		anchura(anchura){
+			return anchura/this.maximo*80 + '%';
+		},
+		
+	},
 
 
 	template: `
 	<div class="pt-2">
-		<p>{{this.variable}}</p>
+		<p>{{this.variable.feature}}</p>
+		<div v-for="(header,index) in featuresHeaders" class="row p-1">
+			<div class="col-md-2">
+				<span style="display: flex; justify-content: center">{{header}}</span>
+			</div>
+			<div class="col-md-3" :style="{width:anchura(maxFeatures[index]), backgroundColor:'#AACDFF'}" style="border-radius:3px;">
+				<span style="display: flex; justify-content: center">{{maxFeatures[index]}}</span>
+			</div>
+		</div>
+		
+		
 	</div>
 	
 	`
