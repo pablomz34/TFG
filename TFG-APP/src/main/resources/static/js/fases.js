@@ -358,7 +358,8 @@ Vue.component('fase5', {
 		</span>
 		<div class="row">
 			
-			<div class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px">
+			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
+				<h4>Create cluster survival curve</h4>
 				<form @submit.prevent="asyncCreateClusterSurvivalCurve">				
 					<div class="form-group col-md-4 pb-4">
 						<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
@@ -373,7 +374,8 @@ Vue.component('fase5', {
 				</form>
 			</div>
 			
-			<div class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px">
+			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
+				<h4>Create cluster profile</h4>
 				<form @submit.prevent="asyncCreateClusterProfile">				
 					<div class="form-group col-md-4 pb-4">
 						<label class="form-label" for="clusterNumber">Numero de cluster</label>
