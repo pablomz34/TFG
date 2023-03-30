@@ -289,7 +289,7 @@ Vue.component('fase5', {
 			const THIZ = this;
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('max_clusters', this.clusterNumberSurvivalCurve);
+			formData.append('cluster_number', this.clusterNumberSurvivalCurve);
 			formData.append('file', this.$refs.csvFileSurvivalCurve.files[0]);
 
 			fetch(window.location.origin + "/admin/fases/createClusterSurvivalCurve", {
@@ -313,7 +313,7 @@ Vue.component('fase5', {
 			const THIZ = this;
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('cluster_number', this.clusterNumber);
+			formData.append('cluster_number', this.clusterNumberProfile);
 			formData.append('file', this.$refs.csvFileProfile.files[0]);
 
 			fetch(window.location.origin + "/admin/fases/createClusterProfile", {
@@ -363,7 +363,7 @@ Vue.component('fase5', {
 				<form @submit.prevent="asyncCreateClusterSurvivalCurve">				
 					<div class="form-group col-md-4 pb-4">
 						<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
-					    <input type="number" min=0 class="form-control" v-model="SurvivalCurve" id="SurvivalCurve">
+					    <input type="number" min=0 class="form-control" v-model="clusterNumberSurvivalCurve" id="clusterNumberSurvivalCurve">
 					</div>
 					
 					<div class="form-group col-md-6 pb-4">
@@ -378,8 +378,8 @@ Vue.component('fase5', {
 				<h4>Create cluster profile</h4>
 				<form @submit.prevent="asyncCreateClusterProfile">				
 					<div class="form-group col-md-4 pb-4">
-						<label class="form-label" for="clusterNumber">Numero de cluster</label>
-					    <input type="number" min=0 class="form-control" v-model="clusterNumber" id="clusterNumber">
+						<label class="form-label" for="clusterNumberProfile">Numero de cluster</label>
+					    <input type="number" min=0 class="form-control" v-model="clusterNumberProfile" id="clusterNumberProfile">
 					</div>
 					
 					<div class="form-group col-md-6 pb-4">
