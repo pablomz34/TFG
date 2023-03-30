@@ -74,7 +74,7 @@ import com.tfg.services.IMedicosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 	
-	static final String UrlServidor = "https://20dc-81-41-176-55.eu.ngrok.io/";
+	static final String UrlServidor = "https://4226-81-41-173-74.eu.ngrok.io/";
 	
 	@Autowired
 	private IMedicosService medicosService;
