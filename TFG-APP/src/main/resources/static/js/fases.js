@@ -281,13 +281,11 @@ Vue.component('fase5', {
 	},
 	
 	
-	
-
-	
 	methods: {
 		asyncCreateClusterSurvivalCurve() {
 			const THIZ = this;
 			const formData = new FormData();
+			this.imagenCreada = false;
 			$('#cargando').show();
 			formData.append('cluster_number', this.clusterNumberSurvivalCurve);
 			formData.append('file', this.$refs.csvFileSurvivalCurve.files[0]);
@@ -311,6 +309,8 @@ Vue.component('fase5', {
 		
 		asyncCreateClusterProfile() {
 			const THIZ = this;
+			this.datosCargados = false;
+			this.variableSeleccionada = '';
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('cluster_number', this.clusterNumberProfile);
@@ -338,7 +338,6 @@ Vue.component('fase5', {
 			})
 			.catch(err => console.log(err));
 		},
-		
 		
 		color(){
 			return '#AACDFF'
@@ -392,14 +391,13 @@ Vue.component('fase5', {
 		
 		</div>
 		<div class="row">	
-			<div v-if="imagenCreada" class="col-md-5 p-2 m-3">
+			<div v-if="imagenCreada" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
 				<a v-bind:href="imagenUrl" download="nClustersImagen.png">
 					<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
 				</a>
 			</div>
-			
-			
+			<div v-else class="col-md-5 p-2 m-1"/>
 			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<h2>Overview</h2>
 				<table class="table table-condensed stats">
@@ -412,10 +410,12 @@ Vue.component('fase5', {
 					</tbody>
 				</table>
 			</div>
-			
-			<div v-if="datosCargados" class="col-md-6 p-2 m-1" style="border:1px solid black; border-radius:10px;">
+		</div>
+		<div class="row">
+			<div class="col-md-5 p2 m-1"/>
+			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<h2>Variables</h2>
-				<select name="Variables" v-model="variableSeleccionada">
+				<select name="variables" v-model="variableSeleccionada">
 					<option value="" disabled selected>Select columns</option>
 					<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
 				</select>
@@ -439,9 +439,9 @@ Vue.component('variables', {
 	data: function() {
 		return {
 			maximo: '',
-			maxFeatures:[],
-			datosCargados:false,
-			featuresHeaders:[]
+			featuresHeaders:[],
+			featuresValues:[],
+			datosCargados:false,			
 		}
 	},
 	
@@ -453,33 +453,14 @@ Vue.component('variables', {
 			let array= new Array(l);
 			array= Object.values(this.variable)[1];
 			THIZ.maximo=0;
-			THIZ.maxFeatures=[];
+			THIZ.featuresValues= [];
+			THIZ.featuresHeaders= [];
 			for(i=0;i<l;i++){
-				THIZ.maxFeatures[i]= parseInt(Object.values(array[i]));
+				THIZ.featuresValues[i]= parseInt(Object.values(array[i]));
+				THIZ.featuresHeaders[i]= String(Object.keys(array[i]));
 			}
-			THIZ.maximo = Math.max(...this.maxFeatures);
+			THIZ.maximo = Math.max(...this.featuresValues);
 			THIZ.datosCargados=true;
-			
-			switch(this.variable.feature){
-				case 'GENDER':
-					THIZ.featuresHeaders = ['M', 'F'];
-					break;
-				case 'EDUCATION':
-					THIZ.featuresHeaders = ['ML', 'ME', 'LO', 'HI'];
-					break;
-				case 'ETHCAT':
-					THIZ.featuresHeaders = ['BLA'];
-					break;
-				case 'WORK_INCOME_TCR':
-					THIZ.featuresHeaders = ['N'];
-					break;
-				case 'PRI_PAYMENT_TCR_KI':
-					THIZ.featuresHeaders = ['MC', 'MA'];
-					break;
-				case 'AGE_RANGE':
-					THIZ.featuresHeaders = ['<60', '>=60'];
-					break;
-			}
 		}
 		
 	},
@@ -499,8 +480,8 @@ Vue.component('variables', {
 			<div class="col-md-2">
 				<span style="display: flex; justify-content: center">{{header}}</span>
 			</div>
-			<div class="col-md-3" :style="{width:anchura(maxFeatures[index]), backgroundColor:'#AACDFF'}" style="border-radius:3px;">
-				<span style="display: flex; justify-content: center">{{maxFeatures[index]}}</span>
+			<div class="col-md-3" :style="{width:anchura(featuresValues[index]), backgroundColor:'#AACDFF'}" style="border-radius:3px;">
+				<span style="display: flex; justify-content: center">{{featuresValues[index]}}</span>
 			</div>
 		</div>
 		
