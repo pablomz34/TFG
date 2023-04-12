@@ -1,3 +1,5 @@
+
+
 Vue.component('fase1', {
 	data: function() {
 		return {
@@ -97,33 +99,33 @@ Vue.component('fase2', {
 				},
 				body: formData
 			})
-			.then(response => {
-				// Verificar si la respuesta es OK
-				if (!response.ok) {
-					throw new Error('Ocurrió un error al descargar el archivo');
-				}
+				.then(response => {
+					// Verificar si la respuesta es OK
+					if (!response.ok) {
+						throw new Error('Ocurrió un error al descargar el archivo');
+					}
 
-				// Crear un objeto URL para el contenido del archivo
-				return response.arrayBuffer();
-			})
-			.then(csv_bytes => {
+					// Crear un objeto URL para el contenido del archivo
+					return response.arrayBuffer();
+				})
+				.then(csv_bytes => {
 
-				const byteArray = new Uint8Array(csv_bytes);
-				const blob = new Blob([byteArray], { type: 'text/csv' });
-				const url = URL.createObjectURL(blob);
-				const link = document.createElement('a');
-				link.href = url;
-				link.download = 'SubPopulationsResponse.csv';
+					const byteArray = new Uint8Array(csv_bytes);
+					const blob = new Blob([byteArray], { type: 'text/csv' });
+					const url = URL.createObjectURL(blob);
+					const link = document.createElement('a');
+					link.href = url;
+					link.download = 'SubPopulationsResponse.csv';
 
-				// Agregar el enlace al DOM y hacer clic en él para descargar el archivo
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-				$('#cargando').hide();
-			})
-			.catch(error => {
-				console.error(error);
-			});
+					// Agregar el enlace al DOM y hacer clic en él para descargar el archivo
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+					$('#cargando').hide();
+				})
+				.catch(error => {
+					console.error(error);
+				});
 		}
 	},
 
@@ -182,13 +184,13 @@ Vue.component('fase3', {
 				method: "POST",
 				body: formData
 			})
-			.then(response => response.json())
-			.then(data =>{
-				for(i=0, j=1; j<data.length; i++,j++) THIZ.lista[i] = data[j]
-				THIZ.datosCargados=true;
-				$('#cargando').hide();
-			})
-			.catch(error => console.error(error));
+				.then(response => response.json())
+				.then(data => {
+					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j]
+					THIZ.datosCargados = true;
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
 
 		}
 	},
@@ -235,24 +237,211 @@ Vue.component('fase3', {
 	`
 });
 
+
+
+
 Vue.component('fase4', {
 	data: function() {
 		return {
-			
+			csvFile: '',
+			csvFile2: '',
+			imagenCreada: false,
+			imagenUrl: '',
+			crearStats: false,
+			estadisticasOverview: [],
+			datos: [{ mes: 'Enero', data: 7 }, { mes: 'Febrero', data: 12 },
+			{ mes: 'Marzo', data: 18 }, { mes: 'Abril', data: 10 }, { mes: 'Mayo', data: 5 },
+			{ mes: 'Marzo', data: 18 }, { mes: 'Abril', data: 10 }, { mes: 'Mayo', data: 5 }]
 		}
 	},
 
+	methods: {
+		createAllSurvivalCurves: function() {
+			const THIZ = this;
+			const formData = new FormData();
+			$('#cargando').show();
+			formData.append('file', this.$refs.csvFile.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/createAllSurvivalCurves", {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.arrayBuffer())
+				.then(image_bytes => {
+
+					THIZ.divJson = false;
+					const byteArray = new Uint8Array(image_bytes);
+					const blob = new Blob([byteArray], { type: 'image/png' });
+					const url = URL.createObjectURL(blob);
+					THIZ.imagenCreada = true;
+					THIZ.imagenUrl = url;
+					$('#cargando').hide();
+				})
+				.catch(err => console.log(err));
 
 
-	
+		},
 
+		createPopulationProfile: function() {
+			const THIZ = this;
+			const formData = new FormData();
+			$('#cargando').show();
+
+			formData.append('file', this.$refs.csvFile2.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/createPopulationProfile", {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.json())
+				.then(json => {
+
+					this.imagenCreada = false;
+					this.crearStats = true;
+
+
+
+					console.log(json);
+
+
+
+					$('#cargando').hide();
+				})
+				.catch(err => console.log(err));
+
+
+		}
+	},
 	template: `
-	<div class="pt-2">
-		<p>Aqui se meterán los createAllSurvivalCurves y cratePopulationProfile</p>
+	<div class="container col-md-12">
+	
+		<span>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+   			 </div>
+		</span>
+		
+		<div class="row justify-content-between py-3">
+		<div class="col-5" style="border:1px solid black; border-radius:10px; padding:20px">
+			<form @submit.prevent="createAllSurvivalCurves">				
+				
+				<div class="form-group col-md-6 pb-4">
+					<input type="file" accept=".csv" class="form-control-file" id="csv1" ref="csvFile">
+				</div>
+				
+				<button type="submit" class="btn btn-primary">Ejecutar</button>
+			</form>
+		</div>
+		
+		<div class="col-5" style="border:1px solid black; border-radius:10px; padding:20px">
+			<form @submit.prevent="createPopulationProfile">				
+				
+				<div class="form-group col-md-6 pb-4">
+					<input type="file" accept=".csv" class="form-control-file" id="csv2" ref="csvFile2">
+				</div>
+				
+				<button type="submit" class="btn btn-primary">Ejecutar</button>
+			</form>
+		</div>
+		
+		</div>
+		
+		<div v-if="imagenCreada" class="col-md-10 p-2 m-3">
+			<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+			<a v-bind:href="imagenUrl" download="survivalCurves.png">
+				<img id="imagenFase4" v-bind:src="imagenUrl" style="max-width:100%"/>
+			</a>
+		</div>
+		
+		
+		<DatasetOverview v-if="this.crearStats" :general-stats="['1','2','3']" /> 
+		
+		<Graphic :datos=this.datos /> 
+		
 	</div>
 	`
 
 });
+
+
+Vue.component('Graphic', {
+	props: {
+		datos: Array
+	},
+	data: function() {
+		return {
+			dataKeys: [],
+			dataValues: []
+		}
+	},
+	methods: {
+		obtenerKeysAndValues() {
+
+			for (let i = 0; i < this.datos.length; i++) {
+				this.dataKeys.push(this.datos[i].mes);
+				this.dataValues.push(this.datos[i].data);
+			}
+
+		}
+	},
+
+	mounted() {
+
+		const ctx = document.getElementById('graphicCanvas');
+
+		this.obtenerKeysAndValues();
+
+		new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: this.dataKeys,
+				datasets: [{
+					label: "# of Votes",
+					data: this.dataValues,
+					backgroundColor: [
+						'rgba(255, 99, 132, 0.2)',
+						'rgba(255, 159, 64, 0.2)',
+						'rgba(255, 205, 86, 0.2)',
+						'rgba(75, 192, 192, 0.2)',
+						'rgba(54, 162, 235, 0.2)',
+						'rgba(153, 102, 255, 0.2)',
+						'rgba(201, 203, 207, 0.2)'
+					],
+					borderColor: [
+						'rgb(255, 99, 132)',
+						'rgb(255, 159, 64)',
+						'rgb(255, 205, 86)',
+						'rgb(75, 192, 192)',
+						'rgb(54, 162, 235)',
+						'rgb(153, 102, 255)',
+						'rgb(201, 203, 207)'
+					],
+					borderWidth: 1
+				}]
+			},
+			options: {
+				indexAxis: 'y',
+				plugins: {
+					legend: {
+						position: 'top',
+					},
+					title: {
+						display: true,
+						text: 'Variable Name'
+					}
+				}
+			}
+		})
+	},
+	template: `
+		<div class="col-6">	
+			<canvas id="graphicCanvas"></canvas>
+		</div>
+	`
+});
+
+
+
 
 Vue.component('fase5', {
 	data: function() {
@@ -262,25 +451,25 @@ Vue.component('fase5', {
 			imagenCreada: false,
 			imagenUrl: '',
 			//--------------------------------------------------------------------->
-			
+
 			clusterNumberProfile: '',
 			csvFileProfile: '',
-			datasetStatistics:[
-				{nombre: 'Id Prediction', fila:0, valor:''}, 
-				{nombre: 'Number of variables', fila:1, valor:''}, 
-				{nombre: 'Number of observations', fila:2, valor:''},
-				{nombre: 'Target median', fila:3, valor:''},
-				{nombre: 'Target third quantile', fila:4, valor:''},
+			datasetStatistics: [
+				{ nombre: 'Id Prediction', fila: 0, valor: '' },
+				{ nombre: 'Number of variables', fila: 1, valor: '' },
+				{ nombre: 'Number of observations', fila: 2, valor: '' },
+				{ nombre: 'Target median', fila: 3, valor: '' },
+				{ nombre: 'Target third quantile', fila: 4, valor: '' },
 			],
-			variables: [{feature:'GENDER', GENDER:[]}, {feature: 'EDUCATION',EDUCATION:[]}, {feature:'ETHCAT', ETHCAT:[]}, 
-				{feature:'WORK_INCOME_TCR',WORK_INCOME_TCR:[]}, {feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI:[]}, {feature:'AGE_RANGE', AGE_RANGE: []}],
+			variables: [{ feature: 'GENDER', GENDER: [] }, { feature: 'EDUCATION', EDUCATION: [] }, { feature: 'ETHCAT', ETHCAT: [] },
+			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
 			variableSeleccionada: '',
 			datosCargados: false,
-			
+
 		}
 	},
-	
-	
+
+
 	methods: {
 		asyncCreateClusterSurvivalCurve() {
 			const THIZ = this;
@@ -306,7 +495,7 @@ Vue.component('fase5', {
 				})
 				.catch(err => console.log(err));
 		},
-		
+
 		asyncCreateClusterProfile() {
 			const THIZ = this;
 			this.datosCargados = false;
@@ -320,26 +509,26 @@ Vue.component('fase5', {
 				method: "POST",
 				body: formData
 			})
-			.then(response => response.json())
-			.then(data => {
-				console.log(data);
-	
-				THIZ.datasetStatistics[0].valor=data.id_prediction;
-				THIZ.datasetStatistics[1].valor=data.number_of_variables;
-				THIZ.datasetStatistics[2].valor=data.number_of_observations;
-				THIZ.datasetStatistics[3].valor=data.target_median;
-				THIZ.datasetStatistics[4].valor=data.target_third_quantile;
-				
-				for(i=0; i<data.features.length;i++){
-					THIZ.variables[i]=data.features[i];
-				}
-				THIZ.datosCargados=true;
-				$('#cargando').hide();
-			})
-			.catch(err => console.log(err));
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+
+					THIZ.datasetStatistics[0].valor = data.id_prediction;
+					THIZ.datasetStatistics[1].valor = data.number_of_variables;
+					THIZ.datasetStatistics[2].valor = data.number_of_observations;
+					THIZ.datasetStatistics[3].valor = data.target_median;
+					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
+
+					for (i = 0; i < data.features.length; i++) {
+						THIZ.variables[i] = data.features[i];
+					}
+					THIZ.datosCargados = true;
+					$('#cargando').hide();
+				})
+				.catch(err => console.log(err));
 		},
-		
-		color(){
+
+		color() {
 			return '#AACDFF'
 		},
 
@@ -439,37 +628,37 @@ Vue.component('variables', {
 	data: function() {
 		return {
 			maximo: '',
-			featuresHeaders:[],
-			featuresValues:[],
-			datosCargados:false,			
+			featuresHeaders: [],
+			featuresValues: [],
+			datosCargados: false,
 		}
 	},
-	
+
 	watch: {
-		variable(){
+		variable() {
 			const THIZ = this;
 			let l = Object.values(this.variable)[1].length;
-			
-			let array= new Array(l);
-			array= Object.values(this.variable)[1];
-			THIZ.maximo=0;
-			THIZ.featuresValues= [];
-			THIZ.featuresHeaders= [];
-			for(i=0;i<l;i++){
-				THIZ.featuresValues[i]= parseInt(Object.values(array[i]));
-				THIZ.featuresHeaders[i]= String(Object.keys(array[i]));
+
+			let array = new Array(l);
+			array = Object.values(this.variable)[1];
+			THIZ.maximo = 0;
+			THIZ.featuresValues = [];
+			THIZ.featuresHeaders = [];
+			for (i = 0; i < l; i++) {
+				THIZ.featuresValues[i] = parseInt(Object.values(array[i]));
+				THIZ.featuresHeaders[i] = String(Object.keys(array[i]));
 			}
 			THIZ.maximo = Math.max(...this.featuresValues);
-			THIZ.datosCargados=true;
+			THIZ.datosCargados = true;
 		}
-		
+
 	},
 
 	methods: {
-		anchura(anchura){
-			return anchura/this.maximo*80 + '%';
+		anchura(anchura) {
+			return anchura / this.maximo * 80 + '%';
 		},
-		
+
 	},
 
 
@@ -517,7 +706,7 @@ new Vue({
 			if (seleccion === this.seleccion) return '#0D6EFD';
 			else return '#AACDFF'
 		},
-		
+
 		linea(seleccion) {
 			if (seleccion === this.seleccion) return '2px solid';
 			else return '1px solid';

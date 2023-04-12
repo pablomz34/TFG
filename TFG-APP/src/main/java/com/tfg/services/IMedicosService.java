@@ -15,5 +15,7 @@ public interface IMedicosService {
 	
 	public Medicos findMedicosByCorreo(String correo);
 	
+	public Medicos findMedicosByDni(String dni);
+	
 	public List<MedicosDto> findAllMedicos();
 }

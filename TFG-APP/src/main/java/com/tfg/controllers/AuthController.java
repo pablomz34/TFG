@@ -17,6 +17,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
 import com.tfg.entities.Roles;
@@ -46,7 +48,9 @@ public class AuthController {
     
     
     @GetMapping("/")
-    public String index2(){    	
+    public String index2(){ 
+    	
+    	
     	return "index";
     }
     
@@ -67,20 +71,17 @@ public class AuthController {
     public String registration(@Valid @ModelAttribute("medico") MedicosDto medicoDto,
                                BindingResult result,
                                Model model){
-        Medicos existingUser = medicosService.findMedicosByCorreo(medicoDto.getCorreo());
-
-        if(existingUser != null && existingUser.getCorreo() != null && !existingUser.getCorreo().isEmpty()){
-            result.rejectValue("correo", null,
-                    "There is already an account registered with the same email");
-        }
-
-        if(result.hasErrors()){
-            model.addAttribute("medico", medicoDto);
-            return "/registro";
-        }
-
-        medicosService.guardarMedico(medicoDto);
-        return "redirect:/registro?success";
+    		
+    	if(result.hasErrors() || !ValidarRegistro(medicoDto, result, model)) {
+    		model.addAttribute("medico", medicoDto);
+    		return "/registro";
+    	}
+    	else {
+    		medicosService.guardarMedico(medicoDto);
+            
+            return "redirect:/registro?success";
+    	}
+        
     }
     
     
@@ -105,5 +106,61 @@ public class AuthController {
         
         return false;
     }
+    
+    
+    private boolean ValidarRegistro(MedicosDto medicoDto,
+                               BindingResult result,
+                               Model model) {
+    	
+    	 Medicos userByCorreo = medicosService.findMedicosByCorreo(medicoDto.getCorreo());
+
+         if(userByCorreo != null && userByCorreo.getCorreo() != null && !userByCorreo.getCorreo().isEmpty()){
+             result.rejectValue("correo", null,
+                     "Ya existe una cuenta creada con ese correo");
+         }
+         
+         Medicos userByDni = medicosService.findMedicosByDni(medicoDto.getDni());
+         
+         if(userByDni != null && userByDni.getDni() != null && !userByDni.getDni().isEmpty()){
+             result.rejectValue("dni", null,
+                     "Ya existe una cuenta creada con este DNI");
+         }
+         
+         if(!medicoDto.getPassword().equals(medicoDto.getRepeatPassword())) {
+         	 result.rejectValue("repeatPassword", null,
+                      "Las contraseñas deben coincidir");
+         }
+         
+         if(!validarNifNie(medicoDto.getDni())) {
+        	 result.rejectValue("dni", null,
+                     "El dígito de control del NIF/NIE no es válido");
+         }
+         
+         if(result.hasErrors()) {
+        	 return false;
+         }
+    	
+    	 return true;
+    }
+    
+    
+    private boolean validarNifNie(String nifNie) {
+        String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+        boolean valido = false;
+
+        if (nifNie != null && nifNie.matches("^[XYZ]?\\d{7,8}[A-Z]$")) {
+            String numero = nifNie.replaceAll("[^0-9]", ""); // Eliminar letra del NIF/NIE
+            int indice = Integer.parseInt(numero) % 23;
+            char letra = nifNie.charAt(nifNie.length() - 1);
+
+            if (letra == letras.charAt(indice)) {
+                valido = true;
+            }
+        }
+
+        return valido;
+    }
+
+
 
 }

@@ -6,65 +6,84 @@
 <body>
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
-	
+
 	<br /><br /><br />
-	<div class="container">
-		<div class="row col-md-8 offset-md-2">
-			<div class="card">
-			<div th:if="${param.success}">
-					<div class="alert alert-info">
-						Te has registrado correctamente
+
+	<div id="registrationValidation">
+
+		<div class="container">
+			<div class="row col-md-8 offset-md-2">
+				<div class="card">
+					<div th:if="${param.success}">
+						<div class="alert alert-info">
+							Te has registrado correctamente
+						</div>
 					</div>
-				</div>
-				<div class="card-header">
-					<h2 class="text-center">Registro</h2>
-				</div>
-				<div class="card-body">
-					<form method="post" role="form" th:action="@{/registro/guardar}" th:object="${medico}">
-						<div class="form-group mb-3">
-							<label class="form-label">Nombre</label>
-							<input class="form-control" id="nombre" name="nombre" placeholder="Nombre"
-								th:field="*{nombre}" type="text" />
-							<p th:errors="*{nombre}" class="text-danger" th:if="${#fields.hasErrors('nombre')}">
-							</p>
-						</div>
+					<div class="card-header">
+						<h2 class="text-center">Registro</h2>
+					</div>
+					<div class="card-body">
+						<form @submit.prevent="handleSubmit" method="post" role="form" th:action="@{/registro/guardar}" th:object="${medico}">
+							<div class="form-group mb-3">
+								<label class="form-label">Nombre</label>
+								<input class="form-control" :class=[inputs.nombre.clase] id="nombre" name="nombre" placeholder="Nombre"
+									th:field="*{nombre}" type="text" v-model="inputs.nombre.text" v-on:keyup="validar_nombre()" />
+								<p th:errors="*{nombre}" class="text-danger" th:if="${#fields.hasErrors('nombre')}">
+								</p>
+							</div>
 
-						<div class="form-group mb-3">
-							<label class="form-label">Last Name</label>
-							<input class="form-control" id="apellidos" name="apellidos" placeholder="Apellidos"
-								th:field="*{apellidos}" type="text" />
-							<p th:errors="*{apellidos}" class="text-danger" th:if="${#fields.hasErrors('apellidos')}"></p>
-						</div>
+							<div class="form-group mb-3">
+								<label class="form-label">Last Name</label>
+								<input class="form-control" :class=[inputs.apellido.clase] id="apellidos" name="apellidos" placeholder="Apellidos"
+									th:field="*{apellidos}" type="text" v-model="inputs.apellido.text" v-on:keyup="validar_apellido()" />
+								<p th:errors="*{apellidos}" class="text-danger"
+									th:if="${#fields.hasErrors('apellidos')}"></p>
+							</div>
 
-						<div class="form-group mb-3">
-							<label class="form-label">Correo</label>
-							<input class="form-control" id="correo" name="correo" placeholder="Correo"
-								th:field="*{correo}" type="email" />
-							<p th:errors="*{correo}" class="text-danger" th:if="${#fields.hasErrors('correo')}"></p>
-						</div>
-						
-						<div class="form-group mb-3">
-							<label class="form-label">Dni</label>
-							<input class="form-control" id="dni" name="dni" placeholder="Dni"
-								th:field="*{dni}" type="dni" />
-							<p th:errors="*{dni}" class="text-danger" th:if="${#fields.hasErrors('dni')}"></p>
-						</div>
+							<div class="form-group mb-3">
+								<label class="form-label">Correo</label>
+								<input class="form-control" :class=[inputs.correo.clase] id="correo" name="correo" placeholder="Correo"
+									th:field="*{correo}" type="email" v-model="inputs.correo.text" v-on:keyup="validar_correo()" />
+								<p th:errors="*{correo}" class="text-danger" th:if="${#fields.hasErrors('correo')}"></p>
+							</div>
 
-						<div class="form-group mb-3">
-							<label class="form-label">Password</label>
-							<input class="form-control" id="password" name="password" placeholder="Password"
-								th:field="*{password}" type="password" />
-							<p th:errors="*{password}" class="text-danger" th:if="${#fields.hasErrors('password')}"></p>
-						</div>
-						<div class="form-group">
-							<button class="btn btn-primary" type="submit">Registro</button>
-							<span>¿Ya estás registrado? <a th:href="@{/login}">Haz login</a></span>
-						</div>
-					</form>
+							<div class="form-group mb-3">
+								<label class="form-label">NIF/NIE</label>
+								<input class="form-control" :class=[inputs.dni.clase] id="dni" name="dni" placeholder="Dni" th:field="*{dni}"
+									type="dni" v-model="inputs.dni.text" v-on:keyup="validar_dni()"/>
+								<p th:errors="*{dni}" class="text-danger" th:if="${#fields.hasErrors('dni')}"></p>
+							</div>
+
+							<div class="form-group mb-3">
+								<label class="form-label">Password</label>
+								<input class="form-control" :class=[inputs.password.clase] id="password" name="password" placeholder="Password"
+									th:field="*{password}" type="password" v-model="inputs.password.text" v-on:keyup="validar_password()"/>
+								<p th:errors="*{password}" class="text-danger" th:if="${#fields.hasErrors('password')}">
+								</p>
+							</div>
+
+
+							<div class="form-group mb-3">
+								<label class="form-label">Repeat Password</label>
+								<input class="form-control" :class=[inputs.repeatPassword.clase] id="repeatPassword" name="repeatPassword"
+									placeholder="Repeat password" th:field="*{repeatPassword}" type="password"
+									v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
+								<p th:errors="*{repeatPassword}" class="text-danger"
+									th:if="${#fields.hasErrors('repeatPassword')}"></p>
+							</div>
+
+							<div class="form-group">
+								<button class="btn btn-primary" type="submit">Registro</button>
+								<span>¿Ya estás registrado? <a th:href="@{/login}">Haz login</a></span>
+							</div>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	<script type="text/javascript" src="/js/registro.js"></script>
 </body>
 
 </html>

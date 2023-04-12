@@ -2,9 +2,11 @@ package com.tfg.services;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,10 @@ import com.tfg.entities.Medicos;
 import com.tfg.entities.Roles;
 import com.tfg.repositories.MedicosRepository;
 import com.tfg.repositories.RolesRepository;
+
+import jakarta.persistence.PersistenceException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Service
 @Transactional
@@ -50,13 +56,21 @@ public class MedicosService implements IMedicosService {
 			rol = checkRolExist();
 		}
 		medico.setRoles(Arrays.asList(rol));
-		medicosRep.save(medico);
-	}
 
+		
+		medicosRep.save(medico);
+
+	}
 
 	@Override
 	public Medicos findMedicosByCorreo(String correo) {
 		return medicosRep.findByCorreo(correo);
+	}
+	
+
+	@Override
+	public Medicos findMedicosByDni(String dni) {
+		return  medicosRep.findByDni(dni);
 	}
 
 	@Override
@@ -73,12 +87,13 @@ public class MedicosService implements IMedicosService {
 		medicoDto.setDni(medico.getDni());
 		return medicoDto;
 	}
-	
 
 	private Roles checkRolExist() {
 		Roles rol = new Roles();
 		rol.setNombre("ROLE_ADMIN");
 		return rolesRep.save(rol);
 	}
+
+
 
 }

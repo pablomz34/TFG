@@ -6,6 +6,7 @@ $nav-link-font-weight: bold;
 $navbar-light-color: #fff;
 $navbar-light-hover-color: rgb(232, 248, 245);
 
+$input-btn-focus-box-shadow: none;
 
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
@@ -13,7 +14,7 @@ $navbar-light-hover-color: rgb(232, 248, 245);
 
 //#7B68EE
 $custom-colors: (
-  "custom-color": rgb(72, 201, 176)
+  "custom-color": #5564eb
 );
 
 // Merge the maps

@@ -74,7 +74,7 @@ import com.tfg.services.IMedicosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 	
-	static final String UrlServidor = "https://4226-81-41-173-74.eu.ngrok.io/";
+	static final String UrlServidor = "https://bc45-81-41-173-74.eu.ngrok.io/";
 	
 	@Autowired
 	private IMedicosService medicosService;
@@ -266,6 +266,111 @@ public class FasesController {
 		List<Map<String, Object>> map = null;
 		map = new ObjectMapper().readValue(aux, List.class);
 		
+		
+		return new ResponseEntity<>(map, HttpStatus.OK);
+
+		
+	}
+	
+	
+	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
+	public ResponseEntity<byte[]> createAllSurvivalCurves(@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+		HttpPost httpPost = new HttpPost(
+				UrlServidor + "survivalAndProfiling/createAllSurvivalCurves");
+
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		
+		// Agregar el archivo al cuerpo de la petición
+
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+		// Copiar el contenido del objeto MultipartFile al objeto File
+		multipartFile.transferTo(file);
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+
+		HttpEntity responseEntity = response.getEntity();
+
+		InputStream responseInputStream = responseEntity.getContent();
+
+		byte[] imageBytes = responseInputStream.readAllBytes();
+
+		// Cerrar el objeto CloseableHttpClient y liberar los recursos
+		httpClient.close();
+		
+		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
+
+		
+	}
+	
+	@PostMapping(value = "/createPopulationProfile", consumes = "multipart/form-data")
+	public ResponseEntity<HashMap<String, Object>> createPopulationProfile(@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException, ClassNotFoundException {
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+		HttpPost httpPost = new HttpPost(
+				UrlServidor + "survivalAndProfiling/createPopulationProfile");
+
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		
+		// Agregar el archivo al cuerpo de la petición
+
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+		// Copiar el contenido del objeto MultipartFile al objeto File
+		multipartFile.transferTo(file);
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+
+		HttpEntity responseEntity = response.getEntity();
+		
+		InputStream responseInputStream = responseEntity.getContent();
+		
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
+		String line;
+		StringBuilder stringBuilder = new StringBuilder();
+		while ((line = bufferedReader.readLine()) != null) {
+			stringBuilder.append(line);
+		}
+		String jsonString = stringBuilder.toString();
+		
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(jsonString, HashMap.class);
 		
 		return new ResponseEntity<>(map, HttpStatus.OK);
 

@@ -15,4 +15,6 @@ public interface MedicosRepository extends JpaRepository<Medicos, Long> {
 	public List<Medicos> findAll();
 	
 	Medicos findByCorreo(String correo);
+	
+	Medicos findByDni(String dni);
 }
