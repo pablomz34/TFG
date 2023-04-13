@@ -247,17 +247,18 @@ Vue.component('fase4', {
 			csvFile2: '',
 			imagenCreada: false,
 			imagenUrl: '',
-			crearStats: false,
+			datosCargados: false,
 			estadisticasOverview: [],
-			datos: [{ mes: 'Enero', data: 7 }, { mes: 'Febrero', data: 12 },
-			{ mes: 'Marzo', data: 18 }, { mes: 'Abril', data: 10 }, { mes: 'Mayo', data: 5 },
-			{ mes: 'Marzo', data: 18 }, { mes: 'Abril', data: 10 }, { mes: 'Mayo', data: 5 }]
+			variableSeleccionada: '',
+			variables: [{ feature: 'agglomerative', agglomerative: [] }, { feature: 'GENDER', GENDER: [] }, { feature: 'EDUCATION', EDUCATION: [] }, { feature: 'ETHCAT', ETHCAT: [] },
+			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
 		}
 	},
 
 	methods: {
 		createAllSurvivalCurves: function() {
 			const THIZ = this;
+			THIZ.imagenCreada = false;
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('file', this.$refs.csvFile.files[0]);
@@ -285,6 +286,8 @@ Vue.component('fase4', {
 		createPopulationProfile: function() {
 			const THIZ = this;
 			const formData = new FormData();
+			this.datosCargados = false;
+			this.variableSeleccionada = '';
 			$('#cargando').show();
 
 			formData.append('file', this.$refs.csvFile2.files[0]);
@@ -294,17 +297,14 @@ Vue.component('fase4', {
 				body: formData
 			})
 				.then(res => res.json())
-				.then(json => {
+				.then(data => {
 
-					this.imagenCreada = false;
-					this.crearStats = true;
+					THIZ.datosCargados = true;
+					for (i = 0; i < data.features.length; i++) {
+						THIZ.variables[i] = data.features[i];
+					}
 
-
-
-					console.log(json);
-
-
-
+					console.log(data);
 					$('#cargando').hide();
 				})
 				.catch(err => console.log(err));
@@ -353,46 +353,40 @@ Vue.component('fase4', {
 			</a>
 		</div>
 		
-		
-		<DatasetOverview v-if="this.crearStats" :general-stats="['1','2','3']" /> 
-		
-		<Graphic :datos=this.datos /> 
-		
+		<div class="row">
+			<div class="col-md-5 p2 m-1"/>
+			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
+				<h2>Variables</h2>
+				<select name="variables" v-model="variableSeleccionada">
+					<option value="" disabled selected>Select columns</option>
+					<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+				</select>
+				
+				<variables :variable="this.variableSeleccionada"/>	
+	    	</div>
+	 	</div>	
+		 
 	</div>
 	`
 
 });
 
 
-Vue.component('Graphic', {
+Vue.component('graphic', {
 	props: {
-		datos: Array
+		dataKeys: Array,
+		dataValues: Array
 	},
-	data: function() {
-		return {
-			dataKeys: [],
-			dataValues: []
-		}
-	},
-	methods: {
-		obtenerKeysAndValues() {
-
-			for (let i = 0; i < this.datos.length; i++) {
-				this.dataKeys.push(this.datos[i].mes);
-				this.dataValues.push(this.datos[i].data);
-			}
-
-		}
-	},
-
-	mounted() {
+	
+	
+	mounted(){
 
 		const ctx = document.getElementById('graphicCanvas');
 
-		this.obtenerKeysAndValues();
+		
 
-		new Chart(ctx, {
-			type: 'bar',
+		window.grafica= new Chart(ctx, {
+			type: 'pie',
 			data: {
 				labels: this.dataKeys,
 				datasets: [{
@@ -432,9 +426,66 @@ Vue.component('Graphic', {
 				}
 			}
 		})
+	}, 
+	
+	watch: {
+		dataKeys(){
+	
+			var ctx = document.getElementById('graphicCanvas').getContext('2d');
+			if(window.grafica){
+				window.grafica.clear();
+				window.grafica.destroy();
+			}
+		
+
+			window.grafica = new Chart(ctx, {
+				type: 'pie',
+				data: {
+					labels: this.dataKeys,
+					datasets: [{
+						label: "# of Votes",
+						data: this.dataValues,
+						backgroundColor: [
+							'rgba(255, 99, 132, 0.2)',
+							'rgba(255, 159, 64, 0.2)',
+							'rgba(255, 205, 86, 0.2)',
+							'rgba(75, 192, 192, 0.2)',
+							'rgba(54, 162, 235, 0.2)',
+							'rgba(153, 102, 255, 0.2)',
+							'rgba(201, 203, 207, 0.2)'
+						],
+						borderColor: [
+							'rgb(255, 99, 132)',
+							'rgb(255, 159, 64)',
+							'rgb(255, 205, 86)',
+							'rgb(75, 192, 192)',
+							'rgb(54, 162, 235)',
+							'rgb(153, 102, 255)',
+							'rgb(201, 203, 207)'
+						],
+						borderWidth: 1
+					}]
+				},
+				options: {
+					indexAxis: 'y',
+					plugins: {
+						legend: {
+							position: 'top',
+						},
+						title: {
+							display: true,
+							text: 'Variable Name'
+						}
+					}
+				}
+			})
+		}
+		
 	},
+	
+	
 	template: `
-		<div class="col-6">	
+		<div class="col-12">	
 			<canvas id="graphicCanvas"></canvas>
 		</div>
 	`
@@ -471,7 +522,7 @@ Vue.component('fase5', {
 
 
 	methods: {
-		asyncCreateClusterSurvivalCurve() {
+		createClusterSurvivalCurve() {
 			const THIZ = this;
 			const formData = new FormData();
 			this.imagenCreada = false;
@@ -496,7 +547,7 @@ Vue.component('fase5', {
 				.catch(err => console.log(err));
 		},
 
-		asyncCreateClusterProfile() {
+		createClusterProfile() {
 			const THIZ = this;
 			this.datosCargados = false;
 			this.variableSeleccionada = '';
@@ -548,7 +599,7 @@ Vue.component('fase5', {
 			
 			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
 				<h4>Create cluster survival curve</h4>
-				<form @submit.prevent="asyncCreateClusterSurvivalCurve">				
+				<form @submit.prevent="createClusterSurvivalCurve">				
 					<div class="form-group col-md-4 pb-4">
 						<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
 					    <input type="number" min=0 class="form-control" v-model="clusterNumberSurvivalCurve" id="clusterNumberSurvivalCurve">
@@ -564,7 +615,7 @@ Vue.component('fase5', {
 			
 			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
 				<h4>Create cluster profile</h4>
-				<form @submit.prevent="asyncCreateClusterProfile">				
+				<form @submit.prevent="createClusterProfile">				
 					<div class="form-group col-md-4 pb-4">
 						<label class="form-label" for="clusterNumberProfile">Numero de cluster</label>
 					    <input type="number" min=0 class="form-control" v-model="clusterNumberProfile" id="clusterNumberProfile">
@@ -631,6 +682,9 @@ Vue.component('variables', {
 			featuresHeaders: [],
 			featuresValues: [],
 			datosCargados: false,
+			muestraGrafico: false,
+			dataKeys: [],
+			dataValues: []
 		}
 	},
 
@@ -638,18 +692,23 @@ Vue.component('variables', {
 		variable() {
 			const THIZ = this;
 			let l = Object.values(this.variable)[1].length;
-
+			//if(this.muestraGrafico) var grafico = document.getElementById('grafico').remove();
 			let array = new Array(l);
 			array = Object.values(this.variable)[1];
 			THIZ.maximo = 0;
 			THIZ.featuresValues = [];
 			THIZ.featuresHeaders = [];
+			THIZ.dataKeys = [];
+			THIZ.dataValues = [];
 			for (i = 0; i < l; i++) {
 				THIZ.featuresValues[i] = parseInt(Object.values(array[i]));
 				THIZ.featuresHeaders[i] = String(Object.keys(array[i]));
+				THIZ.dataKeys[i] = String(Object.keys(array[i]));
+				THIZ.dataValues[i] = parseInt(Object.values(array[i]));
 			}
 			THIZ.maximo = Math.max(...this.featuresValues);
 			THIZ.datosCargados = true;
+			THIZ.muestraGrafico=true;
 		}
 
 	},
@@ -663,7 +722,7 @@ Vue.component('variables', {
 
 
 	template: `
-	<div class="pt-2">
+	<div v-if="datosCargados" class="pt-2">
 		<p>{{this.variable.feature}}</p>
 		<div v-for="(header,index) in featuresHeaders" class="row p-1">
 			<div class="col-md-2">
@@ -672,10 +731,13 @@ Vue.component('variables', {
 			<div class="col-md-3" :style="{width:anchura(featuresValues[index]), backgroundColor:'#AACDFF'}" style="border-radius:3px;">
 				<span style="display: flex; justify-content: center">{{featuresValues[index]}}</span>
 			</div>
-		</div>
-		
+		</div> 
+	
+		<graphic v-if="muestraGrafico" id="grafico" :dataKeys="this.dataKeys" :dataValues="this.dataValues"/> 
 		
 	</div>
+	
+
 	
 	`
 
