@@ -64,6 +64,7 @@ public class MedicosService implements IMedicosService {
 
 	@Override
 	public Medicos findMedicosByCorreo(String correo) {
+	
 		return medicosRep.findByCorreo(correo);
 	}
 	

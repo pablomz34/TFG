@@ -3,7 +3,7 @@
 
 <head th:insert="~{fragmentos/head.html}"></head>
 
-<body>
+<body class="bg-light-subtle">
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 
@@ -11,63 +11,106 @@
 
 	<div id="registrationValidation">
 
-		<div class="container">
-			<div class="row col-md-8 offset-md-2">
-				<div class="card">
+		<div class="container mb-5">
+			<div class="row col-md-6 offset-md-3">
+				<div class="card rounded-4 p-0 shadow">
 					<div th:if="${param.success}">
 						<div class="alert alert-info">
 							Te has registrado correctamente
 						</div>
 					</div>
-					<div class="card-header">
-						<h2 class="text-center">Registro</h2>
+					<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+						<h2 class="text-center text-white">Registro</h2>
 					</div>
 					<div class="card-body">
-						<form @submit.prevent="handleSubmit" method="post" role="form" th:action="@{/registro/guardar}" th:object="${medico}">
+						<form @submit.prevent="handleSubmit" id="formRegistro" method="post" role="form"
+							th:action="@{/registro/guardar}" th:object="${medico}">
 							<div class="form-group mb-3">
-								<label class="form-label">Nombre</label>
-								<input class="form-control" :class=[inputs.nombre.clase] id="nombre" name="nombre" placeholder="Nombre"
-									th:field="*{nombre}" type="text" v-model="inputs.nombre.text" v-on:keyup="validar_nombre()" />
+								<label :class="inputs.nombre.validationMessageClass" class="form-label">Nombre</label>
+								<input class="form-control" :class=[inputs.nombre.borderClass] id="nombre" name="nombre"
+									placeholder="Nombre" th:field="*{nombre}" type="text" v-model="inputs.nombre.text"
+									v-on:keyup="validar_nombre()" />
+								<p v-if="inputs.nombre.validationMessage!=''"
+									:class="inputs.nombre.validationMessageClass">
+									{{inputs.nombre.validationMessage}}
+								</p>
 								<p th:errors="*{nombre}" class="text-danger" th:if="${#fields.hasErrors('nombre')}">
 								</p>
 							</div>
 
 							<div class="form-group mb-3">
-								<label class="form-label">Last Name</label>
-								<input class="form-control" :class=[inputs.apellido.clase] id="apellidos" name="apellidos" placeholder="Apellidos"
-									th:field="*{apellidos}" type="text" v-model="inputs.apellido.text" v-on:keyup="validar_apellido()" />
+								<label :class="inputs.apellidos.validationMessageClass"
+									class="form-label">Apellidos</label>
+								<input class="form-control" :class=[inputs.apellidos.borderClass] id="apellidos"
+									name="apellidos" placeholder="Apellidos" th:field="*{apellidos}" type="text"
+									v-model="inputs.apellidos.text" v-on:keyup="validar_apellidos()" />
+								<p v-if="inputs.apellidos.validationMessage!=''"
+									:class="inputs.apellidos.validationMessageClass">
+									{{inputs.apellidos.validationMessage}}</p>
 								<p th:errors="*{apellidos}" class="text-danger"
 									th:if="${#fields.hasErrors('apellidos')}"></p>
 							</div>
 
 							<div class="form-group mb-3">
-								<label class="form-label">Correo</label>
-								<input class="form-control" :class=[inputs.correo.clase] id="correo" name="correo" placeholder="Correo"
-									th:field="*{correo}" type="email" v-model="inputs.correo.text" v-on:keyup="validar_correo()" />
+								<label :class="inputs.correo.validationMessageClass" class="form-label">Correo</label>
+								<input class="form-control" :class=[inputs.correo.borderClass] id="correo" name="correo"
+									placeholder="Correo" th:field="*{correo}" type="email" v-model="inputs.correo.text"
+									v-on:keyup="validar_correo()" />
+								<p v-if="inputs.correo.validationMessage!=''"
+									:class="inputs.correo.validationMessageClass">{{inputs.correo.validationMessage}}
+								</p>
 								<p th:errors="*{correo}" class="text-danger" th:if="${#fields.hasErrors('correo')}"></p>
 							</div>
 
 							<div class="form-group mb-3">
-								<label class="form-label">NIF/NIE</label>
-								<input class="form-control" :class=[inputs.dni.clase] id="dni" name="dni" placeholder="Dni" th:field="*{dni}"
-									type="dni" v-model="inputs.dni.text" v-on:keyup="validar_dni()"/>
+								<label :class="inputs.dni.validationMessageClass" class="form-label">NIF/NIE</label>
+								<input class="form-control" :class=[inputs.dni.borderClass] id="dni" name="dni"
+									placeholder="NIF/NIE" th:field="*{dni}" type="dni" v-model="inputs.dni.text"
+									v-on:keyup="validar_dni()" />
+								<p v-if="inputs.dni.validationMessage!=''" :class="inputs.dni.validationMessageClass">
+									{{inputs.dni.validationMessage}}</p>
 								<p th:errors="*{dni}" class="text-danger" th:if="${#fields.hasErrors('dni')}"></p>
 							</div>
 
 							<div class="form-group mb-3">
-								<label class="form-label">Password</label>
-								<input class="form-control" :class=[inputs.password.clase] id="password" name="password" placeholder="Password"
-									th:field="*{password}" type="password" v-model="inputs.password.text" v-on:keyup="validar_password()"/>
+								<label :class="inputs.password.validationMessageClass"
+									class="form-label">Contraseña</label>
+
+								<div class="input-group mb-2">
+									<input class="form-control" :class=[inputs.password.borderClass] id="password"
+										name="password" placeholder="Password" th:field="*{password}" type="password"
+										v-model="inputs.password.text" v-on:keyup="validar_password()"
+										aria-describedby="button-password" />
+									<button class="btn btn-custom-color" type="button" id="button-password"
+										v-on:mousedown="changePasswordInput('password', 'button-password')"
+										v-on:mouseup="changePasswordInput('password', 'button-password')"><i
+											id="icon-password" class="fa-solid fa-eye-slash fs-5"></i></button>
+								</div>
+
+								<p v-if="inputs.password.validationMessage!=''"
+									:class="inputs.password.validationMessageClass">
+									{{inputs.password.validationMessage}}</p>
 								<p th:errors="*{password}" class="text-danger" th:if="${#fields.hasErrors('password')}">
 								</p>
 							</div>
 
 
 							<div class="form-group mb-3">
-								<label class="form-label">Repeat Password</label>
-								<input class="form-control" :class=[inputs.repeatPassword.clase] id="repeatPassword" name="repeatPassword"
-									placeholder="Repeat password" th:field="*{repeatPassword}" type="password"
-									v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
+								<label :class="inputs.repeatPassword.validationMessageClass" class="form-label">Repetir
+									Contraseña</label>
+								<div class="input-group mb-2">
+									<input class="form-control" :class=[inputs.repeatPassword.borderClass]
+										id="repeatPassword" name="repeatPassword" placeholder="Repeat password"
+										th:field="*{repeatPassword}" type="password"
+										v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
+									<button class="btn btn-custom-color" type="button" id="button-repeatPassword"
+										v-on:mousedown="changePasswordInput('repeatPassword', 'button-repeatPassword')"
+										v-on:mouseup="changePasswordInput('repeatPassword', 'button-repeatPassword')"><i
+											id="icon-repeatPassword" class="fa-solid fa-eye-slash fs-5"></i></button>
+								</div>
+								<p v-if="inputs.repeatPassword.validationMessage!=''"
+									:class="inputs.repeatPassword.validationMessageClass">
+									{{inputs.repeatPassword.validationMessage}}</p>
 								<p th:errors="*{repeatPassword}" class="text-danger"
 									th:if="${#fields.hasErrors('repeatPassword')}"></p>
 							</div>
@@ -83,7 +126,90 @@
 		</div>
 	</div>
 
-	<script type="text/javascript" src="/js/registro.js"></script>
+
+	<div id="validationErrorToast" class="toast position-absolute top-50 start-50 translate-middle"
+		data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
+		<div class="toast-header bg-danger bg-gradient bg-opacity-75">
+
+			<strong class="me-auto fs-5"><i class="fa-sharp fa-solid fa-circle-exclamation fa-flip"></i> Aviso</strong>
+			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+		<div class="toast-body">
+			<strong class="text-danger">Rellene todos los campos del formulario correctamente antes de enviarlo</strong>
+		</div>
+	</div>
+
+
+	<script>
+
+		let lastElementMousedown = null
+
+		let lastElementMosuedownId = null
+
+		document.body.addEventListener("mousedown", function (event) {
+			// Obtener la información del botón y el input
+
+			let targetElement = event.target;
+
+			let buttonPassword = document.getElementById("button-password");
+			let buttonRepeatPassword = document.getElementById("button-repeatPassword");
+
+			if (targetElement == buttonPassword || targetElement == buttonPassword.firstElementChild) {
+				lastElementMousedown = targetElement
+				lastElementMousedownId = "button-password";
+			}
+
+			if (targetElement == buttonRepeatPassword || targetElement == buttonRepeatPassword.firstElementChild) {
+				lastElementMousedown = targetElement
+				lastElementMousedownId = "button-repeatPassword";
+			}
+
+		})
+
+		document.body.addEventListener("mouseup", function (event) {
+			// Obtener la información del botón y el input
+			let targetElement = event.target;
+
+			let buttonPassword = document.getElementById("button-password");
+			let buttonRepeatPassword = document.getElementById("button-repeatPassword");
+
+			if (targetElement !== buttonPassword && targetElement !== buttonPassword.firstElementChild
+				&& targetElement !== buttonRepeatPassword && targetElement !== buttonRepeatPassword.firstElementChild) {
+
+				if (lastElementMousedown == buttonPassword || lastElementMousedown == buttonPassword.firstElementChild
+					|| lastElementMousedown == buttonRepeatPassword || lastElementMousedown == buttonRepeatPassword.firstElementChild) {
+					
+					let inputName = lastElementMousedownId.substring(7);
+
+					let passwordInput = document.getElementById(inputName);
+					let icon = document.getElementById(lastElementMousedownId).firstElementChild;
+					let type_input = passwordInput.getAttribute("type");
+
+					if (type_input == 'password') {
+						icon.setAttribute("class", "fa-solid fa-eye fs-5");
+						passwordInput.setAttribute("type", "text");
+					}
+					else if (type_input == 'text') {
+						icon.setAttribute("class", "fa-solid fa-eye-slash fs-5");
+						passwordInput.setAttribute("type", "password");
+					}
+					
+					lastElementMousedown = null;
+					lastElementMousedownId = null;
+				}
+
+			}
+
+		})
+
+
+
+
+	</script>
+
+	<script type="module" src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+	<script type="module" src="/js/registro.js"></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 package com.tfg.controllers;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -9,15 +10,19 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriUtils;
 
 import com.tfg.dto.MedicosDto;
 import com.tfg.entities.Medicos;
@@ -67,6 +72,27 @@ public class AuthController {
         return "registro";
     }
     
+    
+    @GetMapping("/registro/comprobarCorreo")
+    @Transactional
+    public ResponseEntity<?> comprobarCorreo(@RequestParam("correo") String correo) { 
+    		
+    	String scapedCorreo = UriUtils.encodeQueryParam(correo, StandardCharsets.UTF_8);
+		Medicos m = medicosService.findMedicosByCorreo(scapedCorreo);
+	    boolean correoExiste = (m != null && m.getCorreo() != null && !m.getCorreo().isEmpty());
+	    return new ResponseEntity<>(correoExiste, HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/registro/comprobarDNI")
+    @Transactional
+    public ResponseEntity<?> comprobarDNI(@RequestParam("dni") String dni) { 
+    		
+    	String scapedDNI = UriUtils.encodeQueryParam(dni, StandardCharsets.UTF_8);
+		Medicos m = medicosService.findMedicosByDni(scapedDNI);
+	    boolean DNIExiste = (m != null && m.getCorreo() != null && !m.getCorreo().isEmpty());
+	    return new ResponseEntity<>(DNIExiste, HttpStatus.OK);
+    }
     @PostMapping("/registro/guardar")
     public String registration(@Valid @ModelAttribute("medico") MedicosDto medicoDto,
                                BindingResult result,
@@ -148,7 +174,7 @@ public class AuthController {
         String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
         boolean valido = false;
 
-        if (nifNie != null && nifNie.matches("^[XYZ]?\\d{7,8}[A-Z]$")) {
+        if (nifNie != null && nifNie.matches("^[XYZ]\\d{7}[TRWAGMYFPDXBNJZSQVHLCKE]$|^\\d{8}[TRWAGMYFPDXBNJZSQVHLCKE]$")) {
             String numero = nifNie.replaceAll("[^0-9]", ""); // Eliminar letra del NIF/NIE
             int indice = Integer.parseInt(numero) % 23;
             char letra = nifNie.charAt(nifNie.length() - 1);

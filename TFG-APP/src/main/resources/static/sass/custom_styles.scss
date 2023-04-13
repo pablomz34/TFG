@@ -14,7 +14,7 @@ $input-btn-focus-box-shadow: none;
 
 //#7B68EE
 $custom-colors: (
-  "custom-color": #5564eb
+  "custom-color":#8A2BE2
 );
 
 // Merge the maps
@@ -23,11 +23,4 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 
 @import "../node_modules/bootstrap/scss/bootstrap";
 
-
-//.nav-link {
-//	color: white;
-//}
-//.nav-link:hover{
-//	
-//}
 
