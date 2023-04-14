@@ -74,7 +74,7 @@ import com.tfg.services.IMedicosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 	
-	static final String UrlServidor = "https://bc45-81-41-173-74.eu.ngrok.io/";
+	static final String UrlServidor = "https://c857-81-41-173-74.ngrok-free.app/";
 	
 	@Autowired
 	private IMedicosService medicosService;
@@ -168,8 +168,8 @@ public class FasesController {
 	
 	
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> getSubPopulations(@RequestPart("nClusteresAglomerativo") String nClusteresAglomerativo,
-			@RequestPart("nClusteresKModes") String nClusteresKModes,
+	public ResponseEntity<byte[]> getSubPopulations(@RequestPart("nClustersAglomerativo") String nClustersAglomerativo,
+			@RequestPart("nClustersKModes") String nClustersKModes,
 			@RequestPart("file") MultipartFile multipartFile) throws IOException {
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -177,7 +177,7 @@ public class FasesController {
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
 				UrlServidor+"clustering/getSubpopulations?n_agglomerative="
-						+ Integer.parseInt(nClusteresAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClusteresKModes));
+						+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
