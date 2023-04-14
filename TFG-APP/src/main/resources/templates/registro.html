@@ -82,9 +82,10 @@
 										v-model="inputs.password.text" v-on:keyup="validar_password()"
 										aria-describedby="button-password" />
 									<button class="btn btn-custom-color" type="button" id="button-password"
-										v-on:mousedown="changePasswordInput('password', 'button-password')"
-										v-on:mouseup="changePasswordInput('password', 'button-password')"><i
-											id="icon-password" class="fa-solid fa-eye-slash fs-5"></i></button>
+										@mousedown="onMouseDown('password', 'button-password')"
+										@mouseleave="onMouseLeave('password', 'button-password')"
+										@mouseup="onMouseUp('password', 'button-password')"><i id="icon-password"
+											class="fa-solid fa-eye-slash fs-5"></i></button>
 								</div>
 
 								<p v-if="inputs.password.validationMessage!=''"
@@ -104,9 +105,10 @@
 										th:field="*{repeatPassword}" type="password"
 										v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
 									<button class="btn btn-custom-color" type="button" id="button-repeatPassword"
-										v-on:mousedown="changePasswordInput('repeatPassword', 'button-repeatPassword')"
-										v-on:mouseup="changePasswordInput('repeatPassword', 'button-repeatPassword')"><i
-											id="icon-repeatPassword" class="fa-solid fa-eye-slash fs-5"></i></button>
+										@mousedown="onMouseDown('repeatPassword', 'button-repeatPassword')"
+										@mouseleave="onMouseLeave('repeatPassword', 'button-repeatPassword')"
+										@mouseup="onMouseUp('repeatPassword', 'button-repeatPassword')"><i id="icon-repeatPassword"
+											class="fa-solid fa-eye-slash fs-5"></i></button>
 								</div>
 								<p v-if="inputs.repeatPassword.validationMessage!=''"
 									:class="inputs.repeatPassword.validationMessageClass">
@@ -138,74 +140,6 @@
 			<strong class="text-danger">Rellene todos los campos del formulario correctamente antes de enviarlo</strong>
 		</div>
 	</div>
-
-
-	<script>
-
-		let lastElementMousedown = null
-
-		let lastElementMosuedownId = null
-
-		document.body.addEventListener("mousedown", function (event) {
-			// Obtener la información del botón y el input
-
-			let targetElement = event.target;
-
-			let buttonPassword = document.getElementById("button-password");
-			let buttonRepeatPassword = document.getElementById("button-repeatPassword");
-
-			if (targetElement == buttonPassword || targetElement == buttonPassword.firstElementChild) {
-				lastElementMousedown = targetElement
-				lastElementMousedownId = "button-password";
-			}
-
-			if (targetElement == buttonRepeatPassword || targetElement == buttonRepeatPassword.firstElementChild) {
-				lastElementMousedown = targetElement
-				lastElementMousedownId = "button-repeatPassword";
-			}
-
-		})
-
-		document.body.addEventListener("mouseup", function (event) {
-			// Obtener la información del botón y el input
-			let targetElement = event.target;
-
-			let buttonPassword = document.getElementById("button-password");
-			let buttonRepeatPassword = document.getElementById("button-repeatPassword");
-
-			if (targetElement !== buttonPassword && targetElement !== buttonPassword.firstElementChild
-				&& targetElement !== buttonRepeatPassword && targetElement !== buttonRepeatPassword.firstElementChild) {
-
-				if (lastElementMousedown == buttonPassword || lastElementMousedown == buttonPassword.firstElementChild
-					|| lastElementMousedown == buttonRepeatPassword || lastElementMousedown == buttonRepeatPassword.firstElementChild) {
-					
-					let inputName = lastElementMousedownId.substring(7);
-
-					let passwordInput = document.getElementById(inputName);
-					let icon = document.getElementById(lastElementMousedownId).firstElementChild;
-					let type_input = passwordInput.getAttribute("type");
-
-					if (type_input == 'password') {
-						icon.setAttribute("class", "fa-solid fa-eye fs-5");
-						passwordInput.setAttribute("type", "text");
-					}
-					else if (type_input == 'text') {
-						icon.setAttribute("class", "fa-solid fa-eye-slash fs-5");
-						passwordInput.setAttribute("type", "password");
-					}
-					
-					lastElementMousedown = null;
-					lastElementMousedownId = null;
-				}
-
-			}
-
-		})
-
-
-
-
-	</script>
 
 	<script type="module" src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 

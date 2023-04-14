@@ -4,6 +4,8 @@ new Vue({
 	el: "#registrationValidation",
 	data: function() {
 		return {
+			
+			isMouseDown: false,
 			inputs: {
 				nombre: {
 					text: '',
@@ -244,7 +246,37 @@ new Vue({
 			}
 		},
 
-		changePasswordInput(inputName, buttonName) {
+		onMouseLeave(inputName, buttonName) {
+			
+			if (this.isMouseDown) {
+				
+				this.onMouseUp(inputName, buttonName);
+			}
+		},
+
+		onMouseDown(inputName, buttonName) {
+			let passwordInput = document.getElementById(inputName);
+			let icon = document.getElementById(buttonName).firstElementChild;
+
+			icon.setAttribute("class", "fa-solid fa-eye fs-5");
+			passwordInput.setAttribute("type", "text");
+			
+			this.isMouseDown = true;
+
+		},
+
+		onMouseUp(inputName, buttonName) {
+			let passwordInput = document.getElementById(inputName);
+			let icon = document.getElementById(buttonName).firstElementChild;
+
+			icon.setAttribute("class", "fa-solid fa-eye-slash fs-5");
+			passwordInput.setAttribute("type", "password");
+			
+			this.isMouseDown = false;
+			
+		},
+
+		changePasswordInput() {
 			let passwordInput = document.getElementById(inputName);
 			let icon = document.getElementById(buttonName).firstElementChild;
 			let type_input = passwordInput.getAttribute("type");
