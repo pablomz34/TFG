@@ -3,8 +3,8 @@
 $nav-link-font-size: 18px;
 $nav-link-font-weight: bold;
 
-$navbar-light-color: #fff;
-$navbar-light-hover-color: rgb(232, 248, 245);
+$navbar-light-color: rgb(233, 233, 233);
+$navbar-light-hover-color: #fff;
 
 $input-btn-focus-box-shadow: none;
 
@@ -14,13 +14,22 @@ $input-btn-focus-box-shadow: none;
 
 //#7B68EE
 $custom-colors: (
-  "custom-color":#8A2BE2
+  "custom-color": rgb(25, 25, 112)
 );
 
 // Merge the maps
 $theme-colors: map-merge($theme-colors, $custom-colors);
 
 
+
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 
+
+.nav-index-icon {
+	color: $navbar-light-color !important;
+}
+
+.nav-index-icon:hover{
+	color: $navbar-light-hover-color !important;
+}

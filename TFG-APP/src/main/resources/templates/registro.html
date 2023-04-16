@@ -7,24 +7,23 @@
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 
-	<br /><br /><br />
 
-	<div id="registrationValidation">
 
-		<div class="container mb-5">
-			<div class="row col-md-6 offset-md-3">
-				<div class="card rounded-4 p-0 shadow">
-					<div th:if="${param.success}">
-						<div class="alert alert-info">
-							Te has registrado correctamente
-						</div>
+	<div class="container mb-5 mt-5">
+		<div class="row col-md-6 offset-md-3">
+			<div class="card rounded-4 p-0 shadow">
+				<div th:if="${param.success}">
+					<div class="alert alert-info">
+						Te has registrado correctamente
 					</div>
-					<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-						<h2 class="text-center text-white">Registro</h2>
-					</div>
-					<div class="card-body">
-						<form @submit.prevent="handleSubmit" id="formRegistro" method="post" role="form"
-							th:action="@{/registro/guardar}" th:object="${medico}">
+				</div>
+				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+					<h2 class="text-center text-white">Registro</h2>
+				</div>
+				<div class="card-body">
+					<div id="registrationValidation">
+						<form @submit.prevent="handleSubmit" class="position-relative" id="formRegistro" method="post"
+							role="form" th:action="@{/registro/guardar}" th:object="${medico}">
 							<div class="form-group mb-3">
 								<label :class="inputs.nombre.validationMessageClass" class="form-label">Nombre</label>
 								<input class="form-control" :class=[inputs.nombre.borderClass] id="nombre" name="nombre"
@@ -83,9 +82,12 @@
 										aria-describedby="button-password" />
 									<button class="btn btn-custom-color" type="button" id="button-password"
 										@mousedown="onMouseDown('password', 'button-password')"
+										@touchstart="onMouseDown('password', 'button-password')"
 										@mouseleave="onMouseLeave('password', 'button-password')"
-										@mouseup="onMouseUp('password', 'button-password')"><i id="icon-password"
-											class="fa-solid fa-eye-slash fs-5"></i></button>
+										@touchend="onMouseLeave('password', 'button-password')"
+										@mouseup="onMouseUp('password', 'button-password')"
+										@touchcancel="onMouseUp('password', 'button-password')"><i
+											id="icon-password" class="fa-solid fa-eye-slash fs-5"></i></button>
 								</div>
 
 								<p v-if="inputs.password.validationMessage!=''"
@@ -106,9 +108,12 @@
 										v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
 									<button class="btn btn-custom-color" type="button" id="button-repeatPassword"
 										@mousedown="onMouseDown('repeatPassword', 'button-repeatPassword')"
+										@touchstart="onMouseDown('repeatPassword', 'button-repeatPassword')"
 										@mouseleave="onMouseLeave('repeatPassword', 'button-repeatPassword')"
-										@mouseup="onMouseUp('repeatPassword', 'button-repeatPassword')"><i id="icon-repeatPassword"
-											class="fa-solid fa-eye-slash fs-5"></i></button>
+										@touchend="onMouseLeave('repeatPassword', 'button-repeatPassword')"
+										@mouseup="onMouseUp('repeatPassword', 'button-repeatPassword')"
+										@touchcancel="onMouseUp('repeatPassword', 'button-repeatPassword')"><i
+											id="icon-repeatPassword" class="fa-solid fa-eye-slash fs-5"></i></button>
 								</div>
 								<p v-if="inputs.repeatPassword.validationMessage!=''"
 									:class="inputs.repeatPassword.validationMessageClass">
@@ -117,31 +122,37 @@
 									th:if="${#fields.hasErrors('repeatPassword')}"></p>
 							</div>
 
-							<div class="form-group">
-								<button class="btn btn-primary" type="submit">Registro</button>
-								<span>¿Ya estás registrado? <a th:href="@{/login}">Haz login</a></span>
+							<div class="form-group mb-2">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button class="btn btn-outline-custom-color fs-5 fw-semibold"
+											type="submit">Registrarme</button>
+									</div>
+								</div>
 							</div>
+
+
+							<div id="validationErrorToast"
+								class="toast position-absolute top-50 start-50 translate-middle"
+								data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
+								<div class="toast-header bg-danger bg-gradient bg-opacity-75">
+									<strong class="me-auto fs-5"><i
+											class="fa-sharp fa-solid fa-circle-exclamation fa-flip"></i> Aviso</strong>
+									<button type="button" class="btn-close" data-bs-dismiss="toast"
+										aria-label="Close"></button>
+								</div>
+								<div class="toast-body">
+									<strong class="text-danger">Rellene todos los campos del formulario correctamente
+										antes de enviarlo</strong>
+								</div>
+							</div>
+
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
-
-	<div id="validationErrorToast" class="toast position-absolute top-50 start-50 translate-middle"
-		data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
-		<div class="toast-header bg-danger bg-gradient bg-opacity-75">
-
-			<strong class="me-auto fs-5"><i class="fa-sharp fa-solid fa-circle-exclamation fa-flip"></i> Aviso</strong>
-			<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-		</div>
-		<div class="toast-body">
-			<strong class="text-danger">Rellene todos los campos del formulario correctamente antes de enviarlo</strong>
-		</div>
-	</div>
-
-	<script type="module" src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
 	<script type="module" src="/js/registro.js"></script>
 </body>

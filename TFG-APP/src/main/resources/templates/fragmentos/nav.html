@@ -5,8 +5,17 @@
 <nav class="navbar navbar-expand-lg bg-custom-color bg-gradient">
 	<div class="container-fluid">
 		<!--<a class="navbar-brand" th:href="@{/}">Navbar scroll</a>-->
+		<a class="navbar-brand m-0 px-2" th:href="@{/}">
+			<i class="fa-solid fa-heart-pulse fs-4 nav-index-icon"></i>
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+				<!-- Usuario logueado-->
 				<li th:if="${session.medico}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/admin/fases}">Fases</a>
 				</li>
@@ -14,9 +23,10 @@
 					<a class="nav-link" aria-current="page" th:href="@{/admin/medicos}">Médicos registrados</a>
 				</li>
 				<li th:if="${session.medico}" class="nav-item">
-					<a class="nav-link" aria-current="page" th:href="@{/logout}">Cerra sesión</a>
+					<a class="nav-link" aria-current="page" th:href="@{/logout}">Cerrar sesión</a>
 				</li>
-				
+
+				<!-- Usuario sin loguear-->
 				<li th:unless="${session.medico}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/registro}">Registro</a>
 				</li>

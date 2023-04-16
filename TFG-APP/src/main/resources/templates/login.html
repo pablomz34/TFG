@@ -3,51 +3,74 @@
 
 <head th:insert="~{fragmentos/head.html}"></head>
 
-<body>
+<body class="bg-light-subtle">
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
-	
-	<br /><br />
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6 offset-md-3">
 
-				<div th:if="${param.error}">
-					<div class="alert alert-danger">Correo o contraseña incorrectos</div>
-				</div>
-				<div th:if="${param.logout}">
-					<div class="alert alert-success">Has hecho logout</div>
-				</div>
+	<div id="loginForm" class="mt-5">
+		<div class="container mb-5">
+			<div class="row">
+				<div class="col-md-6 offset-md-3">
 
-				<div class="card">
-					<div class="card-header">
-						<h2 class="text-center">Login</h2>
+					<div th:if="${param.error}">
+						<div class="alert alert-danger">Correo o contraseña incorrectos</div>
 					</div>
-					<div class="card-body">
-						<form method="post" role="form" th:action="@{/login}" class="form-horizontal">
-							<div class="form-group mb-3">
-								<label class="control-label">Correo</label>
-								<input type="text" id="username" name="username" class="form-control"
-									placeholder="Introduce correo electronico" />
-							</div>
+					<div th:if="${param.logout}">
+						<div class="alert alert-success">Has hecho logout</div>
+					</div>
 
-							<div class="form-group mb-3">
-								<label class="control-label"> Password</label>
-								<input type="password" id="password" name="password" class="form-control"
-									placeholder="Introduce contraseña" />
-							</div>
-							<div class="form-group mb-3">
-								<button type="submit" class="btn btn-primary">Submit</button>
-								<span> ¿No estás registrado?
-									<a th:href="@{/registro}">Regístrate aquí</a>
-								</span>
-							</div>
-						</form>
+					<div class="card rounded-4 p-0 shadow">
+						<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+							<h2 class="text-center text-white">Iniciar Sesión</h2>
+						</div>
+						<div class="card-body">
+							<form method="post" role="form" th:action="@{/login}" class="form-horizontal">
+								<div class="form-group mb-3">
+									<label class="control-label">Correo</label>
+									<input type="text" id="username" name="username" class="form-control"
+										placeholder="Introduce correo electronico" />
+								</div>
+
+								<div class="form-group mb-3">
+									<label class="control-label">Contraseña</label>
+									<div class="input-group mb-3">
+										<input type="password" id="password" name="password" class="form-control"
+											placeholder="Introduce contraseña" />
+										<button class="btn btn-custom-color" type="button" id="button-password"
+											@mousedown="onMouseDown" @touchstart="onMouseDown"
+											@mouseleave="onMouseLeave" @touchend="onMouseLeave" @mouseup="onMouseUp"
+											@touchcancel="onMouseUp"><i id="icon-password"
+												class="fa-solid fa-eye-slash fs-5"></i></button>
+									</div>
+								</div>
+
+								<div class="form-group mb-2">
+									<div class="row justify-content-center">
+										<div class="col text-center">
+											<button class="btn btn-outline-custom-color fs-5 fw-semibold"
+												type="submit">Iniciar sesión</button>
+										</div>
+									</div>
+								</div>
+								<div class="form-group mb-3">
+									<div class="row justify-content-center">
+										<div class="col text-center">
+											<span class="fst-italic"> ¿No estás registrado?
+												<a th:href="@{/registro}" class="text-decoration-none">Regístrate aquí</a>
+											</span>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+
+	<script src="/js/login.js"></script>
 </body>
 
 </html>
