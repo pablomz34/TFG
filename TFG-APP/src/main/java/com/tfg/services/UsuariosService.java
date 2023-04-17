@@ -50,7 +50,7 @@ public class UsuariosService implements IUsuariosService {
 		medico.setCorreo(medicoDto.getCorreo());
 		medico.setPassword(passwordEncoder.encode(medicoDto.getPassword()));
 
-		Roles rol = rolesRep.findByNombre("ROLE_ADMIN");
+		Roles rol = rolesRep.findByNombre("ROLE_MEDICO");
 		if (rol == null) {
 			rol = checkRolExist();
 		}
