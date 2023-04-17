@@ -619,31 +619,38 @@ Vue.component('graphic', {
 				data: {
 					labels: this.dataKeys,
 					datasets: [{
-						label: '# de personas',
 						data: this.dataValues,
 						backgroundColor: [
-							'rgba(255, 99, 132, 0.2)',
-							'rgba(255, 159, 64, 0.2)',
-							'rgba(255, 205, 86, 0.2)',
-							'rgba(75, 192, 192, 0.2)',
-							'rgba(54, 162, 235, 0.2)',
-							'rgba(153, 102, 255, 0.2)',
-							'rgba(201, 203, 207, 0.2)'
+							'rgba(255, 0, 0, 0.4)',
+							'rgba(5, 239, 50, 0.4)',
+							'rgba(1, 0, 169, 0.4)',
+							'rgba(220, 241, 2, 0.4)',
+							'rgba(117, 117, 117, 0.4)',
+							'rgba(124, 32, 93, 0.4)',
+							'rgba(116, 124, 32, 0.4)',
+							'rgba(0, 124, 216, 0.4)'
 						],
 						borderColor: [
-							'rgb(255, 99, 132)',
-							'rgb(255, 159, 64)',
-							'rgb(255, 205, 86)',
-							'rgb(75, 192, 192)',
-							'rgb(54, 162, 235)',
-							'rgb(153, 102, 255)',
-							'rgb(201, 203, 207)'
+							'rgba(255, 0, 0, 0.6)',
+							'rgba(5, 239, 50, 0.6)',
+							'rgba(1, 0, 169, 0.6)',
+							'rgba(220, 241, 2, 0.6)',
+							'rgba(117, 117, 117, 0.6)',
+							'rgba(124, 32, 93, 0.6)',
+							'rgba(116, 124, 32, 0.6)',
+							'rgba(0, 124, 216, 0.6)'
 						],
-						borderWidth: 1
-					}]
+						borderWidth: 1,
+						hoverOffset: 20
+					}],
 				},
 				options: {
 					indexAxis: 'y',
+					layout: {
+						padding: {
+							bottom: 10
+						}
+					},
 					plugins: {
 						legend: {
 							position: 'top',
@@ -651,9 +658,26 @@ Vue.component('graphic', {
 						title: {
 							display: true,
 							text: this.titulo,
+						},
+						datalabels: {
+							font:{
+								weight: 'bold'
+							},
+							align: 'end',
+							formatter: (value, context) => {
+								const datapoints = context.chart.data.datasets[0].data;
+								function totalSum(total, datapoint){
+									return total + datapoint;
+								}
+								const porcentajeTotal = datapoints.reduce(totalSum, 0);
+								const porcentaje =  (value / porcentajeTotal * 100).toFixed(1);
+								const display = [`${value}`, `${porcentaje}%`];
+								return display;
+							}
 						}
 					}
-				}
+				},
+				plugins: [ChartDataLabels]
 			})
 		}
 	},
