@@ -11,9 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.tfg.entities.Medicos;
 import com.tfg.entities.Roles;
-import com.tfg.services.IMedicosService;
+import com.tfg.entities.Usuarios;
+import com.tfg.repositories.RolesRepository;
+import com.tfg.services.IUsuariosService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
@@ -26,11 +27,12 @@ import jakarta.servlet.http.HttpSession;
 
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-
 	
 	@Autowired
-    private IMedicosService medicosService;
-
+	private RolesRepository rolesRep;
+	
+	@Autowired
+    private IUsuariosService medicosService;
 	
 	@Autowired
 	private HttpSession session;
@@ -42,12 +44,23 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		
 		String correo = ((org.springframework.security.core.userdetails.User)
 				authentication.getPrincipal()).getUsername();
+		Usuarios usuario = medicosService.findUsuariosByCorreo(correo);		
 		
-		Medicos medico = medicosService.findMedicosByCorreo(correo);
+		session.setAttribute("usuario", usuario.getCorreo());
 		
-		session.setAttribute("medico", medico.getCorreo());
-  
-		response.sendRedirect("admin/fases");
+		ArrayList<String> rolesNames = new ArrayList<String>();
+			
+		for(Roles rol: usuario.getRoles()) {
+			rolesNames.add(rol.getNombre());
+		}
+	
+		if(rolesNames.contains("ROLE_ADMIN")) {
+			response.sendRedirect("admin/fases");
+		}
+		else if(rolesNames.contains("ROLE_MEDICO")){
+			response.sendRedirect("medico");
+		}
+		
 	}
 
 

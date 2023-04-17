@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MedicosDto {
+public class UsuariosDto {
 	private Long id;
 	
 	@NotEmpty(message = "El dni no debe estar vacío")

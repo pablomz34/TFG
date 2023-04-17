@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.tfg.entities.Medicos;
+import com.tfg.entities.Usuarios;
 
 @Repository
-public interface MedicosRepository extends JpaRepository<Medicos, Long> {
-	public List<Medicos> findAll();
+public interface UsuariosRepository extends JpaRepository<Usuarios, Long> {
+	public List<Usuarios> findAll();
 	
-	Medicos findByCorreo(String correo);
+	Usuarios findByCorreo(String correo);
 	
-	Medicos findByDni(String dni);
+	Usuarios findByDni(String dni);
 }

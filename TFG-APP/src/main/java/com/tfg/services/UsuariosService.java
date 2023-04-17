@@ -11,12 +11,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tfg.dto.MedicosDto;
-
-import com.tfg.entities.Medicos;
+import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Roles;
-import com.tfg.repositories.MedicosRepository;
+import com.tfg.entities.Usuarios;
 import com.tfg.repositories.RolesRepository;
+import com.tfg.repositories.UsuariosRepository;
 
 import jakarta.persistence.PersistenceException;
 import jakarta.validation.ConstraintViolation;
@@ -24,27 +23,27 @@ import jakarta.validation.ConstraintViolationException;
 
 @Service
 @Transactional
-public class MedicosService implements IMedicosService {
+public class UsuariosService implements IUsuariosService {
 
 	@Autowired
 	private RolesRepository rolesRep;
 
 	@Autowired
-	private MedicosRepository medicosRep;
+	private UsuariosRepository usuariosRep;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	public MedicosService(MedicosRepository medicosRep, RolesRepository rolesRep, PasswordEncoder passwordEncoder) {
-		this.medicosRep = medicosRep;
+	public UsuariosService(UsuariosRepository usuariosRep, RolesRepository rolesRep, PasswordEncoder passwordEncoder) {
+		this.usuariosRep = usuariosRep;
 		this.rolesRep = rolesRep;
 		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
-	public void guardarMedico(MedicosDto medicoDto) {
+	public void guardarMedico(UsuariosDto medicoDto) {
 		// TODO Auto-generated method stub
-		Medicos medico = new Medicos();
+		Usuarios medico = new Usuarios();
 		medico.setNombre(medicoDto.getNombre());
 		medico.setApellidos(medicoDto.getApellidos());
 		medico.setDni(medicoDto.getDni());
@@ -58,30 +57,29 @@ public class MedicosService implements IMedicosService {
 		medico.setRoles(Arrays.asList(rol));
 
 		
-		medicosRep.save(medico);
+		usuariosRep.save(medico);
 
 	}
 
 	@Override
-	public Medicos findMedicosByCorreo(String correo) {
+	public Usuarios findUsuariosByCorreo(String correo) {
+		return usuariosRep.findByCorreo(correo);
+	}
 	
-		return medicosRep.findByCorreo(correo);
-	}
-	
 
 	@Override
-	public Medicos findMedicosByDni(String dni) {
-		return  medicosRep.findByDni(dni);
+	public Usuarios findUsuariosByDni(String dni) {
+		return usuariosRep.findByDni(dni);
 	}
 
 	@Override
-	public List<MedicosDto> findAllMedicos() {
-		List<Medicos> medicos = medicosRep.findAll();
+	public List<UsuariosDto> findAllMedicos() {
+		List<Usuarios> medicos = usuariosRep.findAll();
 		return medicos.stream().map((medico) -> mapToMedicosDto(medico)).collect(Collectors.toList());
 	}
 
-	private MedicosDto mapToMedicosDto(Medicos medico) {
-		MedicosDto medicoDto = new MedicosDto();
+	private UsuariosDto mapToMedicosDto(Usuarios medico) {
+		UsuariosDto medicoDto = new UsuariosDto();
 		medicoDto.setNombre(medico.getNombre());
 		medicoDto.setApellidos(medico.getApellidos());
 		medicoDto.setCorreo(medico.getCorreo());
@@ -91,7 +89,7 @@ public class MedicosService implements IMedicosService {
 
 	private Roles checkRolExist() {
 		Roles rol = new Roles();
-		rol.setNombre("ROLE_ADMIN");
+		rol.setNombre("ROLE_MEDICO");
 		return rolesRep.save(rol);
 	}
 
