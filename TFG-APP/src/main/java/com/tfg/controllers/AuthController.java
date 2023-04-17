@@ -171,20 +171,32 @@ public class AuthController {
     
     
     private boolean validarNifNie(String nifNie) {
-        String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
-        boolean valido = false;
+    	final String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+        final String letra = String.valueOf(nifNie.charAt(8)).toUpperCase();
 
-        if (nifNie != null && nifNie.matches("^[XYZ]\\d{7}[TRWAGMYFPDXBNJZSQVHLCKE]$|^\\d{8}[TRWAGMYFPDXBNJZSQVHLCKE]$")) {
-            String numero = nifNie.replaceAll("[^0-9]", ""); // Eliminar letra del NIF/NIE
-            int indice = Integer.parseInt(numero) % 23;
-            char letra = nifNie.charAt(nifNie.length() - 1);
-
-            if (letra == letras.charAt(indice)) {
-                valido = true;
+        if (nifNie.matches("^[XYZ].*")) {
+            // convertir primera letra a número
+            int firstChar = 0;
+            switch (nifNie.charAt(0)) {
+                case 'X':
+                    firstChar = 0;
+                    break;
+                case 'Y':
+                    firstChar = 1;
+                    break;
+                case 'Z':
+                    firstChar = 2;
+                    break;
             }
+            int number = Integer.parseInt(firstChar + nifNie.substring(1, 8));
+            int index = number % 23;
+            return letra.equals(String.valueOf(letras.charAt(index)));
         }
 
-        return valido;
+        // comprobar si es NIF
+        int number = Integer.parseInt(nifNie.substring(0, 8));
+        int index = number % 23;
+        return letra.equals(String.valueOf(letras.charAt(index)));
     }
 
 
