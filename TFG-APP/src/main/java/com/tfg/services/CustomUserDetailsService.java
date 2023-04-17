@@ -10,27 +10,27 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.tfg.entities.Medicos;
 import com.tfg.entities.Roles;
-import com.tfg.repositories.MedicosRepository;
+import com.tfg.entities.Usuarios;
+import com.tfg.repositories.UsuariosRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private MedicosRepository medicosRep;
+    private UsuariosRepository usuariosRep;
 
-    public CustomUserDetailsService(MedicosRepository medicosRep) {
-        this.medicosRep = medicosRep;
+    public CustomUserDetailsService(UsuariosRepository usuariosRep) {
+        this.usuariosRep = usuariosRep;
     }
 
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-        Medicos medico = medicosRep.findByCorreo(correo);
+        Usuarios usuario = usuariosRep.findByCorreo(correo);
 
-        if (medico != null) {
-            return new org.springframework.security.core.userdetails.User(medico.getCorreo(),
-                    medico.getPassword(),
-                    mapRolesToAuthorities(medico.getRoles()));
+        if (usuario != null) {
+            return new org.springframework.security.core.userdetails.User(usuario.getCorreo(),
+            		usuario.getPassword(),
+                    mapRolesToAuthorities(usuario.getRoles()));
         }else{
             throw new UsernameNotFoundException("Invalid username or password.");
         }

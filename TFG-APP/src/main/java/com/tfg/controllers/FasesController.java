@@ -65,9 +65,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tfg.dto.MedicosDto;
-import com.tfg.entities.Medicos;
-import com.tfg.services.IMedicosService;
+import com.tfg.dto.UsuariosDto;
+import com.tfg.services.IUsuariosService;
 
 
 @RestController
@@ -77,15 +76,15 @@ public class FasesController {
 	static final String UrlServidor = "https://75e0-81-41-173-74.ngrok-free.app/";
 	
 	@Autowired
-	private IMedicosService medicosService;
+	private IUsuariosService usuariosService;
 	
 	@Autowired
 	private HttpSession session;
 	
 	
 	@GetMapping("/getMedicos")
-	public List<MedicosDto> getMedicos() {
-		List<MedicosDto> medicos = medicosService.findAllMedicos();
+	public List<UsuariosDto> getMedicos() {
+		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
 		return medicos;
 	}
 

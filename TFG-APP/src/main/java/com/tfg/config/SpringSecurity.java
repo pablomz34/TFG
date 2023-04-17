@@ -1,6 +1,10 @@
 package com.tfg.config;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.SecurityBuilder;
@@ -20,17 +24,29 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.tfg.entities.Roles;
+import com.tfg.entities.Usuarios;
 import com.tfg.handlers.LoginSuccessHandler;
+import com.tfg.repositories.UsuariosRepository;
 import com.tfg.services.CustomUserDetailsService;
 
 import jakarta.servlet.http.HttpSession;
 @Configuration
 @EnableWebSecurity
-public class SpringSecurity {
+public class SpringSecurity implements CommandLineRunner {
 
     @Autowired
     private UserDetailsService userDetailsService;
  
+    @Value("${spring.security.user.name}")
+    private String adminEmail;
+
+    @Value("${spring.security.user.password}")
+    private String adminPassword;
+
+
+    @Autowired
+    private UsuariosRepository userRep;
     
     @Autowired
 	private LoginSuccessHandler loginSuccessHandler;
@@ -40,17 +56,16 @@ public class SpringSecurity {
         return new BCryptPasswordEncoder();
     }
 
-    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-   
-    
+     
     	http
     	.csrf().disable()
     	.authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/images/**", "/js/**", "/python/**", "/css/**", "/node_modules/**", "/sass/**").permitAll()
                                 .requestMatchers("/registro/**", "/login/**", "/", "/index").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/medico/**").hasAnyRole("ADMIN", "MEDICO")
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")
@@ -82,13 +97,33 @@ public class SpringSecurity {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        
+    	
     	auth
                 .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder())
+                ;
     }
 
 
-    
+	@Override
+	public void run(String... args) throws Exception {
+		if(userRep.findByCorreo(adminEmail)==null) {
+    		Usuarios administrador = new Usuarios();
+            administrador.setCorreo(adminEmail);
+            administrador.setPassword(passwordEncoder().encode(adminPassword));
+            administrador.setNombre("admin");
+            administrador.setApellidos("");
+            administrador.setDni("");
+            ArrayList<Roles> roles = new ArrayList<>();
+            
+            Roles rol = new Roles();
+            rol.setNombre("ROLE_ADMIN");
+            
+            roles.add(rol);
+            administrador.setRoles(roles);
+            userRep.save(administrador);
+    	}
+		
+	}   
    
 }

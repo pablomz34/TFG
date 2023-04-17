@@ -25,7 +25,7 @@ public class Roles {
 	private String nombre;
 	
 	@ManyToMany(mappedBy="roles")
-	private List<Medicos> medicos;
+	private List<Usuarios> usuarios;
 	
 
 }

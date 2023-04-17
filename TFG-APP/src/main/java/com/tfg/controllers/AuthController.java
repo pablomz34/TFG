@@ -24,16 +24,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 
-import com.tfg.dto.MedicosDto;
-import com.tfg.entities.Medicos;
+import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Roles;
-import com.tfg.services.IMedicosService;
+import com.tfg.entities.Usuarios;
+import com.tfg.services.IUsuariosService;
 
 @Controller
 public class AuthController {
 	
 	@Autowired
-	private IMedicosService medicosService;
+	private IUsuariosService usuariosService;
 	
 	@Autowired 
 	private HttpSession session;
@@ -67,7 +67,7 @@ public class AuthController {
     		return "redirect:/";
     	}
     	
-        MedicosDto medico = new MedicosDto();
+        UsuariosDto medico = new UsuariosDto();
         model.addAttribute("medico", medico);
         return "registro";
     }
@@ -78,8 +78,8 @@ public class AuthController {
     public ResponseEntity<?> comprobarCorreo(@RequestParam("correo") String correo) { 
     		
     	String scapedCorreo = UriUtils.encodeQueryParam(correo, StandardCharsets.UTF_8);
-		Medicos m = medicosService.findMedicosByCorreo(scapedCorreo);
-	    boolean correoExiste = (m != null && m.getCorreo() != null && !m.getCorreo().isEmpty());
+		Usuarios usuario = usuariosService.findUsuariosByCorreo(scapedCorreo);
+	    boolean correoExiste = (usuario != null && usuario.getCorreo() != null && !usuario.getCorreo().isEmpty());
 	    return new ResponseEntity<>(correoExiste, HttpStatus.OK);
     }
     
@@ -89,12 +89,12 @@ public class AuthController {
     public ResponseEntity<?> comprobarDNI(@RequestParam("dni") String dni) { 
     		
     	String scapedDNI = UriUtils.encodeQueryParam(dni, StandardCharsets.UTF_8);
-		Medicos m = medicosService.findMedicosByDni(scapedDNI);
-	    boolean DNIExiste = (m != null && m.getCorreo() != null && !m.getCorreo().isEmpty());
+    	Usuarios usuario = usuariosService.findUsuariosByDni(scapedDNI);
+	    boolean DNIExiste = (usuario != null && usuario.getCorreo() != null && !usuario.getCorreo().isEmpty());
 	    return new ResponseEntity<>(DNIExiste, HttpStatus.OK);
     }
     @PostMapping("/registro/guardar")
-    public String registration(@Valid @ModelAttribute("medico") MedicosDto medicoDto,
+    public String registration(@Valid @ModelAttribute("medico") UsuariosDto medicoDto,
                                BindingResult result,
                                Model model){
     		
@@ -103,7 +103,7 @@ public class AuthController {
     		return "/registro";
     	}
     	else {
-    		medicosService.guardarMedico(medicoDto);
+    		usuariosService.guardarMedico(medicoDto);
             
             return "redirect:/registro?success";
     	}
@@ -124,9 +124,9 @@ public class AuthController {
     private boolean RedirectLoginRegistro() {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	
-    	Medicos medico = medicosService.findMedicosByCorreo(auth.getName());
+    	Usuarios usuario = usuariosService.findUsuariosByCorreo(auth.getName());
     	
-        if (medico != null) {
+        if (usuario != null) {
             return true;
         }
         
@@ -134,18 +134,18 @@ public class AuthController {
     }
     
     
-    private boolean ValidarRegistro(MedicosDto medicoDto,
+    private boolean ValidarRegistro(UsuariosDto medicoDto,
                                BindingResult result,
                                Model model) {
     	
-    	 Medicos userByCorreo = medicosService.findMedicosByCorreo(medicoDto.getCorreo());
+    	 Usuarios userByCorreo = usuariosService.findUsuariosByCorreo(medicoDto.getCorreo());
 
          if(userByCorreo != null && userByCorreo.getCorreo() != null && !userByCorreo.getCorreo().isEmpty()){
              result.rejectValue("correo", null,
                      "Ya existe una cuenta creada con ese correo");
          }
          
-         Medicos userByDni = medicosService.findMedicosByDni(medicoDto.getDni());
+         Usuarios userByDni = usuariosService.findUsuariosByDni(medicoDto.getDni());
          
          if(userByDni != null && userByDni.getDni() != null && !userByDni.getDni().isEmpty()){
              result.rejectValue("dni", null,
