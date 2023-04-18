@@ -726,7 +726,7 @@ new Vue({
 		},
 
 		linea(seleccion) {
-			if (seleccion === this.seleccion) return '2px solid';
+			if (seleccion === this.seleccion) return '1.5px solid';
 			else return '1px solid';
 		},
 	},
@@ -739,19 +739,19 @@ new Vue({
 		</div>
     	<div class="col-md-12">
             <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}">
-                <span :style="{color: colorTexto('Fase1')}">Fase 1</span> 
+                <span :style="{color: colorTexto('Fase1')}">Obtener nº optimo clusters</span> 
             </button>
             <button @click="cambiarSeleccion('Fase2')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase2'), border: linea('Fase2')}">
-                <span :style="{color: colorTexto('Fase2')}">Fase 2</span>
+                <span :style="{color: colorTexto('Fase2')}">Obtener subpoblaciones</span>
             </button>
             <button @click="cambiarSeleccion('Fase3')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase3'), border: linea('Fase3')}">
-                <span :style="{color: colorTexto('Fase3')}">Fase 3</span>
+                <span :style="{color: colorTexto('Fase3')}">Obtener métricas de varianza</span>
             </button>
             <button @click="cambiarSeleccion('Fase4')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase4'), border: linea('Fase4')}">
-                <span :style="{color: colorTexto('Fase4')}">Fase 4</span>
+                <span :style="{color: colorTexto('Fase4')}">Obtener gráficas y variables de poblacion</span>
             </button>
             <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}">
-                <span :style="{color: colorTexto('Fase5')}">Fase 5</span>
+                <span :style="{color: colorTexto('Fase5')}">Obtener gráficas y variables por cluster</span>
             </button>
     	</div>	    
     	
