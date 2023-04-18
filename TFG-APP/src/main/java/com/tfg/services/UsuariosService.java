@@ -74,7 +74,8 @@ public class UsuariosService implements IUsuariosService {
 
 	@Override
 	public List<UsuariosDto> findAllMedicos() {
-		List<Usuarios> medicos = usuariosRep.findAll();
+		Roles rolMedico = rolesRep.findByNombre("ROLE_MEDICO");
+		List<Usuarios> medicos = usuariosRep.findByRoles(rolMedico);
 		return medicos.stream().map((medico) -> mapToMedicosDto(medico)).collect(Collectors.toList());
 	}
 

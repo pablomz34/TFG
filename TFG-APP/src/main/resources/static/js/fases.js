@@ -300,11 +300,11 @@ Vue.component('fase4', {
 					THIZ.datasetStatistics[2].valor = data.number_of_observations;
 					THIZ.datasetStatistics[3].valor = data.target_median;
 					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
-					
+
 					for (i = 0; i < data.features.length; i++) {
 						THIZ.variables[i] = data.features[i];
 					}
-					
+
 					THIZ.datosCargados = true;
 
 					$('#cargando').hide();
@@ -536,20 +536,80 @@ Vue.component('fase5', {
 	`
 });
 
+Vue.component('fase6', {
+	data: function() {
+		return {
+			csvGetPerformanceModel: ''
+		}
+	},
+
+
+	methods: {
+
+		getModelPerformance() {
+			const THIZ = this;
+			const formData = new FormData();
+			$('#cargando').show();
+			formData.append('file', this.$refs.csvGetPerformanceModel.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/getModelPerformance", {
+				method: "POST",
+				body: formData
+			})
+				.then(response => response.json())
+				.then(data => {
+					
+					console.log(data);
+		
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
+		}
+	},
+
+
+	template: `
+	
+	<div class="container">
+		<span>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+   			 </div>
+		</span>
+		
+		<div class="row">
+			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
+				<h4>Get Model Performance</h4>
+				<form @submit.prevent="getModelPerformance">				
+					
+					<div class="form-group col-md-6 pb-4">
+						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvGetPerformanceModel">
+					</div>
+					
+					<button type="submit" class="btn btn-primary">Ejecutar</button>
+				</form>
+			</div>
+			
+		</div>
+		
+	</div>	
+	`
+});
+
 Vue.component('overview', {
 	props: ['statistics'],
-	
-	data: function(){
+
+	data: function() {
 		return {
 			datasetStatistics: [],
 		}
 	},
-	
-	created(){
+
+	created() {
 		const THIZ = this;
 		THIZ.datasetStatistics = this.statistics;
 	},
-	
+
 	template: `
 	<div class="pt-2">
 		<table class="table table-condensed stats">
@@ -606,15 +666,15 @@ Vue.component('graphic', {
 		dataValues: Array,
 		titulo: String
 	},
-	
+
 	methods: {
-		generarGrafica(){
+		generarGrafica() {
 			var ctx = document.getElementById('graphicCanvas').getContext('2d');
-			if(window.grafica){
+			if (window.grafica) {
 				window.grafica.clear();
 				window.grafica.destroy();
 			}
-			window.grafica= new Chart(ctx, {
+			window.grafica = new Chart(ctx, {
 				type: 'pie',
 				data: {
 					labels: this.dataKeys,
@@ -660,17 +720,17 @@ Vue.component('graphic', {
 							text: this.titulo,
 						},
 						datalabels: {
-							font:{
+							font: {
 								weight: 'bold'
 							},
 							align: 'end',
 							formatter: (value, context) => {
 								const datapoints = context.chart.data.datasets[0].data;
-								function totalSum(total, datapoint){
+								function totalSum(total, datapoint) {
 									return total + datapoint;
 								}
 								const porcentajeTotal = datapoints.reduce(totalSum, 0);
-								const porcentaje =  (value / porcentajeTotal * 100).toFixed(1);
+								const porcentaje = (value / porcentajeTotal * 100).toFixed(1);
 								const display = [`${value}`, `${porcentaje}%`];
 								return display;
 							}
@@ -681,18 +741,18 @@ Vue.component('graphic', {
 			})
 		}
 	},
-	
-	mounted(){
+
+	mounted() {
 		this.generarGrafica();
-	}, 
-	
+	},
+
 	watch: {
-		titulo(){
+		titulo() {
 			this.generarGrafica();
 		}
 	},
-	
-	
+
+
 	template: `
 	<div class="col-12">	
 		<canvas id="graphicCanvas"></canvas>
@@ -753,6 +813,9 @@ new Vue({
             <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}">
                 <span :style="{color: colorTexto('Fase5')}">Obtener gráficas y variables por cluster</span>
             </button>
+            <button @click="cambiarSeleccion('Fase6')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}">
+                <span :style="{color: colorTexto('Fase6')}">Obtener rendimiento del modelo</span>
+            </button>
     	</div>	    
     	
     	<fase1 v-if="seleccion==='Fase1'"/>
@@ -760,7 +823,7 @@ new Vue({
         <fase3 v-if="seleccion==='Fase3'"/>     
         <fase4 v-if="seleccion==='Fase4'"/>  
         <fase5 v-if="seleccion==='Fase5'"/>   
-            
+        <fase6 v-if="seleccion==='Fase6'"/>
 	</div>
 	`
 })

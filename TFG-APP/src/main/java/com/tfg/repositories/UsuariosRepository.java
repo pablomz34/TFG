@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
 
 @Repository
@@ -17,4 +18,6 @@ public interface UsuariosRepository extends JpaRepository<Usuarios, Long> {
 	Usuarios findByCorreo(String correo);
 	
 	Usuarios findByDni(String dni);
+	
+	List<Usuarios> findByRoles(Roles rol);
 }

@@ -78,8 +78,8 @@ public class AuthController {
     public ResponseEntity<?> comprobarCorreo(@RequestParam("correo") String correo) { 
     		
     	String scapedCorreo = UriUtils.encodeQueryParam(correo, StandardCharsets.UTF_8);
-		Usuarios usuario = usuariosService.findUsuariosByCorreo(scapedCorreo);
-	    boolean correoExiste = (usuario != null && usuario.getCorreo() != null && !usuario.getCorreo().isEmpty());
+		Usuarios medico = usuariosService.findUsuariosByCorreo(scapedCorreo);
+	    boolean correoExiste = (medico != null && medico.getCorreo() != null && !medico.getCorreo().isEmpty());
 	    return new ResponseEntity<>(correoExiste, HttpStatus.OK);
     }
     
@@ -124,9 +124,9 @@ public class AuthController {
     private boolean RedirectLoginRegistro() {
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	
-    	Usuarios usuario = usuariosService.findUsuariosByCorreo(auth.getName());
+    	Usuarios medico = usuariosService.findUsuariosByCorreo(auth.getName());
     	
-        if (usuario != null) {
+        if (medico != null) {
             return true;
         }
         
@@ -138,16 +138,16 @@ public class AuthController {
                                BindingResult result,
                                Model model) {
     	
-    	 Usuarios userByCorreo = usuariosService.findUsuariosByCorreo(medicoDto.getCorreo());
+    	 Usuarios medicoByCorreo = usuariosService.findUsuariosByCorreo(medicoDto.getCorreo());
 
-         if(userByCorreo != null && userByCorreo.getCorreo() != null && !userByCorreo.getCorreo().isEmpty()){
+         if(medicoByCorreo != null && medicoByCorreo.getCorreo() != null && !medicoByCorreo.getCorreo().isEmpty()){
              result.rejectValue("correo", null,
                      "Ya existe una cuenta creada con ese correo");
          }
          
-         Usuarios userByDni = usuariosService.findUsuariosByDni(medicoDto.getDni());
+         Usuarios medicoByDni = usuariosService.findUsuariosByDni(medicoDto.getDni());
          
-         if(userByDni != null && userByDni.getDni() != null && !userByDni.getDni().isEmpty()){
+         if(medicoByDni != null && medicoByDni.getDni() != null && !medicoByDni.getDni().isEmpty()){
              result.rejectValue("dni", null,
                      "Ya existe una cuenta creada con este DNI");
          }

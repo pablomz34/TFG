@@ -68,20 +68,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.dto.UsuariosDto;
 import com.tfg.services.IUsuariosService;
 
-
 @RestController
 @RequestMapping("/admin/fases")
 public class FasesController {
-	
+
 	static final String UrlServidor = "https://75e0-81-41-173-74.ngrok-free.app/";
-	
+
 	@Autowired
 	private IUsuariosService usuariosService;
-	
+
 	@Autowired
 	private HttpSession session;
-	
-	
+
 	@GetMapping("/getMedicos")
 	public List<UsuariosDto> getMedicos() {
 		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
@@ -122,13 +120,12 @@ public class FasesController {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(
-				UrlServidor + "clustering/getOptimalNClusters?max_clusters="
-						+ Integer.parseInt(max_clusters));
+				UrlServidor + "clustering/getOptimalNClusters?max_clusters=" + Integer.parseInt(max_clusters));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		
+
 		// Agregar el archivo al cuerpo de la petición
 
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
@@ -159,24 +156,21 @@ public class FasesController {
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
-		
+
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
-		
 	}
-	
-	
+
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
 	public ResponseEntity<byte[]> getSubPopulations(@RequestPart("nClustersAglomerativo") String nClustersAglomerativo,
-			@RequestPart("nClustersKModes") String nClustersKModes,
-			@RequestPart("file") MultipartFile multipartFile) throws IOException {
-		
+			@RequestPart("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
+			throws IOException {
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor+"clustering/getSubpopulations?n_agglomerative="
-						+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes));
+		HttpPost httpPost = new HttpPost(UrlServidor + "clustering/getSubpopulations?n_agglomerative="
+				+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
@@ -203,24 +197,23 @@ public class FasesController {
 
 		// Ejecutar la petición y obtener la respuesta
 		CloseableHttpResponse response = httpClient.execute(httpPost);
-		
+
 		HttpEntity responseEntity = response.getEntity();
-		
+
 		byte[] csvBytes = responseEntity.getContent().readAllBytes();
-		
-        // Devuelve la respuesta con el archivo adjunto.
-        return new ResponseEntity<>(csvBytes, HttpStatus.OK);
+
+		// Devuelve la respuesta con el archivo adjunto.
+		return new ResponseEntity<>(csvBytes, HttpStatus.OK);
 	}
-	
+
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
-	public ResponseEntity<List<Map<String,Object>>> getVarianceMetrics(@RequestPart("file") MultipartFile multipartFile) 
-			throws IllegalStateException, IOException, JSONException {
-		
+	public ResponseEntity<List<Map<String, Object>>> getVarianceMetrics(
+			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException, JSONException {
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor+"clustering/getVarianceMetrics");
+		HttpPost httpPost = new HttpPost(UrlServidor + "clustering/getVarianceMetrics");
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
@@ -247,44 +240,39 @@ public class FasesController {
 
 		// Ejecutar la petición y obtener la respuesta
 		CloseableHttpResponse response = httpClient.execute(httpPost);
-		
-		
+
 		HttpEntity responseEntity = response.getEntity();
 		InputStream responseInputStream = responseEntity.getContent();
-		
+
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
 		String line;
 		StringBuffer res = new StringBuffer();
 		while ((line = bufferedReader.readLine()) != null) {
 			res.append(line);
 		}
-		String aux = res.substring(1, res.length()-1);
+		String aux = res.substring(1, res.length() - 1);
 		aux = aux.replaceAll("'", "\"");
-		
-		
+
 		List<Map<String, Object>> map = null;
 		map = new ObjectMapper().readValue(aux, List.class);
-		
-		
+
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
-		
 	}
-	
-	
+
 	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> createAllSurvivalCurves(@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+	public ResponseEntity<byte[]> createAllSurvivalCurves(@RequestPart("file") MultipartFile multipartFile)
+			throws IllegalStateException, IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor + "survivalAndProfiling/createAllSurvivalCurves");
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createAllSurvivalCurves");
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		
+
 		// Agregar el archivo al cuerpo de la petición
 
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
@@ -315,25 +303,25 @@ public class FasesController {
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
-		
+
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
-		
 	}
-	
+
 	@PostMapping(value = "/createPopulationProfile", consumes = "multipart/form-data")
-	public ResponseEntity<HashMap<String, Object>> createPopulationProfile(@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException, ClassNotFoundException {
+	public ResponseEntity<HashMap<String, Object>> createPopulationProfile(
+			@RequestPart("file") MultipartFile multipartFile)
+			throws IllegalStateException, IOException, ClassNotFoundException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor + "survivalAndProfiling/createPopulationProfile");
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createPopulationProfile");
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		
+
 		// Agregar el archivo al cuerpo de la petición
 
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
@@ -357,9 +345,9 @@ public class FasesController {
 		CloseableHttpResponse response = httpClient.execute(httpPost);
 
 		HttpEntity responseEntity = response.getEntity();
-		
+
 		InputStream responseInputStream = responseEntity.getContent();
-		
+
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
 		String line;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -367,30 +355,29 @@ public class FasesController {
 			stringBuilder.append(line);
 		}
 		String jsonString = stringBuilder.toString();
-		
+
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
+
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
-		
 	}
-	
+
 	@PostMapping(value = "/createClusterProfile", consumes = "multipart/form-data")
-	public ResponseEntity<HashMap<String, Object>> createClusterProfile(@RequestPart("cluster_number") String cluster_number,
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+	public ResponseEntity<HashMap<String, Object>> createClusterProfile(
+			@RequestPart("cluster_number") String cluster_number, @RequestPart("file") MultipartFile multipartFile)
+			throws IllegalStateException, IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor + "survivalAndProfiling/createClusterProfile?cluster_number="
-						+ Integer.parseInt(cluster_number));
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createClusterProfile?cluster_number="
+				+ Integer.parseInt(cluster_number));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		
+
 		// Agregar el archivo al cuerpo de la petición
 
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
@@ -416,7 +403,7 @@ public class FasesController {
 		HttpEntity responseEntity = response.getEntity();
 
 		InputStream responseInputStream = responseEntity.getContent();
-		
+
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
 		String line;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -424,14 +411,14 @@ public class FasesController {
 			stringBuilder.append(line);
 		}
 		String jsonString = stringBuilder.toString();
-		
+
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
-		
+
 	}
-	
+
 	@PostMapping(value = "/createClusterSurvivalCurve", consumes = "multipart/form-data")
 	public ResponseEntity<byte[]> createClusterSurvivalCurve(@RequestPart("cluster_number") String cluster_number,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
@@ -439,14 +426,13 @@ public class FasesController {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor + "survivalAndProfiling/createClusterSurvivalCurve?cluster_number="
-						+ Integer.parseInt(cluster_number));
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createClusterSurvivalCurve?cluster_number="
+				+ Integer.parseInt(cluster_number));
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		
+
 		// Agregar el archivo al cuerpo de la petición
 
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
@@ -477,11 +463,63 @@ public class FasesController {
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
-		
+
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
-		
 	}
 
+	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
+	public ResponseEntity<HashMap<String, Object>> createClusterSurvivalCurve(
+			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/getModelPerformance");
+
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+		// Agregar el archivo al cuerpo de la petición
+
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+		// Copiar el contenido del objeto MultipartFile al objeto File
+		multipartFile.transferTo(file);
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+
+		HttpEntity responseEntity = response.getEntity();
+
+		InputStream responseInputStream = responseEntity.getContent();
+
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
+		String line;
+		StringBuilder stringBuilder = new StringBuilder();
+		while ((line = bufferedReader.readLine()) != null) {
+			stringBuilder.append(line);
+		}
+		String jsonString = stringBuilder.toString();
+
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+
+		return new ResponseEntity<>(map, HttpStatus.OK);
+
+	}
 
 }
