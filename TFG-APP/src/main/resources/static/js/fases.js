@@ -365,7 +365,7 @@ Vue.component('fase4', {
 			<div class="col-md-5 p2 m-1"/>
 			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<h2>Variables</h2>
-				<select name="variables" v-model="variableSeleccionada">
+				<select class="form-select" name="variables" v-model="variableSeleccionada">
 					<option value="" disabled selected>Select columns</option>
 					<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
 				</select>
