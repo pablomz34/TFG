@@ -365,11 +365,12 @@ Vue.component('fase4', {
 			<div class="col-md-5 p2 m-1"/>
 			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<h2>Variables</h2>
-				<select class="form-select" name="variables" v-model="variableSeleccionada">
-					<option value="" disabled selected>Select columns</option>
-					<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-				</select>
-				
+				<div class="col-md-6">
+					<select class="form-select" name="variables" v-model="variableSeleccionada">
+						<option value="" disabled selected>Select columns</option>
+						<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+					</select>
+				</div>
 				<variables :variable="this.variableSeleccionada"/>	
 	    	</div>
 	 	</div>				
@@ -524,11 +525,12 @@ Vue.component('fase5', {
 			<div class="col-md-5 p2 m-1"/>
 			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<h2>Variables</h2>
-				<select name="variables" v-model="variableSeleccionada">
-					<option value="" disabled selected>Select columns</option>
-					<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-				</select>
-				
+				<div class="col-md-6">
+					<select class="form-select col-md-4" name="variables" v-model="variableSeleccionada">
+						<option value="" disabled selected>Select columns</option>
+						<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+					</select>
+				</div>
 				<variables :variable="this.variableSeleccionada"/>	
 	    	</div>
  		</div>	
