@@ -2,12 +2,6 @@ new Vue({
 	el: "#index_medico",
 	data: function() {
 		return {
-			gender: '',
-			education: '',
-			ethcat: '',
-			work_income_tcr: '',
-			pri_payment_tcr_ki: '',
-			age_range: '',
 			inputs: [{nombre: 'Gender', variables: ['M', 'F'], seleccion:''}, 
 				{nombre: 'Education', variables: ['ML', 'ME', 'MH', 'LO', 'UNK', 'HI'], seleccion:''},
 				{nombre: 'Ethcat', variables: ['WHI', 'BLA', 'HIS', 'OTH'], seleccion:''},
