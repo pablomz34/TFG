@@ -539,7 +539,10 @@ Vue.component('fase5', {
 Vue.component('fase6', {
 	data: function() {
 		return {
-			csvGetPerformanceModel: ''
+			csvGetPerformanceModel: '',
+			datosCargados: false,
+			idModel: '',
+			auc: '',
 		}
 	},
 
@@ -548,6 +551,7 @@ Vue.component('fase6', {
 
 		getModelPerformance() {
 			const THIZ = this;
+			THIZ.datosCargados = false;
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('file', this.$refs.csvGetPerformanceModel.files[0]);
@@ -558,9 +562,9 @@ Vue.component('fase6', {
 			})
 				.then(response => response.json())
 				.then(data => {
-					
-					console.log(data);
-		
+					THIZ.idModel = data.id_model;
+					THIZ.auc = data.auc;
+					THIZ.datosCargados=true;
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
@@ -589,8 +593,22 @@ Vue.component('fase6', {
 					<button type="submit" class="btn btn-primary">Ejecutar</button>
 				</form>
 			</div>
-			
 		</div>
+		
+		<div class="row">
+			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label>Id model: </label>
+						<input type="text" class="form-control border border-success" v-model="idModel" disabled>
+					</div>
+					<div class="form-group col-md-4">
+						<label>Auc: </label>
+						<input type="text" class="form-control border border-success" v-model="auc" disabled>
+					</div>
+				</div>
+	    	</div>
+ 		</div>	
 		
 	</div>	
 	`
@@ -798,23 +816,23 @@ new Vue({
 			<h2>Fases</h2>
 		</div>
     	<div class="col-md-12">
-            <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}">
-                <span :style="{color: colorTexto('Fase1')}">Obtener nº optimo clusters</span> 
+            <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}" style="width:15%">
+                <p :style="{color: colorTexto('Fase1')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener nº optimo clusters</p> 
             </button>
-            <button @click="cambiarSeleccion('Fase2')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase2'), border: linea('Fase2')}">
-                <span :style="{color: colorTexto('Fase2')}">Obtener subpoblaciones</span>
+            <button @click="cambiarSeleccion('Fase2')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase2'), border: linea('Fase2')}" style="width:15%">
+                <p :style="{color: colorTexto('Fase2')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener subpoblaciones</p>
             </button>
-            <button @click="cambiarSeleccion('Fase3')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase3'), border: linea('Fase3')}">
-                <span :style="{color: colorTexto('Fase3')}">Obtener métricas de varianza</span>
+            <button @click="cambiarSeleccion('Fase3')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase3'), border: linea('Fase3')}" style="width:15%">
+                <p :style="{color: colorTexto('Fase3')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener métricas de varianza</p>
             </button>
-            <button @click="cambiarSeleccion('Fase4')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase4'), border: linea('Fase4')}">
-                <span :style="{color: colorTexto('Fase4')}">Obtener gráficas y variables de poblacion</span>
+            <button @click="cambiarSeleccion('Fase4')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase4'), border: linea('Fase4')}" style="width:15%">
+            	<p :style="{color: colorTexto('Fase4')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener gráficas y variables de poblacion</p>
             </button>
-            <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}">
-                <span :style="{color: colorTexto('Fase5')}">Obtener gráficas y variables por cluster</span>
+            <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}" style="width:15%">
+                <p :style="{color: colorTexto('Fase5')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener gráficas y variables por cluster</p>
             </button>
-            <button @click="cambiarSeleccion('Fase6')" type="button" class="btn btn-md col-md-2" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}">
-                <span :style="{color: colorTexto('Fase6')}">Obtener rendimiento del modelo</span>
+            <button @click="cambiarSeleccion('Fase6')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase6'), border: linea('Fase6')}" style="width:15%">
+                <p :style="{color: colorTexto('Fase6')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener rendimiento del modelo</p>
             </button>
     	</div>	    
     	

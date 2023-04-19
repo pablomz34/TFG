@@ -15,14 +15,15 @@ new Vue({
 				{nombre: 'Pri Paymetn Tcr Ki', variables: ['MC', 'PI', 'MA', 'OT'], seleccion:''},
 				{nombre: 'Age Range', variables: ['-40', '-60', '+=60'], seleccion:''},
 			],
-			cluster: ''
+			cluster: '',
+			datosCargados: false
 		}
 	},
 
 	methods: {
 		getNewPatientClassification() {
 			const THIZ = this;
-
+			THIZ.datosCargados=false;
 			$('#cargando').show();
 
 			const jsonData = {
@@ -48,7 +49,7 @@ new Vue({
 				.then(json => {
 					THIZ.cluster= json.Cluster;
 					console.log(json);
-
+					THIZ.datosCargados=true;
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
@@ -81,10 +82,9 @@ new Vue({
 								</select>
 							</div>
 							
-							<div class="form-group col-md-2">
-								<label>Cluster: </label>
-								<input v-if="this.cluster === ''" type="text" class="form-control" v-model="cluster" disabled>
-								<input v-if="this.cluster != ''" type="text" class="form-control border border-success" v-model="cluster" disabled>
+							<div v-if="datosCargados" class="form-group col-md-2">
+								<label>Cluster</label>
+								<input type="text" class="form-control border border-success" v-model="cluster" disabled>
 							</div>
 							
 							
