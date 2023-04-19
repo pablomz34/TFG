@@ -7,6 +7,9 @@ $navbar-light-color: rgb(233, 233, 233);
 $navbar-light-hover-color: #fff;
 
 $input-btn-focus-box-shadow: none;
+$form-file-button-color:     #fff;
+$form-file-button-bg:        rgb(25, 25, 112);
+$form-file-button-hover-bg:     rgb(39, 39, 173);
 
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
@@ -33,3 +36,4 @@ $theme-colors: map-merge($theme-colors, $custom-colors);
 .nav-index-icon:hover{
 	color: $navbar-light-hover-color !important;
 }
+

@@ -37,34 +37,45 @@ Vue.component('fase1', {
 
 
 	template: `
-	<div class="container col-md-12">
-		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+	<div class="container mb-5 mt-5">
+	   <span>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
-		
-		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
-			<form @submit.prevent="getOptimalNClusters">				
-				<div class="form-group col-md-4 pb-4">
-					<label class="form-label" for="nClusters">Numero de clusters</label>
-				    <input type="number" min=0 max=8 class="form-control" v-model="nClusters" id="nClusters">
-				</div>
-				
-				<div class="form-group col-md-6 pb-4">
-					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
-				</div>
-				
-				<button type="submit" class="btn btn-primary">Ejecutar</button>
-			</form>
-		</div>
-		
-		<div v-if="imagenCreada" class="col-md-10 p-2 m-3">
-			<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-			<a v-bind:href="imagenUrl" download="nClustersImagen.png">
-				<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
-			</a>
-		</div>
+	   <div class="row col-md-6 offset-md-3">
+	      <div class="card rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Nº Óptimo de Clusters</h2>
+	         </div>
+	         <div class="card-body">
+	            <form @submit.prevent="getOptimalNClusters">
+	               <div class="form-group mb-3">
+	                  <label class="form-label" for="nClusters">Numero de clusters</label>
+	                  <input type="number" min=0 max=8 class="form-control" v-model="nClusters" id="nClusters">
+	               </div>
+	               <div class="form-group mb-3">
+	                  <label for="csv" class="form-label">Subir archivo</label>
+  					  <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile">
+	               </div>
+	               <div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
+	            </form>
+	         </div>
+	      </div>
+	   </div>
+	   <div v-if="imagenCreada" class="col-md-10 p-2 m-3">
+	      <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+	      <a v-bind:href="imagenUrl" download="nClustersImagen.png">
+	      <img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
+	      </a>
+	   </div>
 	</div>
 	`
 });
@@ -126,32 +137,49 @@ Vue.component('fase2', {
 
 
 	template: `
-	<div class="container col-md-12">
+	<div class="container mb-5 mt-5">
 		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
 		
-		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
-			<form @submit.prevent="getSubPopulations">				
-				<div class="form-group col-md-4 pb-4">
-					<label class="form-label" for="nClusters">Numero de clusters del algoritmo aglomerativo</label>
-				    <input type="number" min=0 max=4 class="form-control" v-model="nClustersAglomerativo" id="nClustersAglomerativo">
-				</div>
-				
-				<div class="form-group col-md-4 pb-4">
-					<label class="form-label" for="nClusters">Numero de clusters del algoritmo kmodes</label>
-				    <input type="number" min=0 max=4 class="form-control" v-model="nClustersKModes" id="nClustersKModes">
-				</div>
-				
-				<div class="form-group col-md-6 pb-4">
-					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
-				</div>
-				
-				<button type="submit" class="btn btn-primary">Calcular clusters</button>
-			</form>
-		</div>
+		
+		<div class="row col-md-6 offset-md-3">
+	      <div class="card rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Sub Populations</h2>
+	         </div>
+	         <div class="card-body">
+	            <form @submit.prevent="getSubPopulations">				
+					<div class="form-group mb-3">
+						<label class="form-label" for="nClusters">Numero de clusters del algoritmo aglomerativo</label>
+					    <input type="number" min=0 max=4 class="form-control" v-model="nClustersAglomerativo" id="nClustersAglomerativo">
+					</div>
+					
+					<div class="form-group mb-3">
+						<label class="form-label" for="nClusters">Numero de clusters del algoritmo kmodes</label>
+					    <input type="number" min=0 max=4 class="form-control" v-model="nClustersKModes" id="nClustersKModes">
+					</div>
+					
+					<div class="form-group mb-3">
+					    <label for="csv" class="form-label">Subir archivo</label>
+  					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile">
+					</div>
+					
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
+				</form>
+	         </div>
+	      </div>
+	   </div>
+		
 	</div>
 	`
 });
@@ -188,23 +216,38 @@ Vue.component('fase3', {
 	},
 
 	template: `
-	<div class="container col-md-12">
+	<div class="container mb-5 mt-5">
 		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
-	
-		<div class="col-md-6 p-2 m-3" style="border:1px solid black; border-radius:10px; padding:20px">
-			<form @submit.prevent="getVarianceMetrics">						
-				<div class="form-group col-md-6 pb-4">
-					<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFile">
-				</div>	
-				
-				<button type="submit" class="btn btn-primary">Ejecutar</button>
-			</form>
-		</div>
 		
+		<div class="row col-md-6 offset-md-3">
+	      <div class="card rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Métricas de Varianza</h2>
+	         </div>
+	         <div class="card-body">
+	            <form @submit.prevent="getVarianceMetrics">						
+					<div class="form-group mb-3">
+						 <label for="csv" class="form-label">Subir archivo</label>
+  					     <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile">
+					</div>	
+					
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
+				</form>
+	         </div>
+	      </div>
+	   </div>
+	
 		<table v-if="datosCargados" class="table table-bordered table-hover p-2 m-3">
 			<thead class="table-dark">
 				<tr>
@@ -315,36 +358,59 @@ Vue.component('fase4', {
 		}
 	},
 	template: `
-	<div class="container">
+	<div class="container mb-5 mt-5">
 		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
 		
-		<div class="row">
-			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
-				<h4>Create all survival curves</h4>
-				<form @submit.prevent="createAllSurvivalCurves">				
-					<div class="form-group col-md-6 pb-4">
-						<input type="file" accept=".csv" class="form-control-file" id="csv1" ref="csvFile">
+		<div class="row justify-content-around">
+	      <div class="card col-5 rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Curvas de supervivencia</h2>
+	         </div>
+	         <div class="card-body">
+	          	<form @submit.prevent="createAllSurvivalCurves">				
+					<div class="form-group mb-3">
+						<label for="csv1" class="form-label">Subir archivo</label>
+  					    <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile">
 					</div>
 					
-					<button type="submit" class="btn btn-primary">Ejecutar</button>
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
 				</form>
-			</div>
-			
-			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
-				<h4>Create population profile</h4>
-				<form @submit.prevent="createPopulationProfile">				
-					<div class="form-group col-md-6 pb-4">
-						<input type="file" accept=".csv" class="form-control-file" id="csv2" ref="csvFile2">
+	         </div>
+	      </div>
+	      <div class="card col-5 rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Perfil de población</h2>
+	         </div>
+	         <div class="card-body">
+	          	<form @submit.prevent="createPopulationProfile">				
+					<div class="form-group mb-3">
+						<label for="csv2" class="form-label">Subir archivo</label>
+  					    <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFile2">
 					</div>
 					
-					<button type="submit" class="btn btn-primary">Ejecutar</button>
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
 				</form>
-			</div>
-		</div>
+	         </div>
+	      </div>
+	   </div>
 		
 		<div class="row">
 			<div v-if="imagenCreada" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
@@ -466,46 +532,70 @@ Vue.component('fase5', {
 
 	template: `
 	
-	<div class="container">
+	<div class="container mb-5 mt-5">
 		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
 		
-		<div class="row">
-			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
-				<h4>Create cluster survival curve</h4>
-				<form @submit.prevent="createClusterSurvivalCurve">				
-					<div class="form-group col-md-4 pb-4">
+		
+		<div class="row justify-content-around">
+	      <div class="card col-5 rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Curva de cluster</h2>
+	         </div>
+	         <div class="card-body">
+	         	<form @submit.prevent="createClusterSurvivalCurve">				
+					<div class="form-group mb-3">
 						<label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
 					    <input type="number" min=0 class="form-control" v-model="clusterNumberSurvivalCurve" id="clusterNumberSurvivalCurve">
 					</div>
 					
-					<div class="form-group col-md-6 pb-4">
-						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFileSurvivalCurve">
+					<div class="form-group mb-3">
+						<label for="csv" class="form-label">Subir archivo</label>
+  					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFileSurvivalCurve">
 					</div>
 					
-					<button type="submit" class="btn btn-primary">Ejecutar</button>
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
 				</form>
-			</div>
-			
-			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
-				<h4>Create cluster profile</h4>
-				<form @submit.prevent="createClusterProfile">				
-					<div class="form-group col-md-4 pb-4">
+	         </div>
+	      </div>
+	      <div class="card col-5 rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Perfil de cluster</h2>
+	         </div>
+	         <div class="card-body">
+	         	<form @submit.prevent="createClusterProfile">				
+					<div class="form-group mb-3">
 						<label class="form-label" for="clusterNumberProfile">Numero de cluster</label>
 					    <input type="number" min=0 class="form-control" v-model="clusterNumberProfile" id="clusterNumberProfile">
 					</div>
 					
-					<div class="form-group col-md-6 pb-4">
-						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvFileProfile">
+					<div class="form-group mb-3">
+						<label for="csv" class="form-label">Subir archivo</label>
+  					    <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFileProfile">
 					</div>
 					
-					<button type="submit" class="btn btn-primary">Ejecutar</button>
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
 				</form>
-			</div>
-		</div>
+	         </div>
+	      </div>
+	   </div>
 		
 		<div class="row">	
 			<div v-if="imagenCreada" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
@@ -566,7 +656,7 @@ Vue.component('fase6', {
 				.then(data => {
 					THIZ.idModel = data.id_model;
 					THIZ.auc = data.auc;
-					THIZ.datosCargados=true;
+					THIZ.datosCargados = true;
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
@@ -576,26 +666,40 @@ Vue.component('fase6', {
 
 	template: `
 	
-	<div class="container">
+	<div class="container mb-5 mt-5">
 		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
+			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
+        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
 		
-		<div class="row">
-			<div class="col-md-5 p-2 mt-3 m-1" style="border:1px solid black; border-radius:10px">
-				<h4>Get Model Performance</h4>
-				<form @submit.prevent="getModelPerformance">				
+		
+		<div class="row col-md-6 offset-md-3">
+	      <div class="card rounded-4 p-0 shadow">
+	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <h2 class="text-center text-white">Rendimiento del modelo</h2>
+	         </div>
+	         <div class="card-body">
+	         	<form @submit.prevent="getModelPerformance">				
 					
-					<div class="form-group col-md-6 pb-4">
-						<input type="file" accept=".csv" class="form-control-file" id="csv" ref="csvGetPerformanceModel">
+					<div class="form-group mb-3">
+						<label for="csv" class="form-label">Subir archivo</label>
+  					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel">
 					</div>
 					
-					<button type="submit" class="btn btn-primary">Ejecutar</button>
+					<div class="form-group mb-2">
+	                  <div class="row justify-content-center">
+	                     <div class="col text-center">
+	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+	                           type="submit">Ejecutar</button>
+	                     </div>
+	                  </div>
+	               </div>
 				</form>
-			</div>
-		</div>
+	         </div>
+	      </div>
+	   </div>
+		
 		
 		<div class="row">
 			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
