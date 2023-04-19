@@ -601,11 +601,11 @@ Vue.component('fase6', {
 			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label>Id model: </label>
+						<label>Id model</label>
 						<input type="text" class="form-control border border-success" v-model="idModel" disabled>
 					</div>
 					<div class="form-group col-md-4">
-						<label>Auc: </label>
+						<label>Auc</label>
 						<input type="text" class="form-control border border-success" v-model="auc" disabled>
 					</div>
 				</div>

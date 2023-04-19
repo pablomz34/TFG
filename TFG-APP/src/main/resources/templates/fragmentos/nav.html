@@ -23,7 +23,7 @@
 					<a class="nav-link" aria-current="page" th:href="@{/admin/medicos}">Médicos registrados</a>
 				</li>
 				
-				<li th:if="${session.usuario != null and session.rol == 'ROLE_MEDICO'}" class="nav-item">
+				<li th:if="${session.usuario}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/medico}">Herramienta predictiva</a>
 				</li>
 				
