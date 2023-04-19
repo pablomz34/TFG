@@ -26,6 +26,6 @@ public class Imagenes {
 	@Column(name = "ruta", nullable = false, unique=true)
 	private String ruta;
 	
-	@Column(name = "n_cluster", nullable = false, unique = true)
-	private Integer nCluster;
+	@Column(name = "num_cluster", nullable = false, unique = true)
+	private Integer numCluster;
 }

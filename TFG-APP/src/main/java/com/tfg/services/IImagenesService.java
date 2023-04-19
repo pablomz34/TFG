@@ -11,5 +11,5 @@ import com.tfg.entities.Usuarios;
 @Service
 public interface IImagenesService {
 	
-	
+	public void guardarImagen(Integer numCluster, String ruta);
 }
