@@ -44,7 +44,7 @@ Vue.component('fase1', {
    			 </div>
 		</span>
 	   <div class="row col-md-6 offset-md-3">
-	      <div class="card rounded-4 p-0 shadow">
+	      <div class="card rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Nº Óptimo de Clusters</h2>
 	         </div>
@@ -70,12 +70,16 @@ Vue.component('fase1', {
 	         </div>
 	      </div>
 	   </div>
-	   <div v-if="imagenCreada" class="col-md-10 p-2 m-3">
-	      <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-	      <a v-bind:href="imagenUrl" download="nClustersImagen.png">
-	      <img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
-	      </a>
-	   </div>
+	   <div class="row justify-content-around">
+		   <div v-if="imagenCreada" class="card col-10 rounded-4 p-0 shadow">
+		      <div class="card-body">
+					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+					<a v-bind:href="imagenUrl" download="nClustersImagen.png">
+						<img id="imagenFase1" v-bind:src="imagenUrl" style="max-width:100%"/>
+					</a>
+				</div>
+			</div>
+		</div>
 	</div>
 	`
 });
@@ -366,7 +370,7 @@ Vue.component('fase4', {
 		</span>
 		
 		<div class="row justify-content-around">
-	      <div class="card col-5 rounded-4 p-0 shadow">
+	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Curvas de supervivencia</h2>
 	         </div>
@@ -388,7 +392,7 @@ Vue.component('fase4', {
 				</form>
 	         </div>
 	      </div>
-	      <div class="card col-5 rounded-4 p-0 shadow">
+	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Perfil de población</h2>
 	         </div>
@@ -412,32 +416,38 @@ Vue.component('fase4', {
 	      </div>
 	   </div>
 		
-		<div class="row">
-			<div v-if="imagenCreada" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-				<a v-bind:href="imagenUrl" download="survivalCurves.png">
-					<img id="imagenFase4" v-bind:src="imagenUrl" style="max-width:100%"/>
-				</a>
+		<div class="row justify-content-around">
+			<div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+					<a v-bind:href="imagenUrl" download="survivalCurves.png">
+						<img id="imagenFase4" v-bind:src="imagenUrl" style="max-width:100%"/>
+					</a>
+				</div>
 			</div>
-			<div v-else class="col-md-5 p-2 m-1"/>
-		
-			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<h2>Overview</h2>
-				<overview :statistics="this.datasetStatistics"/>
+			<div v-else class="col-5 mb-2"/>
+			<div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<h2>Overview</h2>
+					<overview :statistics="this.datasetStatistics"/>
+				</div>
 			</div>
+			<div v-else class="col-5 mb-2"/>
 		</div>
 		
-		<div class="row">
-			<div class="col-md-5 p2 m-1"/>
-			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<h2>Variables</h2>
-				<div class="col-md-6">
-					<select class="form-select" name="variables" v-model="variableSeleccionada">
-						<option value="" disabled selected>Select columns</option>
-						<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-					</select>
+		<div class="row justify-content-around">
+			<div class="col-5 mb-2"/>
+			<div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<h2>Variables</h2>
+					<div class="col-md-6">
+						<select class="form-select" name="variables" v-model="variableSeleccionada">
+							<option value="" disabled selected>Select columns</option>
+							<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+						</select>
+					</div>
+					<variables :variable="this.variableSeleccionada"/>	
 				</div>
-				<variables :variable="this.variableSeleccionada"/>	
 	    	</div>
 	 	</div>				
 	</div>
@@ -541,7 +551,7 @@ Vue.component('fase5', {
 		
 		
 		<div class="row justify-content-around">
-	      <div class="card col-5 rounded-4 p-0 shadow">
+	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Curva de cluster</h2>
 	         </div>
@@ -553,7 +563,6 @@ Vue.component('fase5', {
 					</div>
 					
 					<div class="form-group mb-3">
-						<label for="csv" class="form-label">Subir archivo</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFileSurvivalCurve">
 					</div>
 					
@@ -568,7 +577,7 @@ Vue.component('fase5', {
 				</form>
 	         </div>
 	      </div>
-	      <div class="card col-5 rounded-4 p-0 shadow">
+	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Perfil de cluster</h2>
 	         </div>
@@ -580,7 +589,6 @@ Vue.component('fase5', {
 					</div>
 					
 					<div class="form-group mb-3">
-						<label for="csv" class="form-label">Subir archivo</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFileProfile">
 					</div>
 					
@@ -597,31 +605,38 @@ Vue.component('fase5', {
 	      </div>
 	   </div>
 		
-		<div class="row">	
-			<div v-if="imagenCreada" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-				<a v-bind:href="imagenUrl" download="nClustersImagen.png">
-					<img id="imagenFase5" v-bind:src="imagenUrl" style="max-width:100%"/>
-				</a>
+		<div class="row justify-content-around">	
+			<div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+					<a v-bind:href="imagenUrl" download="nClustersImagen.png">
+						<img id="imagenFase5" v-bind:src="imagenUrl" style="max-width:100%"/>
+					</a>
+				</div>
 			</div>
-			<div v-else class="col-md-5 p-2 m-1"/>
-			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<h2>Overview</h2>
-				<overview :statistics="this.datasetStatistics"/>
-			</div>
+			<div v-else class="col-5 mb-2"/>
+			<div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<h2>Overview</h2>
+					<overview :statistics="this.datasetStatistics"/>
+				</div>
+			</div>	
+			<div v-else class="col-5 mb-2"/>
 		</div>
 		
-		<div class="row">
-			<div class="col-md-5 p2 m-1"/>
-			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<h2>Variables</h2>
-				<div class="col-md-6">
-					<select class="form-select col-md-4" name="variables" v-model="variableSeleccionada">
-						<option value="" disabled selected>Select columns</option>
-						<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-					</select>
+		<div class="row justify-content-around">
+			<div class="col-5 mb-2"/>
+			<div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<h2>Variables</h2>
+					<div class="col-md-6">
+						<select class="form-select col-md-4" name="variables" v-model="variableSeleccionada">
+							<option value="" disabled selected>Select columns</option>
+							<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+						</select>
+					</div>
+					<variables :variable="this.variableSeleccionada"/>	
 				</div>
-				<variables :variable="this.variableSeleccionada"/>	
 	    	</div>
  		</div>	
 	</div>	
@@ -675,15 +690,14 @@ Vue.component('fase6', {
 		
 		
 		<div class="row col-md-6 offset-md-3">
-	      <div class="card rounded-4 p-0 shadow">
+	      <div class="card rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Rendimiento del modelo</h2>
-	         </div>
+	         </div> 
 	         <div class="card-body">
 	         	<form @submit.prevent="getModelPerformance">				
 					
 					<div class="form-group mb-3">
-						<label for="csv" class="form-label">Subir archivo</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel">
 					</div>
 					
@@ -701,14 +715,14 @@ Vue.component('fase6', {
 	   </div>
 		
 		
-		<div class="row">
-			<div v-if="datosCargados" class="col-md-5 p-2 m-1" style="border:1px solid black; border-radius:10px;">
-				<div class="row">
-					<div class="form-group col-md-4">
+		<div class="row col-md-6 offset-md-3 mt-1">
+			<div v-if="datosCargados" class="card rounded-4 p-0 mb-2 shadow"> 
+				<div class="card-body">
+					<div class="form-group mb-3">
 						<label>Id model</label>
 						<input type="text" class="form-control border border-success" v-model="idModel" disabled>
 					</div>
-					<div class="form-group col-md-4">
+					<div class="form-group mb-3">
 						<label>Auc</label>
 						<input type="text" class="form-control border border-success" v-model="auc" disabled>
 					</div>

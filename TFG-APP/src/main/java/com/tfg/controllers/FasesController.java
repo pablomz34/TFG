@@ -74,7 +74,7 @@ import com.tfg.services.IUsuariosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 
-	static final String UrlServidor = "https://75e0-81-41-173-74.ngrok-free.app/";
+	static final String UrlServidor = "https://de22-81-41-173-74.ngrok-free.app/";
 
 	@Autowired
 	private IUsuariosService usuariosService;
@@ -541,48 +541,48 @@ public class FasesController {
 	
 	
 	private void guardarImagenes(MultipartFile multipartFile, String url, String ruta, Integer numCluster) throws IOException {
-		HttpPost httpPost = new HttpPost(UrlServidor + url);
-		
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-		// Agregar el archivo al cuerpo de la petición
-
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
-
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
-
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
-
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
-
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
-
-		InputStream responseInputStream = responseEntity.getContent();
-
-		byte[] imageBytes = responseInputStream.readAllBytes();
-		
-        FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + ruta);
-        imgOutFile.write(imageBytes);
-        imgOutFile.close();
-        
-        httpClient.close();
-        
-        imagenesService.guardarImagen(numCluster, "clustersImages/allClusters.png");
+//		HttpPost httpPost = new HttpPost(UrlServidor + url);
+//		
+//		CloseableHttpClient httpClient = HttpClients.createDefault();
+//		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+//		// petición
+//		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+//
+//		// Agregar el archivo al cuerpo de la petición
+//
+//		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+//
+//		// Copiar el contenido del objeto MultipartFile al objeto File
+//		multipartFile.transferTo(file);
+//
+//		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+//				file, // Archivo a enviar
+//				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+//				file.getName() // Nombre del archivo en el cuerpo de la petición
+//		);
+//
+//		// Construir el cuerpo de la petición
+//		HttpEntity multipart = builder.build();
+//
+//		// Establecer el cuerpo de la petición en el objeto HttpPost
+//		httpPost.setEntity(multipart);
+//
+//		// Ejecutar la petición y obtener la respuesta
+//		CloseableHttpResponse response = httpClient.execute(httpPost);
+//
+//		HttpEntity responseEntity = response.getEntity();
+//
+//		InputStream responseInputStream = responseEntity.getContent();
+//
+//		byte[] imageBytes = responseInputStream.readAllBytes();
+//		
+//        FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + ruta);
+//        imgOutFile.write(imageBytes);
+//        imgOutFile.close();
+//        
+//        httpClient.close();
+//        
+//        imagenesService.guardarImagen(numCluster, "clustersImages/allClusters.png");
 		
 		
 		
