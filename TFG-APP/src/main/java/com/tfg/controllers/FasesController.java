@@ -310,9 +310,9 @@ public class FasesController {
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
 		
-		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clusterImages\\allClusters.png", -1);
+		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
 		for(int i=0; i<8; i++) {
-			this.guardarImagenes(multipartFile, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clusterImages\\cluster" + Integer.toString(i) + ".png", i);
+			this.guardarImagenes(multipartFile, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
 		}
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
@@ -418,9 +418,9 @@ public class FasesController {
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
 		
-		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clusterImages\\allClusters.png", -1);
+		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
 		for(int i=0; i<8; i++) {
-			this.guardarImagenes(multipartFile, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clusterImages\\cluster" + Integer.toString(i) + ".png", i);
+			this.guardarImagenes(multipartFile, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
 		}
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
