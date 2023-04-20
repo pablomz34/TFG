@@ -23,9 +23,9 @@ public class Imagenes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name = "ruta", nullable = false, unique=true)
+	@Column(name = "ruta", nullable = false, unique = true)
 	private String ruta;
 	
 	@Column(name = "num_cluster", nullable = false, unique = true)
-	private Integer numCluster;
+	private int numCluster;
 }

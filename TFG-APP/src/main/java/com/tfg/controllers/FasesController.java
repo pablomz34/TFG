@@ -64,10 +64,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.commons.codec.binary.Base64;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Imagenes;
 import com.tfg.services.IImagenesService;
+import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
 
 @RestController
@@ -81,6 +84,9 @@ public class FasesController {
 	
 	@Autowired
 	private IImagenesService imagenesService;
+	
+	@Autowired
+	private IProfilesService profilesService;
 
 	@Autowired
 	private HttpSession session;
@@ -89,32 +95,6 @@ public class FasesController {
 	public List<UsuariosDto> getMedicos() {
 		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
 		return medicos;
-	}
-
-	@GetMapping("/getHelloApi")
-	public ResponseEntity<HashMap<String, Object>> getHelloApi() {
-		String url = "https://pokeapi.co/api/v2/pokemon/ditto";
-		HashMap<String, Object> map = null;
-		try {
-			URL obj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String line;
-			StringBuilder stringBuilder = new StringBuilder();
-			while ((line = bufferedReader.readLine()) != null) {
-				stringBuilder.append(line);
-			}
-			String jsonString = stringBuilder.toString();
-
-			map = new ObjectMapper().readValue(jsonString, HashMap.class);
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
@@ -161,6 +141,8 @@ public class FasesController {
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
+		
+		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
@@ -206,6 +188,8 @@ public class FasesController {
 		HttpEntity responseEntity = response.getEntity();
 
 		byte[] csvBytes = responseEntity.getContent().readAllBytes();
+		
+		file.delete();
 
 		// Devuelve la respuesta con el archivo adjunto.
 		return new ResponseEntity<>(csvBytes, HttpStatus.OK);
@@ -260,6 +244,8 @@ public class FasesController {
 
 		List<Map<String, Object>> map = null;
 		map = new ObjectMapper().readValue(aux, List.class);
+		
+		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
@@ -310,10 +296,13 @@ public class FasesController {
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
 		
-		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
 		for(int i=0; i<8; i++) {
-			this.guardarImagenes(multipartFile, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
+			this.guardarImagenes(file, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
 		}
+		
+		file.delete();
+		
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
 	}
@@ -368,6 +357,8 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+		
+		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
@@ -418,10 +409,13 @@ public class FasesController {
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
 		
-		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
+				
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
 		for(int i=0; i<8; i++) {
-			this.guardarImagenes(multipartFile, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
+			this.guardarImagenes(file, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
 		}
+		
+		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
@@ -478,6 +472,8 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+		
+		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
@@ -534,60 +530,72 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+		
+		
+		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
 	
 	
-	private void guardarImagenes(MultipartFile multipartFile, String url, String ruta, Integer numCluster) throws IOException {
-//		HttpPost httpPost = new HttpPost(UrlServidor + url);
-//		
-//		CloseableHttpClient httpClient = HttpClients.createDefault();
-//		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-//		// petición
-//		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//
-//		// Agregar el archivo al cuerpo de la petición
-//
-//		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-//
-//		// Copiar el contenido del objeto MultipartFile al objeto File
-//		multipartFile.transferTo(file);
-//
-//		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-//				file, // Archivo a enviar
-//				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-//				file.getName() // Nombre del archivo en el cuerpo de la petición
-//		);
-//
-//		// Construir el cuerpo de la petición
-//		HttpEntity multipart = builder.build();
-//
-//		// Establecer el cuerpo de la petición en el objeto HttpPost
-//		httpPost.setEntity(multipart);
-//
-//		// Ejecutar la petición y obtener la respuesta
-//		CloseableHttpResponse response = httpClient.execute(httpPost);
-//
-//		HttpEntity responseEntity = response.getEntity();
-//
-//		InputStream responseInputStream = responseEntity.getContent();
-//
-//		byte[] imageBytes = responseInputStream.readAllBytes();
-//		
-//        FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + ruta);
-//        imgOutFile.write(imageBytes);
-//        imgOutFile.close();
-//        
-//        httpClient.close();
-//        
-//        imagenesService.guardarImagen(numCluster, "clustersImages/allClusters.png");
+	private void guardarImagenes(File file, String url, String rutaServidor, Integer numCluster) throws IOException {
 		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
 		
+		HttpPost httpPost = new HttpPost(UrlServidor + url);
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+		// Agregar el archivo al cuerpo de la petición
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+
+		HttpEntity responseEntity = response.getEntity();
+
+		InputStream responseInputStream = responseEntity.getContent();
+
+		byte[] imageBytes = responseInputStream.readAllBytes();
+		
+        FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + rutaServidor);
+        imgOutFile.write(imageBytes);
+        imgOutFile.close();
+        
+        httpClient.close();
+        
+        imagenesService.guardarImagen(numCluster, "clustersImages/allClusters.png");
 		
 	}
+	
+	@GetMapping("/getHello")
+	public String getHello() throws JsonMappingException, JsonProcessingException {
+		
+		String jsonString = "{'Pablo': {'Cris': '3'}, 'Oscar': '2'}";
+		jsonString = jsonString.replaceAll("'", "\"");
+		profilesService.guardarProfile(jsonString);
+		
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+		
+		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
 
-
-
+		System.out.println(map.keySet());
+		
+		
+		return "getHello";
+	}
 }

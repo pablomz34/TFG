@@ -9,7 +9,7 @@ import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Usuarios;
 
 @Service
-public interface IImagenesService {
+public interface IProfilesService {
 	
-	public void guardarImagen(int numCluster, String ruta);
+	public void guardarProfile(String features);
 }

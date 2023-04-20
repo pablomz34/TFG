@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Imagenes;
+import com.tfg.entities.Profiles;
 import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
 import com.tfg.repositories.ImagenesRepository;
+import com.tfg.repositories.ProfilesRepository;
 import com.tfg.repositories.RolesRepository;
 import com.tfg.repositories.UsuariosRepository;
 
@@ -25,22 +27,28 @@ import jakarta.validation.ConstraintViolationException;
 
 @Service
 @Transactional
-public class ImagenesService implements IImagenesService {
+public class ProfilesService implements IProfilesService {
 
 	@Autowired
-	private ImagenesRepository repos;
-		
+	private ProfilesRepository repos;
+
 	@Override
-	public void guardarImagen(int numCluster, String ruta) {
-		Imagenes imagen = repos.findByNumCluster(numCluster);
+	public void guardarProfile(String features) {
 		
-		if(imagen == null) {
-			Imagenes imagenNueva = new Imagenes();
-			imagenNueva.setNumCluster(numCluster);;
-			imagenNueva.setRuta(ruta);
-			repos.save(imagenNueva);
+		List<Profiles> profile = repos.findAll();
+		
+		if(profile.size() == 0) {
+			Profiles profileNuevo = new Profiles();
+			profileNuevo.setFeatures(features);
+			repos.save(profileNuevo);
+		}
+		else {
+			profile.get(0).setFeatures(features);
+			repos.save(profile.get(0));
 		}
 		
 	}
+		
+	
 
 }
