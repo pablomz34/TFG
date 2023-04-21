@@ -24,13 +24,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tfg.entities.Imagenes;
 import com.tfg.entities.Profiles;
+import com.tfg.services.IImagenesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
 
@@ -40,7 +43,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/medico")
 public class MedicoController {
 
-	static final String UrlServidor = "https://75e0-81-41-173-74.ngrok-free.app/";
+	static final String UrlServidor = "https://50f5-81-41-173-74.ngrok-free.app/";
 	
 	@Autowired
 	private IUsuariosService usuariosService;
@@ -51,13 +54,16 @@ public class MedicoController {
 	@Autowired
 	private IProfilesService profilesService;
 	
+	@Autowired
+	private IImagenesService imagenesService;
+	
 	@GetMapping
 	public String indexMedico() {
 		return "index_medico";
 	}
 	
 	@PostMapping(value="/getNewPatientClassification", consumes="application/json")
-	public ResponseEntity<HashMap<String, Object>> getNewPatientClassification(
+	public ResponseEntity<String> getNewPatientClassification(
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 
@@ -92,7 +98,13 @@ public class MedicoController {
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
 
-		return new ResponseEntity<>(map, HttpStatus.OK);
+
+		int cluster = (int) map.get("Cluster");
+		
+		System.out.println(cluster);
+		String rutaImagen = imagenesService.findClusterImage(cluster).getRuta();
+		
+		return new ResponseEntity<>(rutaImagen, HttpStatus.OK);
 
 	}
 	
@@ -109,6 +121,5 @@ public class MedicoController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-	
 	
 }

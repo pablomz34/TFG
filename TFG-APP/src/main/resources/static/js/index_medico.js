@@ -9,8 +9,8 @@ new Vue({
 				{nombre: 'Pri Payment Tcr Ki', variables: [], seleccion:''},
 				{nombre: 'Age Range', variables: [], seleccion:''},
 			],
-			cluster: '',
-			datosCargados: false
+			imagenUrl: '',
+			imagenCreada: false
 		}
 	},
 	
@@ -39,7 +39,6 @@ new Vue({
 	methods: {
 		getNewPatientClassification() {
 			const THIZ = this;
-			THIZ.datosCargados=false;
 			$('#cargando').show();
 
 			const jsonData = {
@@ -51,9 +50,6 @@ new Vue({
 				"AGE_RANGE": this.inputs[5].seleccion
 			}
 
-			console.log(jsonData);
-
-
 			fetch(window.location.origin + "/medico/getNewPatientClassification", {
 				method: "POST",
 				headers: {
@@ -61,11 +57,12 @@ new Vue({
 				},
 				body: JSON.stringify(jsonData)
 			})
-				.then(res => res.json())
-				.then(json => {
-					THIZ.cluster= json.Cluster;
-					console.log(json);
-					THIZ.datosCargados=true;
+				.then(res => res.text())
+				.then(imagenUrl => {
+					console.log(imagenUrl);
+					THIZ.imagenCreada = true;
+					THIZ.imagenUrl= imagenUrl;
+					
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
@@ -98,11 +95,6 @@ new Vue({
 								</select>
 							</div>
 							
-							<div v-if="datosCargados" class="form-group col-md-2">
-								<label>Cluster</label>
-								<input type="text" class="form-control border border-success" v-model="cluster" disabled>
-							</div>
-							
 							
 							<div class="form-group mb-2">
 								<div class="row justify-content-center">
@@ -118,6 +110,18 @@ new Vue({
 				</div>
 			</div>
 		</div>
+		
+		
+		<div class="row justify-content-around">
+			<div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body">
+					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+					<a v-bind:href="imagenUrl" download="graficaPaciente.png">
+						<img id="imagenCluster" v-bind:src="imagenUrl" style="max-width:100%"/>
+					</a>
+				</div>
+			</div>
+		</div>	
 	</div>
 	`
 })

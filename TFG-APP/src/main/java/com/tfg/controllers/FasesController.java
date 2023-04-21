@@ -55,6 +55,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -80,14 +81,14 @@ import com.tfg.services.IUsuariosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 
-	static final String UrlServidor = "https://de22-81-41-173-74.ngrok-free.app/";
+	static final String UrlServidor = "https://50f5-81-41-173-74.ngrok-free.app/";
 
 	@Autowired
 	private IUsuariosService usuariosService;
-	
+
 	@Autowired
 	private IImagenesService imagenesService;
-	
+
 	@Autowired
 	private IProfilesService profilesService;
 
@@ -144,7 +145,7 @@ public class FasesController {
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
-		
+
 		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
@@ -191,7 +192,7 @@ public class FasesController {
 		HttpEntity responseEntity = response.getEntity();
 
 		byte[] csvBytes = responseEntity.getContent().readAllBytes();
-		
+
 		file.delete();
 
 		// Devuelve la respuesta con el archivo adjunto.
@@ -247,7 +248,7 @@ public class FasesController {
 
 		List<Map<String, Object>> map = null;
 		map = new ObjectMapper().readValue(aux, List.class);
-		
+
 		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
@@ -294,18 +295,22 @@ public class FasesController {
 		InputStream responseInputStream = responseEntity.getContent();
 
 		byte[] imageBytes = responseInputStream.readAllBytes();
-		
-		
+
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
-		
-		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
-		for(int i=0; i<8; i++) {
-			this.guardarImagenes(file, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
+
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
+				"\\src\\main\\resources\\static\\clustersImages\\allClusters.png", "clustersImages/allClusters.png",
+				-1);
+		for (int i = 0; i < 8; i++) {
+			this.guardarImagenes(file,
+					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
+					"\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png",
+					"clustersImages/cluster" + Integer.toString(i) + ".png", i);
 		}
-		
+
 		file.delete();
-		
+
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
 	}
@@ -360,13 +365,15 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
+
+		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile");
+
 		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-	
+
 	@PostMapping(value = "/createClusterSurvivalCurve", consumes = "multipart/form-data")
 	public ResponseEntity<byte[]> createClusterSurvivalCurve(@RequestPart("cluster_number") String cluster_number,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
@@ -411,13 +418,17 @@ public class FasesController {
 
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
-		
-				
-		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", "\\src\\main\\resources\\static\\clustersImages\\allClusters.png", -1);
-		for(int i=0; i<8; i++) {
-			this.guardarImagenes(file, "survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i), "\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png", i);
+
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
+				"\\src\\main\\resources\\static\\clustersImages\\allClusters.png", "clustersImages/allClusters.png",
+				-1);
+		for (int i = 0; i < 8; i++) {
+			this.guardarImagenes(file,
+					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
+					"\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png",
+					"clustersImages/cluster" + Integer.toString(i) + ".png", i);
 		}
-		
+
 		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
@@ -476,13 +487,13 @@ public class FasesController {
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
 		
+		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile");
+
 		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-
-	
 
 	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
 	public ResponseEntity<HashMap<String, Object>> createClusterSurvivalCurve(
@@ -533,19 +544,18 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
-		
+
 		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-	
-	
-	private void guardarImagenes(File file, String url, String rutaServidor, Integer numCluster) throws IOException {
-		
+
+	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, int numCluster)
+			throws IOException {
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		
+
 		HttpPost httpPost = new HttpPost(UrlServidor + url);
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
@@ -573,57 +583,80 @@ public class FasesController {
 		InputStream responseInputStream = responseEntity.getContent();
 
 		byte[] imageBytes = responseInputStream.readAllBytes();
-		
-        FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + rutaServidor);
-        imgOutFile.write(imageBytes);
-        imgOutFile.close();
-        
-        httpClient.close();
-        
-        imagenesService.guardarImagen(numCluster, "clustersImages/allClusters.png");
-		
+
+		FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + rutaImagenServidor);
+		imgOutFile.write(imageBytes);
+		imgOutFile.close();
+
+		httpClient.close();
+
+		imagenesService.guardarImagen(numCluster, rutaImagenBDD);
+
 	}
-	
-	@GetMapping("/getHello")
-	public String getHello() throws JsonMappingException, JsonProcessingException {
+
+	private void guardarFeatures(File file, String url) throws ClientProtocolException, IOException {
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		HttpPost httpPost = new HttpPost(UrlServidor + url);
+		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+		// petición
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+		// Agregar el archivo al cuerpo de la petición
+
+		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+				file, // Archivo a enviar
+				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+				file.getName() // Nombre del archivo en el cuerpo de la petición
+		);
+
+		// Construir el cuerpo de la petición
+		HttpEntity multipart = builder.build();
+
+		// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(multipart);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+
+		HttpEntity responseEntity = response.getEntity();
+
+		InputStream responseInputStream = responseEntity.getContent();
 		
-		String jsonString = "{\"id_prediction\":1,\"number_of_variables\":8,\"number_of_observations\":199,\"target_median\":6.850243331,\"target_third_quantile\":9.035093123,\"features\":[{\"feature\":\"agglomerative\",\"agglomerative\":[{\"0\":56},{\"1\":20},{\"7\":19},{\"3\":21},{\"4\":25},{\"6\":13},{\"5\":6},{\"2\":39}]},{\"feature\":\"GENDER\",\"GENDER\":[{\"F\":101},{\"M\":98}]},{\"feature\":\"EDUCATION\",\"EDUCATION\":[{\"ML\":80},{\"ME\":43},{\"UNK\":29},{\"LO\":27},{\"MH\":11},{\"HI\":9}]},{\"feature\":\"ETHCAT\",\"ETHCAT\":[{\"BLA\":83},{\"WHI\":53},{\"OTH\":18},{\"HIS\":45}]},{\"feature\":\"WORK_INCOME_TCR\",\"WORK_INCOME_TCR\":[{\"U\":29},{\"N\":143},{\"Y\":27}]},{\"feature\":\"PRI_PAYMENT_TCR_KI\",\"PRI_PAYMENT_TCR_KI\":[{\"MC\":122},{\"MA\":20},{\"PI\":53},{\"OT\":4}]},{\"feature\":\"AGE_RANGE\",\"AGE_RANGE\":[{\"<60\":112},{\"<40\":25},{\">=60\":62}]}]}";
-		
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
+		String line;
+		StringBuilder stringBuilder = new StringBuilder();
+		while ((line = bufferedReader.readLine()) != null) {
+			stringBuilder.append(line);
+		}
+		String jsonString = stringBuilder.toString();
+
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
 		
 		int maxClusters = getMaxClusters(map);
-	
+		
 		HashMap<String, Object> featuresMap = new HashMap<String, Object>();
-		
-		featuresMap.put("features", map.get("features"));
-		
-		
-		
-		Gson gson = new Gson();
-        String featuresString = gson.toJson(featuresMap);
-		
-		//System.out.println(features);
-		profilesService.guardarProfile(featuresString, maxClusters);
 
-		Profiles p = profilesService.findProfile();
+		featuresMap.put("features", map.get("features"));
+
+		Gson gson = new Gson();
+		String featuresString = gson.toJson(featuresMap);
+
+		profilesService.guardarProfile(featuresString, maxClusters);
 		
-		HashMap<String, Object> map3 = null;
-		map3 = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
-		
-		return "getHello";
 	}
-	
-	
+
 	private int getMaxClusters(HashMap<String, Object> map) {
-		
+
 		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
-		
+
 		HashMap<String, Object> agglomerativeMap = features.get(0);
-		
-		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap.get("agglomerative");
-		
+
+		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap
+				.get("agglomerative");
+
 		return agglomerativeValues.size();
-		
+
 	}
 }

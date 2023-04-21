@@ -43,4 +43,9 @@ public class ImagenesService implements IImagenesService {
 		
 	}
 
+	@Override
+	public Imagenes findClusterImage(int cluster) {
+		return repos.findByNumCluster(cluster);
+	}
+
 }
