@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tfg.entities.Profiles;
+import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
 
 import jakarta.servlet.http.HttpSession;
@@ -46,6 +48,8 @@ public class MedicoController {
 	@Autowired
 	private HttpSession session;
 	
+	@Autowired
+	private IProfilesService profilesService;
 	
 	@GetMapping
 	public String indexMedico() {
@@ -87,6 +91,20 @@ public class MedicoController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
+
+		return new ResponseEntity<>(map, HttpStatus.OK);
+
+	}
+	
+	
+	@GetMapping("/getFeatures")
+	public ResponseEntity<HashMap<String, Object>> getFeatures()
+			throws IllegalStateException, IOException {
+
+		Profiles p = profilesService.findProfile();
+		
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
 

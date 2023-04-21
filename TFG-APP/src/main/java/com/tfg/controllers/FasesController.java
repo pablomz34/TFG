@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -67,8 +68,10 @@ import org.apache.commons.codec.binary.Base64;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Imagenes;
+import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
@@ -584,18 +587,43 @@ public class FasesController {
 	@GetMapping("/getHello")
 	public String getHello() throws JsonMappingException, JsonProcessingException {
 		
-		String jsonString = "{'Pablo': {'Cris': '3'}, 'Oscar': '2'}";
-		jsonString = jsonString.replaceAll("'", "\"");
-		profilesService.guardarProfile(jsonString);
+		String jsonString = "{\"id_prediction\":1,\"number_of_variables\":8,\"number_of_observations\":199,\"target_median\":6.850243331,\"target_third_quantile\":9.035093123,\"features\":[{\"feature\":\"agglomerative\",\"agglomerative\":[{\"0\":56},{\"1\":20},{\"7\":19},{\"3\":21},{\"4\":25},{\"6\":13},{\"5\":6},{\"2\":39}]},{\"feature\":\"GENDER\",\"GENDER\":[{\"F\":101},{\"M\":98}]},{\"feature\":\"EDUCATION\",\"EDUCATION\":[{\"ML\":80},{\"ME\":43},{\"UNK\":29},{\"LO\":27},{\"MH\":11},{\"HI\":9}]},{\"feature\":\"ETHCAT\",\"ETHCAT\":[{\"BLA\":83},{\"WHI\":53},{\"OTH\":18},{\"HIS\":45}]},{\"feature\":\"WORK_INCOME_TCR\",\"WORK_INCOME_TCR\":[{\"U\":29},{\"N\":143},{\"Y\":27}]},{\"feature\":\"PRI_PAYMENT_TCR_KI\",\"PRI_PAYMENT_TCR_KI\":[{\"MC\":122},{\"MA\":20},{\"PI\":53},{\"OT\":4}]},{\"feature\":\"AGE_RANGE\",\"AGE_RANGE\":[{\"<60\":112},{\"<40\":25},{\">=60\":62}]}]}";
 		
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
 		
-		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
-
-		System.out.println(map.keySet());
+		int maxClusters = getMaxClusters(map);
+	
+		HashMap<String, Object> featuresMap = new HashMap<String, Object>();
 		
+		featuresMap.put("features", map.get("features"));
+		
+		
+		
+		Gson gson = new Gson();
+        String featuresString = gson.toJson(featuresMap);
+		
+		//System.out.println(features);
+		profilesService.guardarProfile(featuresString, maxClusters);
+
+		Profiles p = profilesService.findProfile();
+		
+		HashMap<String, Object> map3 = null;
+		map3 = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
 		
 		return "getHello";
+	}
+	
+	
+	private int getMaxClusters(HashMap<String, Object> map) {
+		
+		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
+		
+		HashMap<String, Object> agglomerativeMap = features.get(0);
+		
+		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap.get("agglomerative");
+		
+		return agglomerativeValues.size();
+		
 	}
 }

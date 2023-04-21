@@ -23,7 +23,10 @@ public class Profiles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name = "features", nullable = false, unique=true)
+	@Column(name = "features", nullable = false, unique=true, columnDefinition = "TEXT")
 	private String features;
 	
+	
+	@Column(name="max_clusters", nullable= false, unique=true)
+	private int maxClusters;
 }

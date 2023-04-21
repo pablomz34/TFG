@@ -2,16 +2,38 @@ new Vue({
 	el: "#index_medico",
 	data: function() {
 		return {
-			inputs: [{nombre: 'Gender', variables: ['M', 'F'], seleccion:''}, 
-				{nombre: 'Education', variables: ['ML', 'ME', 'MH', 'LO', 'UNK', 'HI'], seleccion:''},
-				{nombre: 'Ethcat', variables: ['WHI', 'BLA', 'HIS', 'OTH'], seleccion:''},
-				{nombre: 'Work Income Tcr', variables: ['N', 'Y', 'U'], seleccion:''},
-				{nombre: 'Pri Paymetn Tcr Ki', variables: ['MC', 'PI', 'MA', 'OT'], seleccion:''},
-				{nombre: 'Age Range', variables: ['-40', '-60', '+=60'], seleccion:''},
+			inputs: [{nombre: 'Gender', variables: [], seleccion:''}, 
+				{nombre: 'Education', variables: [], seleccion:''},
+				{nombre: 'Ethcat', variables: [], seleccion:''},
+				{nombre: 'Work Income Tcr', variables: [], seleccion:''},
+				{nombre: 'Pri Payment Tcr Ki', variables: [], seleccion:''},
+				{nombre: 'Age Range', variables: [], seleccion:''},
 			],
 			cluster: '',
 			datosCargados: false
 		}
+	},
+	
+	created(){
+			fetch(window.location.origin + "/medico/getFeatures", {
+				method: "GET"
+			})
+				.then(res => res.json())
+				.then(json => {
+					const THIZ = this;
+					let features = json.features;
+					for(let i=1; i< features.length;i++){
+						let feature = features[i];
+						
+						let arrayFeature = Object.values(feature)[1];
+						
+						for(let j=0; j<arrayFeature.length;j++){
+							THIZ.inputs[i-1].variables.push(String(Object.keys(arrayFeature[j])));
+						}
+						
+					}
+				})
+				.catch(error => console.error(error));
 	},
 
 	methods: {

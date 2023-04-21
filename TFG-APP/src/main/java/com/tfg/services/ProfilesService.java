@@ -33,20 +33,27 @@ public class ProfilesService implements IProfilesService {
 	private ProfilesRepository repos;
 
 	@Override
-	public void guardarProfile(String features) {
+	public void guardarProfile(String features, int maxClusters) {
 		
-		List<Profiles> profile = repos.findAll();
+		List<Profiles> profiles = repos.findAll();
 		
-		if(profile.size() == 0) {
+		if(profiles.size() == 0) {
 			Profiles profileNuevo = new Profiles();
 			profileNuevo.setFeatures(features);
+			profileNuevo.setMaxClusters(maxClusters);
 			repos.save(profileNuevo);
 		}
 		else {
-			profile.get(0).setFeatures(features);
-			repos.save(profile.get(0));
+			profiles.get(0).setFeatures(features);
+			profiles.get(0).setMaxClusters(maxClusters);
+			repos.save(profiles.get(0));
 		}
 		
+	}
+
+	@Override
+	public Profiles findProfile() {
+		return repos.findAll().get(0);
 	}
 		
 	
