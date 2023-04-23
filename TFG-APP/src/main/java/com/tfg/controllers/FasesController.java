@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -102,8 +103,29 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> getNClusters(@RequestPart("max_clusters") String max_clusters,
+	public ResponseEntity<?> getNClusters(@RequestPart("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+
+		if (max_clusters == null || max_clusters.isEmpty()) {
+			return new ResponseEntity<>("El parámetro max_clusters es obligatorio.", HttpStatus.BAD_REQUEST);
+		}
+
+		int maxClusters;
+		try {
+			maxClusters = Integer.parseInt(max_clusters);
+		} catch (NumberFormatException e) {
+			return new ResponseEntity<>("El valor de max_clusters no es un número válido.", HttpStatus.BAD_REQUEST);
+		}
+
+		if (multipartFile == null || multipartFile.isEmpty()) {
+			return new ResponseEntity<>("El archivo es obligatorio.", HttpStatus.BAD_REQUEST);
+		}
+
+		// Verificar el tipo de contenido del archivo
+		String contentType = multipartFile.getContentType();
+		if (!ContentType.APPLICATION_OCTET_STREAM.getMimeType().equals(contentType)) {
+			return new ResponseEntity<>("El tipo de archivo no es válido.", HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -149,7 +171,6 @@ public class FasesController {
 		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
-
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
@@ -486,7 +507,7 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
+
 		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile");
 
 		file.delete();
@@ -622,7 +643,7 @@ public class FasesController {
 		HttpEntity responseEntity = response.getEntity();
 
 		InputStream responseInputStream = responseEntity.getContent();
-		
+
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
 		String line;
 		StringBuilder stringBuilder = new StringBuilder();
@@ -633,9 +654,9 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
+
 		int maxClusters = getMaxClusters(map);
-		
+
 		HashMap<String, Object> featuresMap = new HashMap<String, Object>();
 
 		featuresMap.put("features", map.get("features"));
@@ -644,7 +665,7 @@ public class FasesController {
 		String featuresString = gson.toJson(featuresMap);
 
 		profilesService.guardarProfile(featuresString, maxClusters);
-		
+
 	}
 
 	private int getMaxClusters(HashMap<String, Object> map) {
@@ -659,4 +680,14 @@ public class FasesController {
 		return agglomerativeValues.size();
 
 	}
+
+//	private boolean validarNCluster(String max_clusters) {
+//		// TODO Auto-generated method stub
+//
+//	}
+//
+//	private boolean validarFile(MultipartFile multipartFile) {
+//		// TODO Auto-generated method stub
+//
+//	}
 }

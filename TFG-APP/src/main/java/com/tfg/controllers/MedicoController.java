@@ -30,7 +30,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.tfg.entities.Imagenes;
 import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
@@ -66,14 +69,18 @@ public class MedicoController {
 	public ResponseEntity<String> getNewPatientClassification(
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
-
+	
+		validarJson(json);	
+		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/getNewPatientClassification");
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		String jsonString = objectMapper.writeValueAsString(json);
+		// Serializar el HashMap a formato JSON
+		Gson gson = new Gson();
+       
+        String jsonString = gson.toJson(json);
 		
 		StringEntity stringEntity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
 
@@ -109,6 +116,15 @@ public class MedicoController {
 	}
 	
 	
+	private void validarJson(HashMap<String, Object> json) throws JsonMappingException, JsonProcessingException {
+		
+		Profiles p = profilesService.findProfile();
+		
+		HashMap<String, Object> featuresBDDMap = null;
+		featuresBDDMap = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
+		
+	}
+
 	@GetMapping("/getFeatures")
 	public ResponseEntity<HashMap<String, Object>> getFeatures()
 			throws IllegalStateException, IOException {

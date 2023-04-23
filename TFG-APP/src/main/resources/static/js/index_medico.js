@@ -42,12 +42,12 @@ new Vue({
 			$('#cargando').show();
 
 			const jsonData = {
-				"GENDER": this.inputs[0].seleccion,
-				"EDUCATION": this.inputs[1].seleccion,
-				"ETHCAT": this.inputs[2].seleccion,
-				"WORK_INCOME_TCR": this.inputs[3].seleccion,
-				"PRI_PAYMENT_TCR_KI": this.inputs[4].seleccion,
-				"AGE_RANGE": this.inputs[5].seleccion
+				"GENDER": encodeURIComponent(this.inputs[0].seleccion),
+				"EDUCATION": encodeURIComponent(this.inputs[1].seleccion),
+				"ETHCAT": encodeURIComponent(this.inputs[2].seleccion),
+				"WORK_INCOME_TCR": encodeURIComponent(this.inputs[3].seleccion),
+				"PRI_PAYMENT_TCR_KI": encodeURIComponent(this.inputs[4].seleccion),
+				"AGE_RANGE": encodeURIComponent(this.inputs[5].seleccion)
 			}
 
 			fetch(window.location.origin + "/medico/getNewPatientClassification", {
@@ -89,7 +89,7 @@ new Vue({
 						
 							<div class="form-group mb-3" v-for="i in this.inputs">
 								<label>{{i.nombre}}</label>
-								<select class="form-select" name="inputs" v-model="i.seleccion">
+								<select class="form-select" name="inputs" v-model="i.seleccion" required>
 									<option value="" disabled selected></option>
 									<option v-for="variable in i.variables" :value="variable">{{variable}}</option>
 								</select>
