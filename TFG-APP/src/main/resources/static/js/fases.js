@@ -26,9 +26,9 @@ Vue.component('fase1', {
 
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + res.status + " " + res.statusText + " - " + errorMessage;
+						THIZ.error = "Error: " + errorMessage;
 						$('#cargando').hide();
-						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
 					return res.arrayBuffer();
@@ -128,14 +128,17 @@ Vue.component('fase2', {
 				},
 				body: formData
 			})
-				.then(response => {
+				.then(async res => {
 					// Verificar si la respuesta es OK
-					if (!response.ok) {
-						throw new Error('Ocurrió un error al descargar el archivo');
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
 					// Crear un objeto URL para el contenido del archivo
-					return response.arrayBuffer();
+					return res.arrayBuffer();
 				})
 				.then(csv_bytes => {
 
@@ -179,12 +182,12 @@ Vue.component('fase2', {
 	            <form @submit.prevent="getSubPopulations">				
 					<div class="form-group mb-3">
 						<label class="form-label" for="nClusters">Numero de clusters del algoritmo aglomerativo</label>
-					    <input type="number" min=0 max=4 class="form-control" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required>
+					    <input type="number" min=1 max=8 class="form-control" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required>
 					</div>
 					
 					<div class="form-group mb-3">
 						<label class="form-label" for="nClusters">Numero de clusters del algoritmo kmodes</label>
-					    <input type="number" min=0 max=4 class="form-control" v-model="nClustersKModes" id="nClustersKModes" required>
+					    <input type="number" min=1 max=8 class="form-control" v-model="nClustersKModes" id="nClustersKModes" required>
 					</div>
 					
 					<div class="form-group mb-3">
@@ -231,7 +234,16 @@ Vue.component('fase3', {
 				method: "POST",
 				body: formData
 			})
-				.then(response => response.json())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.json();
+					
+				})
 				.then(data => {
 					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j]
 					THIZ.datosCargados = true;
@@ -338,7 +350,17 @@ Vue.component('fase4', {
 				method: "POST",
 				body: formData
 			})
-				.then(res => res.arrayBuffer())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					
+					return res.arrayBuffer();
+						
+				})
 				.then(image_bytes => {
 
 					THIZ.divJson = false;
@@ -368,7 +390,15 @@ Vue.component('fase4', {
 				method: "POST",
 				body: formData
 			})
-				.then(res => res.json())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.json();
+				})
 				.then(data => {
 
 					THIZ.datasetStatistics[0].valor = data.id_prediction;
@@ -527,7 +557,15 @@ Vue.component('fase5', {
 				method: "POST",
 				body: formData
 			})
-				.then(res => res.arrayBuffer())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					res.arrayBuffer();
+				})
 				.then(image_bytes => {
 
 					const byteArray = new Uint8Array(image_bytes);
@@ -554,7 +592,15 @@ Vue.component('fase5', {
 				method: "POST",
 				body: formData
 			})
-				.then(response => response.json())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.json();
+				})
 				.then(data => {
 					THIZ.datasetStatistics[0].valor = data.id_prediction;
 					THIZ.datasetStatistics[1].valor = data.number_of_variables;
@@ -711,7 +757,15 @@ Vue.component('fase6', {
 				method: "POST",
 				body: formData
 			})
-				.then(response => response.json())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.json();
+				})
 				.then(data => {
 					THIZ.idModel = data.id_model;
 					THIZ.auc = data.auc;

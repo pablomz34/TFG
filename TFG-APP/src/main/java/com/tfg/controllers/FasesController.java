@@ -39,8 +39,6 @@ import com.tfg.services.IImagenesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
 
-import jakarta.servlet.http.HttpSession;
-
 @RestController
 @RequestMapping("/admin/fases")
 public class FasesController {
@@ -56,8 +54,6 @@ public class FasesController {
 	@Autowired
 	private IProfilesService profilesService;
 
-	@Autowired
-	private HttpSession session;
 
 	@GetMapping("/getMedicos")
 	public List<UsuariosDto> getMedicos() {
@@ -82,17 +78,17 @@ public class FasesController {
 	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
 	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
-		String error="";
-		error=this.validarInputFile(max_clusters);
-		if(!error.isEmpty()) {
+		
+		String error = this.validarInputFile(max_clusters);
+		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 		// Verificar el tipo de contenido del archivo
-		error=this.validarInputFile(multipartFile);
-		if(!error.isEmpty()) {
+		error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
@@ -140,9 +136,25 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> getSubPopulations(@RequestParam("nClustersAglomerativo") String nClustersAglomerativo,
+	public ResponseEntity<?> getSubPopulations(@RequestParam("nClustersAglomerativo") String nClustersAglomerativo,
 			@RequestParam("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
 			throws IOException {
+
+		String error = this.validarInputFile(nClustersAglomerativo);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+
+		error = this.validarInputFile(nClustersKModes);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+
+		// Verificar el tipo de contenido del archivo
+		error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -187,8 +199,13 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
-	public ResponseEntity<List<Map<String, Object>>> getVarianceMetrics(
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException, JSONException {
+	public ResponseEntity<?> getVarianceMetrics(@RequestPart("file") MultipartFile multipartFile)
+			throws IllegalStateException, IOException, JSONException {
+
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -243,8 +260,13 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> createAllSurvivalCurves(@RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<?> createAllSurvivalCurves(@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
+
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -303,9 +325,13 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/createPopulationProfile", consumes = "multipart/form-data")
-	public ResponseEntity<HashMap<String, Object>> createPopulationProfile(
-			@RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<?> createPopulationProfile(@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
+
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -362,8 +388,17 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/createClusterSurvivalCurve", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> createClusterSurvivalCurve(@RequestParam("cluster_number") String cluster_number,
+	public ResponseEntity<?> createClusterSurvivalCurve(@RequestParam("cluster_number") String cluster_number,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+
+		String error = this.validarInputFile(cluster_number);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+		error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -423,9 +458,17 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/createClusterProfile", consumes = "multipart/form-data")
-	public ResponseEntity<HashMap<String, Object>> createClusterProfile(
-			@RequestParam("cluster_number") String cluster_number, @RequestPart("file") MultipartFile multipartFile)
-			throws IllegalStateException, IOException {
+	public ResponseEntity<?> createClusterProfile(@RequestParam("cluster_number") String cluster_number,
+			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+
+		String error = this.validarInputFile(cluster_number);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+		error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -483,8 +526,13 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
-	public ResponseEntity<HashMap<String, Object>> createClusterSurvivalCurve(
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+	public ResponseEntity<?> createClusterSurvivalCurve(@RequestPart("file") MultipartFile multipartFile)
+			throws IllegalStateException, IOException {
+
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -640,8 +688,7 @@ public class FasesController {
 
 		HashMap<String, Object> agglomerativeMap = features.get(0);
 
-		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap
-				.get("agglomerative");
+		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap.get("agglomerative");
 
 		return agglomerativeValues.size();
 
@@ -650,17 +697,17 @@ public class FasesController {
 	private String validarInputFile(String max_clusters) {
 
 		if (max_clusters == null || max_clusters.isEmpty()) {
-			return "El número de clusters es obligatorio";
-			
+			return "Es obligatorio rellenar todos los inputs";
+
 		}
 		try {
 			int n = Integer.parseInt(max_clusters);
-			if(n < 1 || n > 8) {
-				return "El valor del número de clusters no está dentro del rango permitido";
+			if (n < 1 || n > 8) {
+				return "El valor no está dentro del rango permitido";
 			}
 		} catch (NumberFormatException e) {
-			return "El valor del número de clusters introducido no es un número válido";
-			
+			return "El valor introducido no es válido";
+
 		}
 		return "";
 	}
@@ -671,6 +718,5 @@ public class FasesController {
 			return "El tipo de archivo no es válido";
 		}
 		return "";
-
 	}
 }
