@@ -1,5 +1,4 @@
 
-
 $nav-link-font-size: 18px;
 $nav-link-font-weight: bold;
 
@@ -8,8 +7,8 @@ $navbar-light-hover-color: #fff;
 
 $input-btn-focus-box-shadow: none;
 $form-file-button-color:     #fff;
-$form-file-button-bg:        rgb(25, 25, 112);
-$form-file-button-hover-bg:     rgb(39, 39, 173);
+$form-file-button-bg:       rgb(65,105,225);
+$form-file-button-hover-bg:    rgb(99, 132, 231);
 
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
@@ -17,7 +16,7 @@ $form-file-button-hover-bg:     rgb(39, 39, 173);
 
 //#7B68EE
 $custom-colors: (
-  "custom-color": #4169E1
+  "custom-color": rgb(65,105,225)
 );
 
 // Merge the maps
