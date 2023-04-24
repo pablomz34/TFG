@@ -5,7 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -34,6 +39,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tfg.entities.Imagenes;
 import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
@@ -70,7 +76,14 @@ public class MedicoController {
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 	
-		validarJson(json);	
+		//HashMap<String, Object> jsonSerialized = serializeJson(json);
+		
+		String error = "";
+		error = validarJson(json);	
+		
+		if(!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -115,13 +128,38 @@ public class MedicoController {
 
 	}
 	
-	
-	private void validarJson(HashMap<String, Object> json) throws JsonMappingException, JsonProcessingException {
+	private String validarJson(HashMap<String, Object> json) throws JsonMappingException, JsonProcessingException {
 		
 		Profiles p = profilesService.findProfile();
 		
 		HashMap<String, Object> featuresBDDMap = null;
 		featuresBDDMap = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
+		
+		List<HashMap<String, Object>> featuresList = (List<HashMap<String, Object>>) featuresBDDMap.get("features");
+		
+		featuresList.remove(0);
+		
+		for(HashMap<String, Object> feature: featuresList) {
+			
+			String featureName = (String) feature.get("feature");
+			List<HashMap<String, Object>> featureValues = (List<HashMap<String, Object>>) feature.get(featureName);
+			String jsonFeatureValue = (String) json.get(featureName);
+			
+			if(jsonFeatureValue == null || jsonFeatureValue.isEmpty()) {
+				return "El campo " + featureName + " no puedo estar vacío";
+			}
+			
+			Set<String> allFeatureValuesKeys = featureValues.stream()
+                    .flatMap(hashMap -> hashMap.keySet().stream())
+                    .collect(Collectors.toSet());
+			
+			if(!allFeatureValuesKeys.contains(jsonFeatureValue)) {
+				return "Elija de las opciones válidas para el campo " + featureName;
+			}
+					
+		}
+		
+		return "";
 		
 	}
 
