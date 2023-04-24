@@ -10,7 +10,8 @@ new Vue({
 				{nombre: 'Age Range', variables: [], seleccion:''},
 			],
 			imagenUrl: '',
-			imagenCreada: false
+			imagenCreada: false,
+			error: ''
 		}
 	},
 	
@@ -42,12 +43,12 @@ new Vue({
 			$('#cargando').show();
 
 			const jsonData = {
-				"GENDER": encodeURIComponent(this.inputs[0].seleccion),
-				"EDUCATION": encodeURIComponent(this.inputs[1].seleccion),
-				"ETHCAT": encodeURIComponent(this.inputs[2].seleccion),
-				"WORK_INCOME_TCR": encodeURIComponent(this.inputs[3].seleccion),
-				"PRI_PAYMENT_TCR_KI": encodeURIComponent(this.inputs[4].seleccion),
-				"AGE_RANGE": encodeURIComponent(this.inputs[5].seleccion)
+				"GENDER": this.inputs[0].seleccion,
+				"EDUCATION": this.inputs[1].seleccion,
+				"ETHCAT": this.inputs[2].seleccion,
+				"WORK_INCOME_TCR": this.inputs[3].seleccion,
+				"PRI_PAYMENT_TCR_KI":this.inputs[4].seleccion,
+				"AGE_RANGE": this.inputs[5].seleccion
 			}
 
 			fetch(window.location.origin + "/medico/getNewPatientClassification", {
@@ -57,7 +58,16 @@ new Vue({
 				},
 				body: JSON.stringify(jsonData)
 			})
-				.then(res => res.text())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error = errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					
+					return res.text();
+				})
 				.then(imagenUrl => {
 					console.log(imagenUrl);
 					THIZ.imagenCreada = true;
@@ -80,6 +90,9 @@ new Vue({
 
 		<div class="container mb-5 mt-5">
 			<div class="row col-md-6 offset-md-3">
+				<div v-if="error != ''" class="alert alert-danger">
+					{{this.error}}
+				</div>
 				<div class="card rounded-4 p-0 shadow">
 					<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 						<h2 class="text-center text-white">Herramienta predictiva</h2>
@@ -89,7 +102,7 @@ new Vue({
 						
 							<div class="form-group mb-3" v-for="i in this.inputs">
 								<label>{{i.nombre}}</label>
-								<select class="form-select" name="inputs" v-model="i.seleccion" required>
+								<select class="form-select" name="inputs" v-model="i.seleccion">
 									<option value="" disabled selected></option>
 									<option v-for="variable in i.variables" :value="variable">{{variable}}</option>
 								</select>
