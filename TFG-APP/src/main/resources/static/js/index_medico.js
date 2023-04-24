@@ -102,7 +102,7 @@ new Vue({
 						
 							<div class="form-group mb-3" v-for="i in this.inputs">
 								<label>{{i.nombre}}</label>
-								<select class="form-select" name="inputs" v-model="i.seleccion">
+								<select class="form-select" name="inputs" v-model="i.seleccion" required>
 									<option value="" disabled selected></option>
 									<option v-for="variable in i.variables" :value="variable">{{variable}}</option>
 								</select>

@@ -75,11 +75,8 @@ public class MedicoController {
 	public ResponseEntity<String> getNewPatientClassification(
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
-	
-		//HashMap<String, Object> jsonSerialized = serializeJson(json);
 		
-		String error = "";
-		error = validarJson(json);	
+		String error = validarJson(json);
 		
 		if(!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -154,7 +151,7 @@ public class MedicoController {
                     .collect(Collectors.toSet());
 			
 			if(!allFeatureValuesKeys.contains(jsonFeatureValue)) {
-				return "Elija de las opciones válidas para el campo " + featureName;
+				return "Elija una de las opciones válidas para el campo " + featureName;
 			}
 					
 		}
