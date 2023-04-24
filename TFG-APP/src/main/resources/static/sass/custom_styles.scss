@@ -16,12 +16,19 @@ $form-file-button-hover-bg:    rgb(99, 132, 231);
 
 //#7B68EE
 $custom-colors: (
-  "custom-color": rgb(65,105,225)
+  "custom-color": rgb(65,105,225),
+  "custom-light-color": rgb(162, 182, 240)
 );
 
 // Merge the maps
-$theme-colors: map-merge($theme-colors, $custom-colors);
+$table-color-variants: (
+  "custom-color":  rgb(162, 182, 240),
+  "custom-color-table-head":  rgb(114, 143, 233) 
+);
 
+
+$theme-colors: map-merge($theme-colors, $custom-colors);
+$table-variants: map-merge($table-variants, $table-color-variants);
 
 
 @import "../node_modules/bootstrap/scss/bootstrap";
