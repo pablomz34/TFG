@@ -83,12 +83,12 @@ public class FasesController {
 	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 		String error="";
-		error=this.validarNCluster(max_clusters);
+		error=this.validarInputFile(max_clusters);
 		if(!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 		// Verificar el tipo de contenido del archivo
-		error=this.validarFile(multipartFile);
+		error=this.validarInputFile(multipartFile);
 		if(!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -647,7 +647,7 @@ public class FasesController {
 
 	}
 
-	private String validarNCluster(String max_clusters) {
+	private String validarInputFile(String max_clusters) {
 
 		if (max_clusters == null || max_clusters.isEmpty()) {
 			return "El número de clusters es obligatorio";
@@ -665,7 +665,7 @@ public class FasesController {
 		return "";
 	}
 
-	private String validarFile(MultipartFile multipartFile) {
+	private String validarInputFile(MultipartFile multipartFile) {
 		String contentType = multipartFile.getContentType();
 		if (!ContentType.APPLICATION_OCTET_STREAM.getMimeType().equals(contentType)) {
 			return "El tipo de archivo no es válido";
