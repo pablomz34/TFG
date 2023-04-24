@@ -1,82 +1,45 @@
 package com.tfg.controllers;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import javax.imageio.ImageIO;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
-import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.apache.tomcat.util.json.JSONParser;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.apache.commons.codec.binary.Base64;
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
-import com.tfg.entities.Imagenes;
-import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/admin/fases")
@@ -102,31 +65,34 @@ public class FasesController {
 		return medicos;
 	}
 
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<String> handleException(Exception ex) {
+		// Construir una respuesta personalizada para excepciones no capturadas
+		HttpStatus status = HttpStatus.BAD_REQUEST;
+		String mensaje;
+		if (ex instanceof MissingServletRequestPartException) {
+			mensaje = "El archivo es obligatorio";
+		} else {
+			mensaje = "Ocurrió un error en el servidor: " + ex.getMessage();
+		}
+
+		return ResponseEntity.status(status).body(mensaje);
+	}
+
 	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
-	public ResponseEntity<?> getNClusters(@RequestPart("max_clusters") String max_clusters,
+	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
-
-		if (max_clusters == null || max_clusters.isEmpty()) {
-			return new ResponseEntity<>("El parámetro max_clusters es obligatorio.", HttpStatus.BAD_REQUEST);
+		String error="";
+		error=this.validarNCluster(max_clusters);
+		if(!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-
-		int maxClusters;
-		try {
-			maxClusters = Integer.parseInt(max_clusters);
-		} catch (NumberFormatException e) {
-			return new ResponseEntity<>("El valor de max_clusters no es un número válido.", HttpStatus.BAD_REQUEST);
-		}
-
-		if (multipartFile == null || multipartFile.isEmpty()) {
-			return new ResponseEntity<>("El archivo es obligatorio.", HttpStatus.BAD_REQUEST);
-		}
-
 		// Verificar el tipo de contenido del archivo
-		String contentType = multipartFile.getContentType();
-		if (!ContentType.APPLICATION_OCTET_STREAM.getMimeType().equals(contentType)) {
-			return new ResponseEntity<>("El tipo de archivo no es válido.", HttpStatus.BAD_REQUEST);
+		error=this.validarFile(multipartFile);
+		if(!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-
+		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
@@ -174,8 +140,8 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> getSubPopulations(@RequestPart("nClustersAglomerativo") String nClustersAglomerativo,
-			@RequestPart("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<byte[]> getSubPopulations(@RequestParam("nClustersAglomerativo") String nClustersAglomerativo,
+			@RequestParam("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
 			throws IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -396,7 +362,7 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/createClusterSurvivalCurve", consumes = "multipart/form-data")
-	public ResponseEntity<byte[]> createClusterSurvivalCurve(@RequestPart("cluster_number") String cluster_number,
+	public ResponseEntity<byte[]> createClusterSurvivalCurve(@RequestParam("cluster_number") String cluster_number,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -458,7 +424,7 @@ public class FasesController {
 
 	@PostMapping(value = "/createClusterProfile", consumes = "multipart/form-data")
 	public ResponseEntity<HashMap<String, Object>> createClusterProfile(
-			@RequestPart("cluster_number") String cluster_number, @RequestPart("file") MultipartFile multipartFile)
+			@RequestParam("cluster_number") String cluster_number, @RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -681,13 +647,30 @@ public class FasesController {
 
 	}
 
-//	private boolean validarNCluster(String max_clusters) {
-//		// TODO Auto-generated method stub
-//
-//	}
-//
-//	private boolean validarFile(MultipartFile multipartFile) {
-//		// TODO Auto-generated method stub
-//
-//	}
+	private String validarNCluster(String max_clusters) {
+
+		if (max_clusters == null || max_clusters.isEmpty()) {
+			return "El número de clusters es obligatorio";
+			
+		}
+		try {
+			int n = Integer.parseInt(max_clusters);
+			if(n < 1 || n > 8) {
+				return "El valor del número de clusters no está dentro del rango permitido";
+			}
+		} catch (NumberFormatException e) {
+			return "El valor del número de clusters introducido no es un número válido";
+			
+		}
+		return "";
+	}
+
+	private String validarFile(MultipartFile multipartFile) {
+		String contentType = multipartFile.getContentType();
+		if (!ContentType.APPLICATION_OCTET_STREAM.getMimeType().equals(contentType)) {
+			return "El tipo de archivo no es válido";
+		}
+		return "";
+
+	}
 }

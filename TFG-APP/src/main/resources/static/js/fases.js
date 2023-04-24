@@ -4,7 +4,8 @@ Vue.component('fase1', {
 			nClusters: '',
 			csvFile: '',
 			imagenCreada: false,
-			imagenUrl: ''
+			imagenUrl: '',
+			error: ''
 		}
 	},
 
@@ -16,20 +17,22 @@ Vue.component('fase1', {
 			$('#cargando').show();
 			formData.append('max_clusters', this.nClusters);
 			formData.append('file', this.$refs.csvFile.files[0]);
-
+			THIZ.error = '';
 			fetch(window.location.origin + "/admin/fases/getNClusters", {
 				method: "POST",
 				body: formData
 			})
-				.then(res => {
+				.then(async res => {
 
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						return res.text().then(errorMessage => { // Obtener el mensaje de error desde el cuerpo de la respuesta
-							throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
-						})
+						const errorMessage = await res.text();
+						THIZ.error = "Error: " + res.status + " " + res.statusText + " - " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
 					return res.arrayBuffer();
+
 				})
 				.then(image_bytes => {
 
@@ -40,19 +43,23 @@ Vue.component('fase1', {
 					THIZ.imagenUrl = url;
 					$('#cargando').hide();
 				})
-				.catch(error => console.error(error));
+				//.catch(error => console.error(error))
+				.catch(error => console.error(error))
 		}
 	},
 
 
 	template: `
 	<div class="container mb-5 mt-5">
-	   <span>
+	   	<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
-	   <div class="row col-md-6 offset-md-3">
+	   	<div class="row col-md-6 offset-md-3">
+	   	   <div v-if="error != ''" class="alert alert-danger">
+				{{this.error}}
+			</div>
 	      <div class="card rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Nº Óptimo de Clusters</h2>
@@ -64,7 +71,7 @@ Vue.component('fase1', {
 	                  <input type="number" min=1 max=8 class="form-control" v-model="nClusters" id="nClusters" required>
 	               </div>
 	               <div class="form-group mb-3">
-	                  <label for="csv" class="form-label">Subir archivo</label>
+	                  <label for="csv" class="form-label">Archivo csv</label>
   					  <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required>
 	               </div>
 	               <div class="form-group mb-2">
@@ -98,7 +105,8 @@ Vue.component('fase2', {
 		return {
 			nClustersAglomerativo: '',
 			nClustersKModes: '',
-			csvFile: ''
+			csvFile: '',
+			error: '',
 		}
 	},
 
@@ -106,6 +114,7 @@ Vue.component('fase2', {
 
 		getSubPopulations() {
 			const THIZ = this;
+			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('nClustersAglomerativo', this.nClustersAglomerativo);
@@ -159,9 +168,12 @@ Vue.component('fase2', {
 		
 		
 		<div class="row col-md-6 offset-md-3">
+		  <div v-if="error != ''" class="alert alert-danger">
+				{{this.error}}
+		  </div>
 	      <div class="card rounded-4 p-0 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-	            <h2 class="text-center text-white">Sub Populations</h2>
+	            <h2 class="text-center text-white">Subpoblaciones</h2>
 	         </div>
 	         <div class="card-body">
 	            <form @submit.prevent="getSubPopulations">				
@@ -176,7 +188,7 @@ Vue.component('fase2', {
 					</div>
 					
 					<div class="form-group mb-3">
-					    <label for="csv" class="form-label">Subir archivo</label>
+					    <label for="csv" class="form-label">Archivo csv</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required>
 					</div>
 					
@@ -202,13 +214,15 @@ Vue.component('fase3', {
 		return {
 			lista: [],
 			headers: [{ header: "Metric", pos: 0 }, { header: "Tss_value", pos: 1 }, { header: "Total_wc", pos: 2 }, { header: "Total_bc", pos: 3 }],
-			datosCargados: false
+			datosCargados: false,
+			error: '',
 		}
 	},
 
 	methods: {
 		getVarianceMetrics: function() {
 			const THIZ = this;
+			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('file', this.$refs.csvFile.files[0]);
@@ -237,6 +251,9 @@ Vue.component('fase3', {
 		</span>
 		
 		<div class="row col-md-6 offset-md-3">
+		  <div v-if="error != ''" class="alert alert-danger">
+				{{this.error}}
+		  </div>
 	      <div class="card rounded-4 p-0 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Métricas de Varianza</h2>
@@ -244,7 +261,7 @@ Vue.component('fase3', {
 	         <div class="card-body">
 	            <form @submit.prevent="getVarianceMetrics">						
 					<div class="form-group mb-3">
-						 <label for="csv" class="form-label">Subir archivo</label>
+						 <label for="csv" class="form-label">Archivo csv</label>
   					     <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required>
 					</div>	
 					
@@ -304,12 +321,14 @@ Vue.component('fase4', {
 			variableSeleccionada: '',
 			variables: [{ feature: 'agglomerative', agglomerative: [] }, { feature: 'GENDER', GENDER: [] }, { feature: 'EDUCATION', EDUCATION: [] }, { feature: 'ETHCAT', ETHCAT: [] },
 			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
+			error: '',
 		}
 	},
 
 	methods: {
 		createAllSurvivalCurves: function() {
 			const THIZ = this;
+			THIZ.error = '';
 			THIZ.imagenCreada = false;
 			const formData = new FormData();
 			$('#cargando').show();
@@ -337,9 +356,10 @@ Vue.component('fase4', {
 
 		createPopulationProfile: function() {
 			const THIZ = this;
+			THIZ.error = '';
 			const formData = new FormData();
-			this.datosCargados = false;
-			this.variableSeleccionada = '';
+			THIZ.datosCargados = false;
+			THIZ.variableSeleccionada = '';
 			$('#cargando').show();
 
 			formData.append('file', this.$refs.csvFile2.files[0]);
@@ -379,6 +399,9 @@ Vue.component('fase4', {
 		</span>
 		
 		<div class="row justify-content-around">
+		   <div v-if="error != ''" class="alert alert-danger">
+		       {{this.error}}
+		  </div>
 	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Curvas de supervivencia</h2>
@@ -386,7 +409,7 @@ Vue.component('fase4', {
 	         <div class="card-body">
 	          	<form @submit.prevent="createAllSurvivalCurves">				
 					<div class="form-group mb-3">
-						<label for="csv1" class="form-label">Subir archivo</label>
+						<label for="csv1" class="form-label">Archivo csv</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required>
 					</div>
 					
@@ -408,7 +431,7 @@ Vue.component('fase4', {
 	         <div class="card-body">
 	          	<form @submit.prevent="createPopulationProfile">				
 					<div class="form-group mb-3">
-						<label for="csv2" class="form-label">Subir archivo</label>
+						<label for="csv2" class="form-label">Archivo csv</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFile2" required>
 					</div>
 					
@@ -485,7 +508,7 @@ Vue.component('fase5', {
 			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
 			variableSeleccionada: '',
 			datosCargados: false,
-
+			error: '',
 		}
 	},
 
@@ -493,8 +516,9 @@ Vue.component('fase5', {
 	methods: {
 		createClusterSurvivalCurve() {
 			const THIZ = this;
+			THIZ.error = '';
 			const formData = new FormData();
-			this.imagenCreada = false;
+			THIZ.imagenCreada = false;
 			$('#cargando').show();
 			formData.append('cluster_number', this.clusterNumberSurvivalCurve);
 			formData.append('file', this.$refs.csvFileSurvivalCurve.files[0]);
@@ -518,8 +542,9 @@ Vue.component('fase5', {
 
 		createClusterProfile() {
 			const THIZ = this;
-			this.datosCargados = false;
-			this.variableSeleccionada = '';
+			THIZ.error = '';
+			THIZ.datosCargados = false;
+			THIZ.variableSeleccionada = '';
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('cluster_number', this.clusterNumberProfile);
@@ -560,6 +585,9 @@ Vue.component('fase5', {
 		
 		
 		<div class="row justify-content-around">
+			<div v-if="error != ''" class="alert alert-danger">
+				{{this.error}}
+		  </div>
 	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Curva de cluster</h2>
@@ -572,6 +600,7 @@ Vue.component('fase5', {
 					</div>
 					
 					<div class="form-group mb-3">
+						<label for="csv1" class="form-label">Archivo csv</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFileSurvivalCurve" required>
 					</div>
 					
@@ -586,6 +615,9 @@ Vue.component('fase5', {
 				</form>
 	         </div>
 	      </div>
+	      <div v-if="error != ''" class="alert alert-danger">
+				{{this.error}}
+		  </div>
 	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Perfil de cluster</h2>
@@ -598,6 +630,7 @@ Vue.component('fase5', {
 					</div>
 					
 					<div class="form-group mb-3">
+						<label for="csv2" class="form-label">Archivo csv</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFileProfile" required>
 					</div>
 					
@@ -659,6 +692,7 @@ Vue.component('fase6', {
 			datosCargados: false,
 			idModel: '',
 			auc: '',
+			error: '',
 		}
 	},
 
@@ -668,6 +702,7 @@ Vue.component('fase6', {
 		getModelPerformance() {
 			const THIZ = this;
 			THIZ.datosCargados = false;
+			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('file', this.$refs.csvGetPerformanceModel.files[0]);
@@ -699,6 +734,9 @@ Vue.component('fase6', {
 		
 		
 		<div class="row col-md-6 offset-md-3">
+		  <div v-if="error != ''" class="alert alert-danger">
+				{{this.error}}
+		  </div>
 	      <div class="card rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Rendimiento del modelo</h2>
@@ -707,6 +745,7 @@ Vue.component('fase6', {
 	         	<form @submit.prevent="getModelPerformance">				
 					
 					<div class="form-group mb-3">
+						<label for="csv" class="form-label">Archivo csv</label>
   					    <input class="form-control" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel" required>
 					</div>
 					
