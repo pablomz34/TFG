@@ -280,10 +280,10 @@ public class FasesController {
 
 			prediccionesService.guardarPrediccion(descripcion);
 
-			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+			return new ResponseEntity<>(descripcion, HttpStatus.OK);
 		} else {
 			
-			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+			return new ResponseEntity<>(descripcion, HttpStatus.OK);
 		}
 
 	}

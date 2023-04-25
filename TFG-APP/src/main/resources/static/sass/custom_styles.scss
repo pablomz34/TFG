@@ -43,3 +43,8 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	color: $navbar-light-hover-color !important;
 }
 
+.btn-custom-color:focus{
+	color: white !important;
+	background-color: rgb(123, 151, 234) !important;
+}
+

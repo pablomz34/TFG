@@ -315,6 +315,9 @@ Vue.component('fase3', {
 Vue.component('fase4', {
 	data: function() {
 		return {
+			crear: true,
+			descripcion: '',
+			descripciones: [],
 			csvFile: '',
 			csvFile2: '',
 			imagenCreada: false,
@@ -333,6 +336,32 @@ Vue.component('fase4', {
 			error1: '',
 			error2: '',
 		}
+	},
+	
+	created(){
+//		fetch(window.location.origin + "/admin/fases/getDescripcionesPredicciones", {
+//				method: "GET",
+//				body: formData
+//			})
+//				.then(async res => {
+//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+//						const errorMessage = await res.text();
+//						THIZ.error1 = "Error: " + errorMessage;
+//						$('#cargando').hide();
+//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+//					}
+//					
+//					return res.json();
+//						
+//				})
+//				.then(data => {
+//
+//					
+//					
+//					$('#cargando').hide();
+//				})
+//				.catch(error => console.error(error));
+		
 	},
 
 	methods: {
@@ -416,108 +445,191 @@ Vue.component('fase4', {
 				.catch(error => console.error(error));
 
 
-		}
+		},
+		
+		seleccionarPrediccion: function() {
+			const THIZ = this;
+			$('#cargando').show();
+
+			fetch(window.location.origin + "/admin/fases/createOrFindPrediction?descripcion=" + this.descripcion, {
+				method: "POST",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error2 = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(data => {
+
+
+					console.log(data);
+
+
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
+
+
+		},
+		
+		cambiarSeleccion() {
+			const THIZ = this;
+			THIZ.crear = !this.crear;
+		},
+
+		colorTexto(seleccion) {
+			if (this.crear === seleccion) return 'white';
+			else return 'black';
+		},
+
+		colorBoton(seleccion) {
+			if (this.crear === seleccion) return '#0D6EFD';
+			else return '#AACDFF'
+		},
+		
+		linea(seleccion) {
+			if (this.crear === seleccion) return '1.5px solid';
+			else return '1px solid';
+		},
 	},
+	
 	template: `
 	<div class="container mb-5 mt-5">
-		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75); z-index:9999;">
-        		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
-   			 </div>
-		</span>
-		<div class="row justify-content-around">
-			<div v-if="error1 != ''" class="col-5 alert alert-danger">
-				{{this.error1}}
-			</div>
-			<div v-else class="col-5"/>
-			<div v-if="error2 != ''" class="col-5 alert alert-danger">
-				{{this.error2}}
-			</div>
-			<div v-else class="col-5"/>
-		</div>
-		
-		<div class="row justify-content-around">			  
-		    <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-		         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-		            <h2 class="text-center text-white">Curvas de supervivencia</h2>
-		         </div>
-		         <div class="card-body">
-		          	<form @submit.prevent="createAllSurvivalCurves">				
-						<div class="form-group mb-3">
-							<label for="csv1" class="form-label">Archivo csv</label>
-	  					    <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required>
+	    <span>
+	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
+	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;" />
+	        </div>
+	    </span>
+	    
+	    <div class="row justify-content-around">
+			<div class="card col-7 rounded-4 p-0 mb-2 shadow">
+				<div class="card-body" style="text-align: center;">
+					<button @click="cambiarSeleccion(true)" type="button" class="btn btn-custom-color btn-md-5 mb-3" :disabled="crear" style="border: 1px; width:40%">
+		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Crear</p>
+		            </button>
+		            <button @click="cambiarSeleccion(false)" type="button" class="btn btn-custom-color btn-md-5 mb-3" :disabled="!crear" style="border: 1px; width:40%">
+		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Modificar</p>
+		            </button>            
+				
+					<form @submit.prevent="seleccionarPrediccion">
+						<div v-show="crear" class="row justify-content-around">
+							<div class="form-group mb-3">
+		                        <label for="descripcion" class="form-label">Descripcion de la predicción</label>
+		                        <input type="text" maxlength="50" class="form-control" v-model="descripcion" id="descripcion" required>
+		                    </div>
+						</div>
+						<div v-show="!crear" class="row justify-content-around">
+							<p>adios</p>
 						</div>
 						
 						<div class="form-group mb-2">
-		                  <div class="row justify-content-center">
-		                     <div class="col text-center">
-		                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
-		                           type="submit">Ejecutar</button>
-		                     </div>
-		                  </div>
-		               </div>
+	                        <div class="row justify-content-center">
+	                            <div class="col text-center">
+	                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
+	                            </div>
+	                        </div>
+	                    </div>
 					</form>
-		        </div>
-	     	 </div>
-	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-	            <h2 class="text-center text-white">Perfil de población</h2>
-	         </div>
-	         <div class="card-body">
-	          	<form @submit.prevent="createPopulationProfile">				
-					<div class="form-group mb-3">
-						<label for="csv2" class="form-label">Archivo csv</label>
-  					    <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFile2" required>
-					</div>
-					
-					<div class="form-group mb-2">
-	                  <div class="row justify-content-center">
-	                     <div class="col text-center">
-	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
-	                           type="submit">Ejecutar</button>
-	                     </div>
-	                  </div>
-	               </div>
-				</form>
-	         </div>
-	      </div>
-	   </div>
-		
-		<div class="row justify-content-around">
-			<div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
-				<div class="card-body">
-					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-					<a v-bind:href="imagenUrl" download="survivalCurves.png">
-						<img id="imagenFase4" v-bind:src="imagenUrl" style="max-width:100%"/>
-					</a>
 				</div>
 			</div>
-			<div v-else class="col-5 mb-2"/>
-			<div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
-				<div class="card-body">
-					<h2>Overview</h2>
-					<overview :statistics="this.datasetStatistics"/>
-				</div>
-			</div>
-			<div v-else class="col-5 mb-2"/>
 		</div>
-		
-		<div class="row justify-content-around">
-			<div class="col-5 mb-2"/>
-			<div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
-				<div class="card-body">
-					<h2>Variables</h2>
-					<div class="col-md-6">
-						<select class="form-select" name="variables" v-model="variableSeleccionada">
-							<option value="" disabled selected>Select columns</option>
-							<option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-						</select>
-					</div>
-					<variables :variable="this.variableSeleccionada"/>	
-				</div>
-	    	</div>
-	 	</div>				
+	    
+	    <div class="row justify-content-around">
+	        <div v-if="error1 != ''" class="col-5 alert alert-danger">
+	            {{this.error1}}
+	        </div>
+	        <div v-else class="col-5" />
+	        <div v-if="error2 != ''" class="col-5 alert alert-danger">
+	            {{this.error2}}
+	        </div>
+	        <div v-else class="col-5" />
+	    </div>
+	
+	    <div class="row justify-content-around">
+	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
+	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	                <h2 class="text-center text-white">Curvas de supervivencia</h2>
+	            </div>
+	            <div class="card-body">
+	                <form @submit.prevent="createAllSurvivalCurves">
+	                    <div class="form-group mb-3">
+	                        <label for="csv1" class="form-label">Archivo csv</label>
+	                        <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required />
+	                    </div>
+	
+	                    <div class="form-group mb-2">
+	                        <div class="row justify-content-center">
+	                            <div class="col text-center">
+	                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Ejecutar</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </form>
+	            </div>
+	        </div>
+	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
+	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	                <h2 class="text-center text-white">Perfil de población</h2>
+	            </div>
+	            <div class="card-body">
+	                <form @submit.prevent="createPopulationProfile">
+	                    <div class="form-group mb-3">
+	                        <label for="csv2" class="form-label">Archivo csv</label>
+	                        <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFile2" required />
+	                    </div>
+	
+	                    <div class="form-group mb-2">
+	                        <div class="row justify-content-center">
+	                            <div class="col text-center">
+	                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Ejecutar</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	
+	    <div class="row justify-content-around">
+	        <div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
+	            <div class="card-body">
+	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+	                <a v-bind:href="imagenUrl" download="survivalCurves.png">
+	                    <img id="imagenFase4" v-bind:src="imagenUrl" style="max-width: 100%;" />
+	                </a>
+	            </div>
+	        </div>
+	        <div v-else class="col-5 mb-2" />
+	        <div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+	            <div class="card-body">
+	                <h2>Overview</h2>
+	                <overview :statistics="this.datasetStatistics" />
+	            </div>
+	        </div>
+	        <div v-else class="col-5 mb-2" />
+	    </div>
+	
+	    <div class="row justify-content-around">
+	        <div class="col-5 mb-2" />
+	        <div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+	            <div class="card-body">
+	                <h2>Variables</h2>
+	                <div class="col-md-6">
+	                    <select class="form-select" name="variables" v-model="variableSeleccionada">
+	                        <option value="" disabled selected>Select columns</option>
+	                        <option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
+	                    </select>
+	                </div>
+	                <variables :variable="this.variableSeleccionada" />
+	            </div>
+	        </div>
+	    </div>
 	</div>
+
 	`
 });
 
