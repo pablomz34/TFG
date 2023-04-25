@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ImagenesDto {
 	private Long id;
 	
-	private String dni;
+	private String ruta;
 	
 	private Integer nCluster;
 	

@@ -9,6 +9,7 @@ new Vue({
 				{nombre: 'Pri Payment Tcr Ki', variables: [], seleccion:''},
 				{nombre: 'Age Range', variables: [], seleccion:''},
 			],
+			nCluster: '',
 			imagenUrl: '',
 			imagenCreada: false,
 			error: ''
@@ -66,13 +67,13 @@ new Vue({
 						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					
-					return res.text();
+					return res.json();
 				})
-				.then(imagenUrl => {
-					console.log(imagenUrl);
+				.then(data => {
+					console.log(data);
 					THIZ.imagenCreada = true;
-					THIZ.imagenUrl= imagenUrl;
-					
+					THIZ.imagenUrl= data.ruta;
+					THIZ.nCluster = data.ncluster;
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
@@ -129,6 +130,7 @@ new Vue({
 			<div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
 				<div class="card-body">
 					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+					<p class="mb-0"><strong>Cluster nº {{this.nCluster}}</strong></p>
 					<a v-bind:href="imagenUrl" download="graficaPaciente.png">
 						<img id="imagenCluster" v-bind:src="imagenUrl" style="max-width:100%"/>
 					</a>

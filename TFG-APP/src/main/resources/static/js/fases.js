@@ -289,11 +289,11 @@ Vue.component('fase3', {
 	         </div>
 	      </div>
 	   </div>
-	
-		<table v-if="datosCargados" class="table table-bordered table-hover p-2 m-3">
-			<thead class="table-dark">
+		
+		<table v-if="datosCargados" class="table table-custom-color table-striped-columns table-hover shadow-lg p-3 m-3">
+			<thead class="table-custom-color-table-head">
 				<tr>
-					<th v-for="head in headers"> 
+					<th v-for="head in headers" class="fs-5 text-light"> 
 					{{head.header}}
 					</th>
 				</tr>
@@ -301,13 +301,14 @@ Vue.component('fase3', {
 			
 			<tbody>
 				<tr v-for="i in lista">
-					<td>{{i.metric}}</td>
-					<td>{{i.tss_value}}</td>
-					<td>{{i.total_wc}}</td>
-					<td>{{i.total_bc}}</td>
+					<td class="text-light">{{i.metric}}</td>
+					<td class="text-light">{{i.tss_value}}</td>
+					<td class="text-light">{{i.total_wc}}</td>
+					<td class="text-light">{{i.total_bc}}</td>
 				</tr>
 			</tbody>
 		</table>	
+	
 	</div>
 	`
 });
@@ -573,7 +574,7 @@ Vue.component('fase5', {
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
-					res.arrayBuffer();
+					return res.arrayBuffer();
 				})
 				.then(image_bytes => {
 

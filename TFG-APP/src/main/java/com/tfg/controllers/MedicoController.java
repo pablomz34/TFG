@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.tfg.dto.ImagenesDto;
 import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IProfilesService;
@@ -37,7 +38,7 @@ import com.tfg.services.IProfilesService;
 @RequestMapping("/medico")
 public class MedicoController {
 
-	static final String UrlServidor = "https://50f5-81-41-173-74.ngrok-free.app/";
+	static final String UrlServidor = "https://531e-83-61-231-12.ngrok-free.app/";
 	
 	@Autowired
 	private IProfilesService profilesService;
@@ -51,7 +52,7 @@ public class MedicoController {
 	}
 	
 	@PostMapping(value="/getNewPatientClassification", consumes="application/json")
-	public ResponseEntity<String> getNewPatientClassification(
+	public ResponseEntity<?> getNewPatientClassification(
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 		
@@ -97,10 +98,12 @@ public class MedicoController {
 
 		int cluster = (int) map.get("Cluster");
 		
-		System.out.println(cluster);
-		String rutaImagen = imagenesService.findClusterImage(cluster).getRuta();
 		
-		return new ResponseEntity<>(rutaImagen, HttpStatus.OK);
+		String rutaImagen = imagenesService.findClusterImage(cluster).getRuta();
+		ImagenesDto imagen = new ImagenesDto();
+		imagen.setNCluster(cluster);
+		imagen.setRuta(rutaImagen);
+		return new ResponseEntity<>(imagen, HttpStatus.OK);
 
 	}
 	
