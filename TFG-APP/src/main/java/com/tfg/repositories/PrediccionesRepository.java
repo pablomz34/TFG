@@ -10,4 +10,5 @@ import com.tfg.entities.Predicciones;
 @Repository
 public interface PrediccionesRepository extends JpaRepository<Predicciones, Long> {
 	
+	public Predicciones findByDescripcion(String descripcion);
 }

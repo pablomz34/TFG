@@ -6,10 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -35,7 +36,9 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
+import com.tfg.entities.Predicciones;
 import com.tfg.services.IImagenesService;
+import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
 
@@ -54,6 +57,8 @@ public class FasesController {
 	@Autowired
 	private IProfilesService profilesService;
 
+	@Autowired
+	private IPrediccionesService prediccionesService;
 
 	@GetMapping("/getMedicos")
 	public List<UsuariosDto> getMedicos() {
@@ -78,7 +83,7 @@ public class FasesController {
 	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
 	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
-		
+
 		String error = this.validarInputNumber(max_clusters);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -256,6 +261,30 @@ public class FasesController {
 		file.delete();
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
+
+	}
+
+	@PostMapping("/createOrFindPrediction")
+	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)
+			throws UnsupportedEncodingException {
+		String descripcionEscaped = "";
+		try {
+			descripcionEscaped = URLEncoder.encode(descripcion, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return new ResponseEntity<>("Codificación de la descripción no válida, debe ser codificación UTF-8", HttpStatus.BAD_REQUEST);
+		}
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcionEscaped);
+
+		if (prediccion == null) {
+			prediccion = new Predicciones();
+
+			prediccionesService.guardarPrediccion(descripcion);
+
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+		} else {
+			
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+		}
 
 	}
 
@@ -688,7 +717,8 @@ public class FasesController {
 
 		HashMap<String, Object> agglomerativeMap = features.get(0);
 
-		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap.get("agglomerative");
+		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap
+				.get("agglomerative");
 
 		return agglomerativeValues.size();
 
