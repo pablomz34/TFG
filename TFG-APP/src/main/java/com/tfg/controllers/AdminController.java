@@ -11,21 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.tfg.dto.UsuariosDto;
 import com.tfg.services.IUsuariosService;
 
-import jakarta.servlet.http.HttpSession;
-
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 		
 	
-	
-	
-	
 	@Autowired
 	private IUsuariosService usuariosService;
 	
-	@Autowired
-	private HttpSession session;
 	
 	@GetMapping()
 	public String adminIndex() {

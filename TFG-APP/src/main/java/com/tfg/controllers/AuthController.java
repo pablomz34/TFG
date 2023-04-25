@@ -1,13 +1,6 @@
 package com.tfg.controllers;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
-import jakarta.servlet.http.HttpSession;
-
-import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 
 import com.tfg.dto.UsuariosDto;
-import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
 import com.tfg.services.IUsuariosService;
+
+import jakarta.validation.Valid;
 
 @Controller
 public class AuthController {
@@ -35,9 +29,6 @@ public class AuthController {
 	@Autowired
 	private IUsuariosService usuariosService;
 	
-	@Autowired 
-	private HttpSession session;
-
 	
 	@GetMapping("/admin/fases")
     public String fases(){

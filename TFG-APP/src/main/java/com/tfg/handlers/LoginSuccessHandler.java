@@ -2,34 +2,24 @@ package com.tfg.handlers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
-import com.tfg.repositories.RolesRepository;
 import com.tfg.services.IUsuariosService;
 
-import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 
-
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-	
-	@Autowired
-	private RolesRepository rolesRep;
 	
 	@Autowired
     private IUsuariosService medicosService;
