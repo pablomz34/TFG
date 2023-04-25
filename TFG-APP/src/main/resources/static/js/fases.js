@@ -333,14 +333,15 @@ Vue.component('fase4', {
 			variableSeleccionada: '',
 			variables: [{ feature: 'agglomerative', agglomerative: [] }, { feature: 'GENDER', GENDER: [] }, { feature: 'EDUCATION', EDUCATION: [] }, { feature: 'ETHCAT', ETHCAT: [] },
 			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
-			error: '',
+			error1: '',
+			error2: '',
 		}
 	},
 
 	methods: {
 		createAllSurvivalCurves: function() {
 			const THIZ = this;
-			THIZ.error = '';
+			THIZ.error1 = '';
 			THIZ.imagenCreada = false;
 			const formData = new FormData();
 			$('#cargando').show();
@@ -353,7 +354,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error1 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -378,7 +379,7 @@ Vue.component('fase4', {
 
 		createPopulationProfile: function() {
 			const THIZ = this;
-			THIZ.error = '';
+			THIZ.error2 = '';
 			const formData = new FormData();
 			THIZ.datosCargados = false;
 			THIZ.variableSeleccionada = '';
@@ -393,7 +394,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error2 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -427,33 +428,40 @@ Vue.component('fase4', {
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
-		
 		<div class="row justify-content-around">
-		   <div v-if="error != ''" class="alert alert-danger">
-		       {{this.error}}
-		  </div>
-	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-	            <h2 class="text-center text-white">Curvas de supervivencia</h2>
-	         </div>
-	         <div class="card-body">
-	          	<form @submit.prevent="createAllSurvivalCurves">				
-					<div class="form-group mb-3">
-						<label for="csv1" class="form-label">Archivo csv</label>
-  					    <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required>
-					</div>
-					
-					<div class="form-group mb-2">
-	                  <div class="row justify-content-center">
-	                     <div class="col text-center">
-	                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
-	                           type="submit">Ejecutar</button>
-	                     </div>
-	                  </div>
-	               </div>
-				</form>
-	         </div>
-	      </div>
+			<div v-if="error1 != ''" class="col-5 alert alert-danger">
+				{{this.error1}}
+			</div>
+			<div v-else class="col-5"/>
+			<div v-if="error2 != ''" class="col-5 alert alert-danger">
+				{{this.error2}}
+			</div>
+			<div v-else class="col-5"/>
+		</div>
+		
+		<div class="row justify-content-around">			  
+		    <div class="card col-5 rounded-4 p-0 mb-2 shadow">
+		         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+		            <h2 class="text-center text-white">Curvas de supervivencia</h2>
+		         </div>
+		         <div class="card-body">
+		          	<form @submit.prevent="createAllSurvivalCurves">				
+						<div class="form-group mb-3">
+							<label for="csv1" class="form-label">Archivo csv</label>
+	  					    <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required>
+						</div>
+						
+						<div class="form-group mb-2">
+		                  <div class="row justify-content-center">
+		                     <div class="col text-center">
+		                        <button class="btn btn-outline-custom-color fs-5 fw-semibold"
+		                           type="submit">Ejecutar</button>
+		                     </div>
+		                  </div>
+		               </div>
+					</form>
+		        </div>
+	     	 </div>
 	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Perfil de población</h2>
@@ -538,7 +546,8 @@ Vue.component('fase5', {
 			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
 			variableSeleccionada: '',
 			datosCargados: false,
-			error: '',
+			error1: '',
+			error2: '',
 		}
 	},
 
@@ -546,7 +555,7 @@ Vue.component('fase5', {
 	methods: {
 		createClusterSurvivalCurve() {
 			const THIZ = this;
-			THIZ.error = '';
+			THIZ.error1 = '';
 			const formData = new FormData();
 			THIZ.imagenCreada = false;
 			$('#cargando').show();
@@ -560,7 +569,7 @@ Vue.component('fase5', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error1 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -580,7 +589,7 @@ Vue.component('fase5', {
 
 		createClusterProfile() {
 			const THIZ = this;
-			THIZ.error = '';
+			THIZ.error2 = '';
 			THIZ.datosCargados = false;
 			THIZ.variableSeleccionada = '';
 			const formData = new FormData();
@@ -595,7 +604,7 @@ Vue.component('fase5', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error2 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -628,12 +637,18 @@ Vue.component('fase5', {
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%); z-index:9999;"/>
    			 </div>
 		</span>
-		
+		<div class="row justify-content-around">
+			<div v-if="error1 != ''" class="col-5 alert alert-danger">
+				{{this.error1}}
+			</div>
+			<div v-else class="col-5"/>
+			<div v-if="error2 != ''" class="col-5 alert alert-danger">
+				{{this.error2}}
+			</div>
+			<div v-else class="col-5"/>
+		</div>
 		
 		<div class="row justify-content-around">
-			<div v-if="error != ''" class="alert alert-danger">
-				{{this.error}}
-		  </div>
 	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Curva de cluster</h2>
@@ -661,9 +676,6 @@ Vue.component('fase5', {
 				</form>
 	         </div>
 	      </div>
-	      <div v-if="error != ''" class="alert alert-danger">
-				{{this.error}}
-		  </div>
 	      <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	         <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	            <h2 class="text-center text-white">Perfil de cluster</h2>
@@ -1034,8 +1046,8 @@ new Vue({
 
 	template: `
 	<div class="container pt-2">		
-	    <div class="row col-md-10">
-			<h2>Fases</h2>
+	    <div class="col-12 mb-3">
+				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
 		</div>
     	<div class="col-md-12">
             <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}" style="width:15%">
