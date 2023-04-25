@@ -79,7 +79,7 @@ public class FasesController {
 	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 		
-		String error = this.validarInputFile(max_clusters);
+		String error = this.validarInputNumber(max_clusters);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -140,12 +140,12 @@ public class FasesController {
 			@RequestParam("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
 			throws IOException {
 
-		String error = this.validarInputFile(nClustersAglomerativo);
+		String error = this.validarInputNumber(nClustersAglomerativo);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
-		error = this.validarInputFile(nClustersKModes);
+		error = this.validarInputNumber(nClustersKModes);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -391,7 +391,7 @@ public class FasesController {
 	public ResponseEntity<?> createClusterSurvivalCurve(@RequestParam("cluster_number") String cluster_number,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
-		String error = this.validarInputFile(cluster_number);
+		String error = this.validarInputNumber(cluster_number);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -461,7 +461,7 @@ public class FasesController {
 	public ResponseEntity<?> createClusterProfile(@RequestParam("cluster_number") String cluster_number,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
-		String error = this.validarInputFile(cluster_number);
+		String error = this.validarInputNumber(cluster_number);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -694,7 +694,7 @@ public class FasesController {
 
 	}
 
-	private String validarInputFile(String max_clusters) {
+	private String validarInputNumber(String max_clusters) {
 
 		if (max_clusters == null || max_clusters.isEmpty()) {
 			return "Es obligatorio rellenar todos los inputs";
@@ -714,7 +714,7 @@ public class FasesController {
 
 	private String validarInputFile(MultipartFile multipartFile) {
 		String contentType = multipartFile.getContentType();
-		if (!ContentType.APPLICATION_OCTET_STREAM.getMimeType().equals(contentType)) {
+		if (!contentType.equals("text/csv")) {
 			return "El tipo de archivo no es válido";
 		}
 		return "";
