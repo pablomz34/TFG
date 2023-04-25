@@ -290,24 +290,26 @@ Vue.component('fase3', {
 	      </div>
 	   </div>
 		
-		<table v-if="datosCargados" class="table table-custom-color table-striped-columns table-hover shadow-lg p-3 m-3">
-			<thead class="table-custom-color-table-head">
-				<tr>
-					<th v-for="head in headers" class="fs-5 text-light"> 
-					{{head.header}}
-					</th>
-				</tr>
-			</thead>
-			
-			<tbody>
-				<tr v-for="i in lista">
-					<td class="text-light">{{i.metric}}</td>
-					<td class="text-light">{{i.tss_value}}</td>
-					<td class="text-light">{{i.total_wc}}</td>
-					<td class="text-light">{{i.total_bc}}</td>
-				</tr>
-			</tbody>
-		</table>	
+		<div v-if="datosCargados" class="table-responsive shadow-lg p-0 mt-4">
+			<table class="table table-custom-color table-striped-columns table-hover shadow-lg m-0">
+				<thead class="table-custom-color-table-head">
+					<tr>
+						<th v-for="head in headers" class="fs-5 text-white"> 
+						{{head.header}}
+						</th>
+					</tr>
+				</thead>
+				
+				<tbody>
+					<tr v-for="i in lista">
+						<td class="fw-semibold text-light">{{i.metric}}</td>
+						<td class="fw-semibold text-light">{{i.tss_value}}</td>
+						<td class="fw-semibold text-light">{{i.total_wc}}</td>
+						<td class="fw-semibold text-light">{{i.total_bc}}</td>
+					</tr>
+				</tbody>
+			</table>	
+		</div>
 	
 	</div>
 	`

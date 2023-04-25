@@ -20,18 +20,18 @@
 				<table class="table table-custom-color table-striped-columns table-hover m-0">
 					<thead class="table-custom-color-table-head">
 						<tr>
-							<th class="fs-5 text-light">Nombre</th>
-							<th class="fs-5 text-light">Apellidos</th>
-							<th class="fs-5 text-light">Correo</th>
-							<th class="fs-5 text-light">Dni</th>
+							<th class="fs-5 text-white">Nombre</th>
+							<th class="fs-5 text-white">Apellidos</th>
+							<th class="fs-5 text-white">Correo</th>
+							<th class="fs-5 text-white">Dni</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="medico : ${medicos}">
-							<td class="text-light" th:text="${medico.nombre}"></td>
-							<td class="text-light" th:text="${medico.apellidos}"></td>
-							<td class="text-light" th:text="${medico.correo}"></td>
-							<td class="text-light" th:text="${medico.dni}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.nombre}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.apellidos}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.correo}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.dni}"></td>
 						</tr>
 					</tbody>
 				</table>
