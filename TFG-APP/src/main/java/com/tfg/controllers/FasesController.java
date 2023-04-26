@@ -263,6 +263,11 @@ public class FasesController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/getDescripcionesPredicciones")
+	public ResponseEntity<?> getDescripcionesPredicciones(){
+		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
+	}
 
 	@PostMapping("/createOrFindPrediction")
 	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)

@@ -238,7 +238,7 @@ Vue.component('fase3', {
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.json();
-					
+
 				})
 				.then(data => {
 					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j]
@@ -316,7 +316,7 @@ Vue.component('fase4', {
 	data: function() {
 		return {
 			crear: true,
-			descripcion: '',
+			descripcionSeleccionada: '',
 			descripciones: [],
 			csvFile: '',
 			csvFile2: '',
@@ -337,34 +337,58 @@ Vue.component('fase4', {
 			error2: '',
 		}
 	},
-	
-	created(){
-//		fetch(window.location.origin + "/admin/fases/getDescripcionesPredicciones", {
-//				method: "GET",
-//				body: formData
-//			})
-//				.then(async res => {
-//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-//						const errorMessage = await res.text();
-//						THIZ.error1 = "Error: " + errorMessage;
-//						$('#cargando').hide();
-//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-//					}
-//					
-//					return res.json();
-//						
-//				})
-//				.then(data => {
-//
-//					
-//					
-//					$('#cargando').hide();
-//				})
-//				.catch(error => console.error(error));
-		
+
+	created() {
+		const THIZ = this;
+		fetch(window.location.origin + "/admin/fases/getDescripcionesPredicciones", {
+			method: "GET",
+		})
+			.then(async res => {
+				if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+					const errorMessage = await res.text();
+					THIZ.error1 = "Error: " + errorMessage;
+					$('#cargando').hide();
+					throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+				}
+
+				return res.json();
+
+			})
+			.then(data => {
+
+				for (i = 0; i < data.length; i++) {
+					THIZ.descripciones.push(data[i]);
+				}
+				$('#cargando').hide();
+			})
+			.catch(error => console.error(error));
+
 	},
 
 	methods: {
+		seleccionarPrediccion: function() {
+			const THIZ = this;
+			$('#cargando').show();
+
+			fetch(window.location.origin + "/admin/fases/createOrFindPrediction?descripcion=" + this.descripcionSeleccionada, {
+				method: "POST",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error2 = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(data => {
+					console.log(data)
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
+		},
+
 		createAllSurvivalCurves: function() {
 			const THIZ = this;
 			THIZ.error1 = '';
@@ -384,9 +408,9 @@ Vue.component('fase4', {
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
-					
+
 					return res.arrayBuffer();
-						
+
 				})
 				.then(image_bytes => {
 
@@ -446,57 +470,14 @@ Vue.component('fase4', {
 
 
 		},
-		
-		seleccionarPrediccion: function() {
-			const THIZ = this;
-			$('#cargando').show();
 
-			fetch(window.location.origin + "/admin/fases/createOrFindPrediction?descripcion=" + this.descripcion, {
-				method: "POST",
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						THIZ.error2 = "Error: " + errorMessage;
-						$('#cargando').hide();
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.text();
-				})
-				.then(data => {
-
-
-					console.log(data);
-
-
-					$('#cargando').hide();
-				})
-				.catch(error => console.error(error));
-
-
-		},
-		
 		cambiarSeleccion() {
 			const THIZ = this;
 			THIZ.crear = !this.crear;
-		},
-
-		colorTexto(seleccion) {
-			if (this.crear === seleccion) return 'white';
-			else return 'black';
-		},
-
-		colorBoton(seleccion) {
-			if (this.crear === seleccion) return '#0D6EFD';
-			else return '#AACDFF'
-		},
-		
-		linea(seleccion) {
-			if (this.crear === seleccion) return '1.5px solid';
-			else return '1px solid';
+			THIZ.descripcionSeleccionada = '';
 		},
 	},
-	
+
 	template: `
 	<div class="container mb-5 mt-5">
 	    <span>
@@ -506,7 +487,11 @@ Vue.component('fase4', {
 	    </span>
 	    
 	    <div class="row justify-content-around">
-			<div class="card col-7 rounded-4 p-0 mb-2 shadow">
+			<div class="card col-7 rounded-4 p-0 mb-3 shadow">
+				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	                <h2 v-if="crear" class="text-center text-white">Crear nueva predicción</h2>
+	                <h2 v-if="!crear" class="text-center text-white">Modificar predicción exitente</h2>
+	            </div>
 				<div class="card-body" style="text-align: center;">
 					<button @click="cambiarSeleccion(true)" type="button" class="btn btn-custom-color btn-md-5 mb-3" :disabled="crear" style="border: 1px; width:40%">
 		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Crear</p>
@@ -515,25 +500,40 @@ Vue.component('fase4', {
 		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Modificar</p>
 		            </button>            
 				
-					<form @submit.prevent="seleccionarPrediccion">
-						<div v-show="crear" class="row justify-content-around">
+					
+					<div v-show="crear" class="row justify-content-around">
+						<form @submit.prevent="seleccionarPrediccion">
 							<div class="form-group mb-3">
-		                        <label for="descripcion" class="form-label">Descripcion de la predicción</label>
-		                        <input type="text" maxlength="50" class="form-control" v-model="descripcion" id="descripcion" required>
+		                        <label for="descripcionSeleccionada" class="form-label">Introduce una descripcion de la nueva predicción</label>
+		                        <input type="text" maxlength="50" class="form-control" v-model="descripcionSeleccionada" id="descripcionSeleccionada" required>
 		                    </div>
-						</div>
-						<div v-show="!crear" class="row justify-content-around">
-							<p>adios</p>
-						</div>
-						
-						<div class="form-group mb-2">
-	                        <div class="row justify-content-center">
-	                            <div class="col text-center">
-	                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
-	                            </div>
-	                        </div>
-	                    </div>
-					</form>
+		                    <div class="form-group mb-3">
+		                        <div class="row justify-content-center">
+		                            <div class="col text-center">
+		                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
+		                            </div>
+		                        </div>
+		                    </div>
+		            	</form>
+					</div>
+					<div v-show="!crear" class="row justify-content-around">
+						<form @submit.prevent="seleccionarPrediccion">
+							<div class="form-group mb-3">
+								<label for="descripcionSeleccionada" class="form-label">Elige una descripción existente para editar la predicción</label>
+								<select class="form-select" name="descripciones" v-model="descripcionSeleccionada" required>
+		                       		<option value="" disabled selected></option>
+		                       		<option v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
+		                    	</select>
+							</div>
+							<div class="form-group mb-3">
+		                        <div class="row justify-content-center">
+		                            <div class="col text-center">
+		                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
+		                            </div>
+		                        </div>
+		                    </div>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
