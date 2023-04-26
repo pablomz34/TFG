@@ -11,7 +11,7 @@ public interface IPrediccionesService {
 	
 	public Predicciones findPrediccionByDescripcion(String descripcion);
 	
-	public void guardarPrediccion(String descripcion);
+	public Predicciones guardarPrediccion(String descripcion);
 
 	public List<String> getDescripciones(); 
 }

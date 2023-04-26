@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -46,7 +48,7 @@ import com.tfg.services.IUsuariosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 
-	static final String UrlServidor = "https://531e-83-61-231-12.ngrok-free.app/";
+	static final String UrlServidor = "https://91c1-83-61-231-12.ngrok-free.app/";
 
 	@Autowired
 	private IUsuariosService usuariosService;
@@ -272,23 +274,19 @@ public class FasesController {
 	@PostMapping("/createOrFindPrediction")
 	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)
 			throws UnsupportedEncodingException {
-		String descripcionEscaped = "";
-		try {
-			descripcionEscaped = URLEncoder.encode(descripcion, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return new ResponseEntity<>("Codificación de la descripción no válida, debe ser codificación UTF-8", HttpStatus.BAD_REQUEST);
-		}
-		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcionEscaped);
+		
+		descripcion = StringEscapeUtils.escapeJava(descripcion);
+		
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (prediccion == null) {
-			prediccion = new Predicciones();
 
-			prediccionesService.guardarPrediccion(descripcion);
+			prediccion = prediccionesService.guardarPrediccion(descripcion);
 
-			return new ResponseEntity<>(descripcion, HttpStatus.OK);
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		} else {
 			
-			return new ResponseEntity<>(descripcion, HttpStatus.OK);
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		}
 
 	}

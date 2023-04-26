@@ -38,7 +38,7 @@ import com.tfg.services.IProfilesService;
 @RequestMapping("/medico")
 public class MedicoController {
 
-	static final String UrlServidor = "https://531e-83-61-231-12.ngrok-free.app/";
+	static final String UrlServidor = "https://91c1-83-61-231-12.ngrok-free.app/";
 	
 	@Autowired
 	private IProfilesService profilesService;

@@ -23,7 +23,7 @@ public class PrediccionesService implements IPrediccionesService {
 	}
 
 	@Override
-	public void guardarPrediccion(String descripcion) {
+	public Predicciones guardarPrediccion(String descripcion) {
 		
 		Predicciones prediccion = new Predicciones();
 		
@@ -31,6 +31,7 @@ public class PrediccionesService implements IPrediccionesService {
 		
 		repos.save(prediccion);
 		
+		return prediccion;
 	}
 
 	@Override
