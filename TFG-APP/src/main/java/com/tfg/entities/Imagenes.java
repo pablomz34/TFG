@@ -27,7 +27,7 @@ public class Imagenes {
 	private String ruta;
 	
 	@Column(name = "num_cluster", nullable = false)
-	private int numCluster;
+	private Integer numCluster;
 	
     @ManyToOne
     @JoinColumn(name = "prediccion_id") 

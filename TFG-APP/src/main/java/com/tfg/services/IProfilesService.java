@@ -7,7 +7,7 @@ import com.tfg.entities.Profiles;
 @Service
 public interface IProfilesService {
 	
-	public void guardarProfile(int numCluster, String features, Long idPrediccion);
+	public void guardarProfile(Integer numCluster, String features, Long idPrediccion);
 	
-	public Profiles findProfile(int numCluster, Long idPrediccion);
+	public Profiles findProfile(Integer numCluster, Long idPrediccion);
 }

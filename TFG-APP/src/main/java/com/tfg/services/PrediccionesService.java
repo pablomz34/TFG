@@ -26,9 +26,7 @@ public class PrediccionesService implements IPrediccionesService {
 	public Predicciones guardarPrediccion(String descripcion) {
 		
 		Predicciones prediccion = new Predicciones();
-		
 		prediccion.setDescripcion(descripcion);
-		
 		repos.save(prediccion);
 		
 		return prediccion;
@@ -53,7 +51,7 @@ public class PrediccionesService implements IPrediccionesService {
 	}
 
 	@Override
-	public void guardarMaxClusters(int maxClusters, Long id) {
+	public void guardarMaxClusters(Integer maxClusters, Long id) {
 		
 		Predicciones prediccion = repos.findPrediccionById(id);
 		

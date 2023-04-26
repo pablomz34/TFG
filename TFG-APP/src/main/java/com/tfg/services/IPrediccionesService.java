@@ -15,7 +15,7 @@ public interface IPrediccionesService {
 	
 	public Predicciones guardarPrediccion(String descripcion);
 	
-	public void guardarMaxClusters(int maxClusters, Long id);
+	public void guardarMaxClusters(Integer maxClusters, Long id);
 
 	public List<String> getDescripciones(); 
 }

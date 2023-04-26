@@ -25,7 +25,7 @@ public class ProfilesService implements IProfilesService {
 	private ProfilesRepository repos;
 
 	@Override
-	public void guardarProfile(int numCluster, String features, Long idPrediccion) {
+	public void guardarProfile(Integer numCluster, String features, Long idPrediccion) {
 		
 		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
 		
@@ -46,7 +46,7 @@ public class ProfilesService implements IProfilesService {
 	}
 
 	@Override
-	public Profiles findProfile(int numCluster, Long idPrediccion) {
+	public Profiles findProfile(Integer numCluster, Long idPrediccion) {
 		
 		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
 		

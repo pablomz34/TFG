@@ -13,7 +13,7 @@ import com.tfg.entities.Profiles;
 @Repository
 public interface ProfilesRepository extends JpaRepository<Profiles, Long> {
 	
-	public Profiles findByNumClusterAndPrediccion(int numCluster, Predicciones prediccion);
+	public Profiles findByNumClusterAndPrediccion(Integer numCluster, Predicciones prediccion);
 	
 	public Profiles findByFeatures(String features);
 	

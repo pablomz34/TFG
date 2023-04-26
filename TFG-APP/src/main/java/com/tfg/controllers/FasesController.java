@@ -554,7 +554,7 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
-	public ResponseEntity<?> createClusterSurvivalCurve(@RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<?> getModelPerformance(@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
 		String error = this.validarInputFile(multipartFile);
@@ -614,7 +614,7 @@ public class FasesController {
 
 	}
 
-	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, int numCluster,
+	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, Integer numCluster,
 			Long idPrediccion) throws IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -657,7 +657,7 @@ public class FasesController {
 
 	}
 
-	private void guardarFeatures(File file, String url, int numCluster, Long idPrediccion) throws ClientProtocolException, IOException {
+	private void guardarFeatures(File file, String url, Integer numCluster, Long idPrediccion) throws ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		HttpPost httpPost = new HttpPost(UrlServidor + url);
@@ -717,7 +717,7 @@ public class FasesController {
 		List<HashMap<String, Object>> algorithmArray = (List<HashMap<String, Object>>) algorithmMap
 				.get("agglomerative");
 		
-		int maxClusters = algorithmArray.size();
+		Integer maxClusters = algorithmArray.size();
 		
 		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
 
@@ -730,7 +730,7 @@ public class FasesController {
 
 		}
 		try {
-			int n = Integer.parseInt(max_clusters);
+			Integer n = Integer.parseInt(max_clusters);
 			if (n < 1 || n > 8) {
 				return "El valor no está dentro del rango permitido";
 			}

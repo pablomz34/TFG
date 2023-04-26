@@ -21,7 +21,7 @@ public class ImagenesService implements IImagenesService {
 	private ImagenesRepository repos;
 		
 	@Override
-	public void guardarImagen(int numCluster, String ruta, Long idPrediccion) {
+	public void guardarImagen(Integer numCluster, String ruta, Long idPrediccion) {
 		
 		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
 		
@@ -39,7 +39,7 @@ public class ImagenesService implements IImagenesService {
 	}
 
 	@Override
-	public Imagenes findClusterImage(int cluster) {
+	public Imagenes findClusterImage(Integer cluster) {
 		return repos.findByNumCluster(cluster);
 	}
 

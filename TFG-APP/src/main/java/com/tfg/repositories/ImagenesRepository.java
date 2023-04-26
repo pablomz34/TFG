@@ -12,5 +12,5 @@ import com.tfg.entities.Predicciones;
 public interface ImagenesRepository extends JpaRepository<Imagenes, Long> {
 	public Imagenes findByNumCluster(Integer numCluster);
 	
-	public Imagenes findByNumClusterAndPrediccion(int numCluster, Predicciones prediccion);
+	public Imagenes findByNumClusterAndPrediccion(Integer numCluster, Predicciones prediccion);
 }
