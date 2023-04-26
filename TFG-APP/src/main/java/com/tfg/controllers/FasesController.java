@@ -326,139 +326,104 @@ public class FasesController {
 		return true;
 	}
 
-	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
-	public ResponseEntity<?> createAllSurvivalCurves(@RequestParam("idPrediccion") String idPrediccion,
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+//	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
+//	public ResponseEntity<?> createAllSurvivalCurves(@RequestParam("idPrediccion") String idPrediccion,
+//			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+//
+//		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
+//
+//		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
+//
+//		String error = this.validarInputFile(multipartFile);
+//		if (!error.isEmpty()) {
+//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		}
+//
+//		CloseableHttpClient httpClient = HttpClients.createDefault();
+//
+//		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+//		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createAllSurvivalCurves");
+//
+//		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
+//		// petición
+//		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+//
+//		// Agregar el archivo al cuerpo de la petición
+//
+//		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+//
+//		// Copiar el contenido del objeto MultipartFile al objeto File
+//		multipartFile.transferTo(file);
+//
+//		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
+//				file, // Archivo a enviar
+//				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
+//				file.getName() // Nombre del archivo en el cuerpo de la petición
+//		);
+//
+//		// Construir el cuerpo de la petición
+//		HttpEntity multipart = builder.build();
+//
+//		// Establecer el cuerpo de la petición en el objeto HttpPost
+//		httpPost.setEntity(multipart);
+//
+//		// Ejecutar la petición y obtener la respuesta
+//		CloseableHttpResponse response = httpClient.execute(httpPost);
+//
+//		HttpEntity responseEntity = response.getEntity();
+//
+//		InputStream responseInputStream = responseEntity.getContent();
+//
+//		byte[] imageBytes = responseInputStream.readAllBytes();
+//
+//		// Cerrar el objeto CloseableHttpClient y liberar los recursos
+//		httpClient.close();
+//
+//
+//		file.delete();
+//
+//		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
+//
+//	}
 
+	@PostMapping(value = "/createPopulationAndCurves", consumes = "multipart/form-data")
+	public ResponseEntity<?> createPopulationProfile(@RequestParam("idPrediccion") String idPrediccion,
+			@RequestPart("file") MultipartFile multipartFile)
+			throws IllegalStateException, IOException, ClassNotFoundException {
+	
 		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-
+		
 		String error = this.validarInputFile(multipartFile);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createAllSurvivalCurves");
-
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-		// Agregar el archivo al cuerpo de la petición
-
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
-
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
-
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
-
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
-
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
-
-		InputStream responseInputStream = responseEntity.getContent();
-
-		byte[] imageBytes = responseInputStream.readAllBytes();
-
-		// Cerrar el objeto CloseableHttpClient y liberar los recursos
-		httpClient.close();
-
+		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, prediccion.getId());
+		
+		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
+			this.guardarFeatures(file,
+					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i, prediccion.getId());
+		}
+		
 		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
 
-		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
-				rutaPrediccion + File.separator + "allClusters.png",
-				"clustersImages" + File.separator + "prediccion" + prediccion.getId() + File.separator + "allClusters.png", -1, prediccion.getId());
-		for (int i = 0; i < 8; i++) {
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", rutaPrediccion + File.separator + "allClusters.png",
+				"clustersImages/prediccion" + prediccion.getId() + "/allClusters.png", -1, prediccion.getId());
+		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
 			this.guardarImagenes(file,
 					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
-					rutaPrediccion + File.separator + "cluster" + Integer.toString(i) + ".png",
-					"clustersImages" + File.separator + "prediccion" + prediccion.getId() + File.separator + "cluster"
-							+ Integer.toString(i) + ".png",
-					i, prediccion.getId());
+					rutaPrediccion + File.separator +"cluster" + Integer.toString(i) + ".png",
+					"clustersImages/prediccion" + prediccion.getId() + "/cluster" + Integer.toString(i) + ".png", i,
+					prediccion.getId());
 		}
 
 		file.delete();
 
-		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
-
-	}
-
-	@PostMapping(value = "/createPopulationProfile", consumes = "multipart/form-data")
-	public ResponseEntity<?> createPopulationProfile(@RequestPart("file") MultipartFile multipartFile)
-			throws IllegalStateException, IOException, ClassNotFoundException {
-
-		String error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-		}
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createPopulationProfile");
-
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-		// Agregar el archivo al cuerpo de la petición
-
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
-
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
-
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
-
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
-
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
-
-		InputStream responseInputStream = responseEntity.getContent();
-
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
-		String line;
-		StringBuilder stringBuilder = new StringBuilder();
-		while ((line = bufferedReader.readLine()) != null) {
-			stringBuilder.append(line);
-		}
-		String jsonString = stringBuilder.toString();
-
-		HashMap<String, Object> map = null;
-		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-
-		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile");
-
-		file.delete();
-
-		return new ResponseEntity<>(map, HttpStatus.OK);
+		return new ResponseEntity<>(prediccion.getMaxClusters()+1, HttpStatus.OK);
 
 	}
 
@@ -692,7 +657,7 @@ public class FasesController {
 
 	}
 
-	private void guardarFeatures(File file, String url) throws ClientProtocolException, IOException {
+	private void guardarFeatures(File file, String url, int numCluster, Long idPrediccion) throws ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		HttpPost httpPost = new HttpPost(UrlServidor + url);
@@ -731,30 +696,30 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-
-		int maxClusters = getMaxClusters(map);
-
-		HashMap<String, Object> featuresMap = new HashMap<String, Object>();
-
-		featuresMap.put("features", map.get("features"));
+		
+		if(numCluster==-1){
+			this.calculateMaxClusters(map, idPrediccion);
+		}
 
 		Gson gson = new Gson();
-		String featuresString = gson.toJson(featuresMap);
+		String featuresString = gson.toJson(map);
 
-		profilesService.guardarProfile(featuresString, maxClusters);
+		profilesService.guardarProfile(numCluster, featuresString,idPrediccion);
 
 	}
 
-	private int getMaxClusters(HashMap<String, Object> map) {
+	private void calculateMaxClusters(HashMap<String, Object> map, Long idPrediccion) {
 
 		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
 
-		HashMap<String, Object> agglomerativeMap = features.get(0);
+		HashMap<String, Object> algorithmMap = features.get(0);
 
-		List<HashMap<String, Object>> agglomerativeValues = (List<HashMap<String, Object>>) agglomerativeMap
+		List<HashMap<String, Object>> algorithmArray = (List<HashMap<String, Object>>) algorithmMap
 				.get("agglomerative");
-
-		return agglomerativeValues.size();
+		
+		int maxClusters = algorithmArray.size();
+		
+		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
 
 	}
 

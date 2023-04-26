@@ -51,6 +51,18 @@ public class PrediccionesService implements IPrediccionesService {
 	public Predicciones findPrediccionById(Long id) {
 		return repos.findPrediccionById(id);
 	}
+
+	@Override
+	public void guardarMaxClusters(int maxClusters, Long id) {
+		
+		Predicciones prediccion = repos.findPrediccionById(id);
+		
+		if(prediccion!=null) {
+			prediccion.setMaxClusters(maxClusters);	
+			repos.save(prediccion);
+		}
+		
+	}
 	
 	
 	

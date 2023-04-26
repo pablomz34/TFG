@@ -26,10 +26,7 @@ public class Profiles {
 	@Column(name = "features", nullable = false, unique=true, columnDefinition = "TEXT")
 	private String features;
 	
-	@Column(name="max_clusters", nullable= false, unique=true)
-	private int maxClusters;
-	
-	@Column(name = "num_cluster", nullable = false, unique = true)
+	@Column(name = "num_cluster", nullable = false)
 	private int numCluster;
 	
 	@ManyToOne

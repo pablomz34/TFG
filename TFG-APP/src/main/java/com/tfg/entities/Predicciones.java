@@ -27,6 +27,9 @@ public class Predicciones {
 	@Column(name = "descripcion", nullable = false, unique = true)
 	private String descripcion;
 	
+	@Column(name="max_clusters")
+	private int maxClusters;
+	
 	@OneToMany(mappedBy = "prediccion")
     private List<Imagenes> imagenes;
 	
