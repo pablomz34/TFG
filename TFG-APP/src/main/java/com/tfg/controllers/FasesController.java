@@ -402,6 +402,8 @@ public class FasesController {
 
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
+		multipartFile.transferTo(file);
+		
 		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, prediccion.getId());
 		
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
