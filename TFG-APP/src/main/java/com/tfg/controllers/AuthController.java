@@ -1,8 +1,13 @@
 package com.tfg.controllers;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,7 +34,9 @@ public class AuthController {
 	@Autowired
 	private IUsuariosService usuariosService;
 	
-	
+	@Autowired
+	private ResourceLoader resourceLoader;
+	 
 	@GetMapping("/admin/fases")
     public String fases(){
         return "fases";
@@ -38,14 +45,14 @@ public class AuthController {
 	
     // handler method to handle home page request
     @GetMapping("/index")
-    public String index(){
+    public String index() throws IOException{
+    	
         return "index";
     }
     
     
     @GetMapping("/")
-    public String index2(){ 
-    	
+    public String index2() { 
     	
     	return "index";
     }

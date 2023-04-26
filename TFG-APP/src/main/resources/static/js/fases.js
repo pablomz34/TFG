@@ -398,7 +398,7 @@ Vue.component('fase4', {
 			$('#cargando').show();
 			formData.append('file', this.$refs.csvFile.files[0]);
 
-			fetch(window.location.origin + "/admin/fases/createAllSurvivalCurves+idPrediccion" + this.idPrediccion, {
+			fetch(window.location.origin + "/admin/fases/createAllSurvivalCurves?idPrediccion=" + this.idPrediccion, {
 				method: "POST",
 				body: formData
 			})

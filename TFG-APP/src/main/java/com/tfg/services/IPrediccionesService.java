@@ -11,6 +11,8 @@ public interface IPrediccionesService {
 	
 	public Predicciones findPrediccionByDescripcion(String descripcion);
 	
+	public Predicciones findPrediccionById(Long id);
+	
 	public Predicciones guardarPrediccion(String descripcion);
 
 	public List<String> getDescripciones(); 

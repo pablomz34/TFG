@@ -23,6 +23,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -61,6 +62,9 @@ public class FasesController {
 
 	@Autowired
 	private IPrediccionesService prediccionesService;
+
+	@Value("${myapp.imagenesClusters.ruta}")
+	private String rutaImagenesClusters;
 
 	@GetMapping("/getMedicos")
 	public List<UsuariosDto> getMedicos() {
@@ -265,35 +269,70 @@ public class FasesController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("/getDescripcionesPredicciones")
-	public ResponseEntity<?> getDescripcionesPredicciones(){
+	public ResponseEntity<?> getDescripcionesPredicciones() {
 		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
 	}
 
 	@PostMapping("/createOrFindPrediction")
 	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)
 			throws UnsupportedEncodingException {
-		
+
 		descripcion = StringEscapeUtils.escapeJava(descripcion);
-		
+
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (prediccion == null) {
 
 			prediccion = prediccionesService.guardarPrediccion(descripcion);
 
+			if (!this.crearCarpetaPrediccion(prediccion)) {
+				return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
 			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		} else {
-			
+
+			if (!this.crearCarpetaPrediccion(prediccion)) {
+				return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
 			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		}
 
 	}
 
+	private boolean crearCarpetaPrediccion(Predicciones prediccion) {
+
+		File carpetaClusters = new File(rutaImagenesClusters);
+
+		if (!carpetaClusters.exists()) {
+			if (!carpetaClusters.mkdirs()) {
+				return false;
+			}
+		}
+
+		String nombreCarpetaPrediccion = "prediccion" + prediccion.getId();
+		File carpetaPrediccion = new File(rutaImagenesClusters + File.separator + nombreCarpetaPrediccion);
+
+		if (!carpetaPrediccion.exists()) {
+			if (!carpetaPrediccion.mkdirs()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
-	public ResponseEntity<?> createAllSurvivalCurves(@RequestPart("file") MultipartFile multipartFile)
-			throws IllegalStateException, IOException {
+	public ResponseEntity<?> createAllSurvivalCurves(@RequestParam("idPrediccion") String idPrediccion,
+			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+
+		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
+
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
 
 		String error = this.validarInputFile(multipartFile);
 		if (!error.isEmpty()) {
@@ -340,14 +379,18 @@ public class FasesController {
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
 
+		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
+
 		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
-				"\\src\\main\\resources\\static\\clustersImages\\allClusters.png", "clustersImages/allClusters.png",
-				-1);
+				rutaPrediccion + File.separator + "allClusters.png",
+				"clustersImages" + File.separator + "prediccion" + prediccion.getId() + File.separator + "allClusters.png", -1, prediccion.getId());
 		for (int i = 0; i < 8; i++) {
 			this.guardarImagenes(file,
 					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
-					"\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png",
-					"clustersImages/cluster" + Integer.toString(i) + ".png", i);
+					rutaPrediccion + File.separator + "cluster" + Integer.toString(i) + ".png",
+					"clustersImages" + File.separator + "prediccion" + prediccion.getId() + File.separator + "cluster"
+							+ Integer.toString(i) + ".png",
+					i, prediccion.getId());
 		}
 
 		file.delete();
@@ -473,16 +516,6 @@ public class FasesController {
 		// Cerrar el objeto CloseableHttpClient y liberar los recursos
 		httpClient.close();
 
-		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
-				"\\src\\main\\resources\\static\\clustersImages\\allClusters.png", "clustersImages/allClusters.png",
-				-1);
-		for (int i = 0; i < 8; i++) {
-			this.guardarImagenes(file,
-					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
-					"\\src\\main\\resources\\static\\clustersImages\\cluster" + Integer.toString(i) + ".png",
-					"clustersImages/cluster" + Integer.toString(i) + ".png", i);
-		}
-
 		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
@@ -548,8 +581,6 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-
-		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile");
 
 		file.delete();
 
@@ -618,8 +649,8 @@ public class FasesController {
 
 	}
 
-	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, int numCluster)
-			throws IOException {
+	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, int numCluster,
+			Long idPrediccion) throws IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -651,13 +682,13 @@ public class FasesController {
 
 		byte[] imageBytes = responseInputStream.readAllBytes();
 
-		FileOutputStream imgOutFile = new FileOutputStream(System.getProperty("user.dir") + rutaImagenServidor);
+		FileOutputStream imgOutFile = new FileOutputStream(rutaImagenServidor);
 		imgOutFile.write(imageBytes);
 		imgOutFile.close();
 
 		httpClient.close();
 
-		imagenesService.guardarImagen(numCluster, rutaImagenBDD);
+		imagenesService.guardarImagen(numCluster, rutaImagenBDD, idPrediccion);
 
 	}
 

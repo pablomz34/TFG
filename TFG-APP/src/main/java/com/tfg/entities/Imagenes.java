@@ -26,7 +26,7 @@ public class Imagenes {
 	@Column(name = "ruta", nullable = false, unique = true)
 	private String ruta;
 	
-	@Column(name = "num_cluster", nullable = false, unique = true)
+	@Column(name = "num_cluster", nullable = false)
 	private int numCluster;
 	
     @ManyToOne

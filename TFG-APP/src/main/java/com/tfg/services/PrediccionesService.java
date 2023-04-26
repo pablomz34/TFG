@@ -47,5 +47,12 @@ public class PrediccionesService implements IPrediccionesService {
 		return descripciones;
 	}
 
+	@Override
+	public Predicciones findPrediccionById(Long id) {
+		return repos.findPrediccionById(id);
+	}
+	
+	
+	
 	
 }

@@ -5,23 +5,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.entities.Imagenes;
+import com.tfg.entities.Predicciones;
 import com.tfg.repositories.ImagenesRepository;
+import com.tfg.repositories.PrediccionesRepository;
 
 @Service
 @Transactional
 public class ImagenesService implements IImagenesService {
 
+	
+	@Autowired 
+	private PrediccionesRepository prediccionesRepo;
+	
 	@Autowired
 	private ImagenesRepository repos;
 		
 	@Override
-	public void guardarImagen(int numCluster, String ruta) {
-		Imagenes imagen = repos.findByNumCluster(numCluster);
+	public void guardarImagen(int numCluster, String ruta, Long idPrediccion) {
+		
+		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
+		
+		Imagenes imagen = repos.findByNumClusterAndPrediccion(numCluster, prediccion);
 		
 		if(imagen == null) {
 			Imagenes imagenNueva = new Imagenes();
-			imagenNueva.setNumCluster(numCluster);;
+			imagenNueva.setNumCluster(numCluster);
 			imagenNueva.setRuta(ruta);
+			imagenNueva.setPrediccion(prediccion);
+			
 			repos.save(imagenNueva);
 		}
 		
