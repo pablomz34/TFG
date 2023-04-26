@@ -318,6 +318,7 @@ Vue.component('fase4', {
 			crear: true,
 			descripcionSeleccionada: '',
 			descripciones: [],
+			idPrediccion: '',
 			csvFile: '',
 			csvFile2: '',
 			imagenCreada: false,
@@ -346,7 +347,7 @@ Vue.component('fase4', {
 			.then(async res => {
 				if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 					const errorMessage = await res.text();
-					THIZ.error1 = "Error: " + errorMessage;
+					//THIZ.error1 = "Error: " + errorMessage;
 					$('#cargando').hide();
 					throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 				}
@@ -376,14 +377,14 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error2 = "Error: " + errorMessage;
+						//THIZ.error2 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.text();
 				})
 				.then(data => {
-					console.log(data)
+					THIZ.idPrediccion = data;
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
@@ -397,7 +398,7 @@ Vue.component('fase4', {
 			$('#cargando').show();
 			formData.append('file', this.$refs.csvFile.files[0]);
 
-			fetch(window.location.origin + "/admin/fases/createAllSurvivalCurves", {
+			fetch(window.location.origin + "/admin/fases/createAllSurvivalCurves+idPrediccion" + this.idPrediccion, {
 				method: "POST",
 				body: formData
 			})
