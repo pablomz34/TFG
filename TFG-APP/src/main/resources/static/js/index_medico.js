@@ -11,6 +11,7 @@ new Vue({
 			descripcionSeleccionada: '',
 			datosCargados: false,
 			curvaUrl: '',
+			idPrediccion: '',
 			datasetStatistics: [
 				{ nombre: 'Id Prediction', valor: '' },
 				{ nombre: 'Number of variables', valor: '' },
@@ -24,14 +25,14 @@ new Vue({
 			numCluster: null
 		}
 	},
-	
-	created(){
-			fetch(window.location.origin + "/medico/getDescripcionesPredicciones", {
-				method: "GET"
-			})
+
+	created() {
+		fetch(window.location.origin + "/medico/getDescripcionesPredicciones", {
+			method: "GET"
+		})
 			.then(res => res.json())
 			.then(json => {
-				for(let i=0; i<json.length;i++){
+				for (let i = 0; i < json.length; i++) {
 					this.descripciones.push(json[i]);
 				}
 			})
@@ -41,47 +42,57 @@ new Vue({
 	methods: {
 		getPrediccionValues() {
 			const THIZ = this;
-			
-			THIZ.isPrediccionSelected = true
-			
-			fetch(window.location.origin + "/medico/getFeatures?descripcionPrediccion=" + this.descripcionSeleccionada, {
+
+			fetch(window.location.origin + "/medico/getIdPrediccion?descripcionPrediccion=" + this.descripcionSeleccionada, {
 				method: "GET"
 			})
-				.then(res => res.json())
-				.then(json => {
-					const THIZ = this;
-					let features = json.features;
-					
-					features.shift();
-					
-					for(let i=0; i< features.length;i++){
-						
-						let inputDict = {};
-						let feature = features[i];
-						
-						let arrayFeature = Object.values(feature)[1];
-						
-						inputDict["seleccion"] = '';
-						
-						let inputLabelName = Object.values(feature)[0];
-						
-						let primerLetraMayuscula = inputLabelName.charAt(0).toUpperCase();
-						let restoString = inputLabelName.slice(1).toLowerCase();
-						inputLabelName = primerLetraMayuscula + restoString;
-						
-						inputDict["nombre"] = inputLabelName;
-						
-						inputDict["variables"] = [];
-						
-						for(let j=0; j<arrayFeature.length;j++){
-							inputDict["variables"].push(String(Object.keys(arrayFeature[j])));
-						}
-						
-						THIZ.herramientaPredictivaInputs.push(inputDict);
-					}
-					
+				.then(res => res.text())
+				.then(data => {
+					THIZ.idPrediccion = data
+
+					fetch(window.location.origin + "/medico/getFeatures?idPrediccion=" + this.idPrediccion, {
+						method: "GET"
+					})
+						.then(res => res.json())
+						.then(json => {
+							let features = json.features;
+
+							features.shift();
+
+							for (let i = 0; i < features.length; i++) {
+
+								let inputDict = {};
+								let feature = features[i];
+
+								let arrayFeature = Object.values(feature)[1];
+
+								inputDict["seleccion"] = '';
+
+								let inputLabelName = Object.values(feature)[0];
+
+								let primerLetraMayuscula = inputLabelName.charAt(0).toUpperCase();
+								let restoString = inputLabelName.slice(1).toLowerCase();
+								inputLabelName = primerLetraMayuscula + restoString;
+
+								inputDict["nombre"] = inputLabelName;
+
+								inputDict["variables"] = [];
+
+								for (let j = 0; j < arrayFeature.length; j++) {
+									inputDict["variables"].push(String(Object.keys(arrayFeature[j])));
+								}
+
+								THIZ.herramientaPredictivaInputs.push(inputDict);
+							}
+
+						})
+						.catch(error => console.error(error));
 				})
 				.catch(error => console.error(error));
+
+
+
+			THIZ.isPrediccionSelected = true
 		},
 		getNewPatientClassification() {
 			const THIZ = this;
@@ -89,7 +100,7 @@ new Vue({
 
 
 			let jsonData = {};
-			
+
 			jsonData[this.herramientaPredictivaInputs[0].nombre.toUpperCase()] = this.herramientaPredictivaInputs[0].seleccion;
 			jsonData[this.herramientaPredictivaInputs[1].nombre.toUpperCase()] = this.herramientaPredictivaInputs[1].seleccion;
 			jsonData[this.herramientaPredictivaInputs[2].nombre.toUpperCase()] = this.herramientaPredictivaInputs[2].seleccion;
@@ -97,10 +108,7 @@ new Vue({
 			jsonData[this.herramientaPredictivaInputs[4].nombre.toUpperCase()] = this.herramientaPredictivaInputs[4].seleccion;
 			jsonData[this.herramientaPredictivaInputs[5].nombre.toUpperCase()] = this.herramientaPredictivaInputs[5].seleccion;
 
-
-		
-
-			fetch(window.location.origin + "/medico/getNewPatientClassification?descripcionPrediccion=" + this.descripcionSeleccionada, {
+			fetch(window.location.origin + "/medico/getNewPatientClassification?idPrediccion=" + this.idPrediccion, {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json' // Tipo de contenido del cuerpo de la solicitud
@@ -114,11 +122,11 @@ new Vue({
 						$('#cargando').hide();
 						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
-					
+
 					return res.json();
 				})
 				.then(data => {
-					
+
 					console.log(data);
 					THIZ.numCluster = data.numCluster;
 					THIZ.curvaUrl = data.rutaImagen;
@@ -130,7 +138,7 @@ new Vue({
 					THIZ.datasetStatistics[4].valor = data.clusterData.target_third_quantile;
 
 					THIZ.variables = data.clusterData.features;
-					
+
 					THIZ.datosCargados = true;
 					$('#cargando').hide();
 				})

@@ -59,7 +59,7 @@ public class MedicoController {
 	}
 	
 	@PostMapping(value="/getNewPatientClassification", consumes="application/json")
-	public ResponseEntity<?> getNewPatientClassification(@RequestParam("descripcionPrediccion") String descripcionPrediccion,
+	public ResponseEntity<?> getNewPatientClassification(@RequestParam("idPrediccion") String idPrediccion,
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 		
@@ -105,15 +105,13 @@ public class MedicoController {
 		//Integer numCluster = (Integer) map.get("Cluster");
 		
 		
-		descripcionPrediccion = StringEscapeUtils.escapeJava(descripcionPrediccion);
+		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
 		
 		Integer numCluster = 2;
 		
-		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcionPrediccion);
-		
-		String rutaImagen = imagenesService.findClusterImage(numCluster, prediccion.getId()).getRuta();
+		String rutaImagen = imagenesService.findClusterImage(numCluster, Long.parseLong(idPrediccion)).getRuta();
 
-		Profiles profile = profilesService.findClusterProfile(numCluster, prediccion.getId());
+		Profiles profile = profilesService.findClusterProfile(numCluster, Long.parseLong(idPrediccion));
 		
 		HashMap<String, Object> featuresMap = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
 		
@@ -165,10 +163,10 @@ public class MedicoController {
 //	}
 
 	@GetMapping("/getFeatures")
-	public ResponseEntity<?> getFeatures(@RequestParam("descripcionPrediccion") String descripcionPrediccion)
+	public ResponseEntity<?> getFeatures(@RequestParam("idPrediccion") String idPrediccion)
 			throws IllegalStateException, IOException {
 
-		String features = profilesService.findFeaturesAllClusters(descripcionPrediccion);
+		String features = profilesService.findFeaturesAllClusters(Long.parseLong(idPrediccion));
 		
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(features, HashMap.class);
@@ -179,6 +177,11 @@ public class MedicoController {
 		
 		return new ResponseEntity<>(featuresMap, HttpStatus.OK);
 
+	}
+	
+	@GetMapping("/getIdPrediccion")
+	public ResponseEntity<?> getIdPrediccion(@RequestParam("descripcionPrediccion") String descripcionPrediccion) {
+		return new ResponseEntity<>(prediccionesService.findPrediccionByDescripcion(descripcionPrediccion).getId(), HttpStatus.OK);
 	}
 	
 	

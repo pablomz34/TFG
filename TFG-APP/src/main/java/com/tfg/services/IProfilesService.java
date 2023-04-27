@@ -14,5 +14,5 @@ public interface IProfilesService {
 	
 	public Profiles findClusterProfile(Integer numCluster, Long idPrediccion);
 	
-	public String findFeaturesAllClusters(String descripcionPrediccion);
+	public String findFeaturesAllClusters(Long idPrediccion);
 }
