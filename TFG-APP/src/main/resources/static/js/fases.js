@@ -620,8 +620,8 @@ Vue.component('fase4', {
 	            </div>
 	        </div>
 	        
-	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-	            <div v-if="curvasAndPerfilesCreados" class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	        <div v-if="curvasAndPerfilesCreados" class="card col-5 rounded-4 p-0 mb-2 shadow">
+	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Perfil de cluster</h2>
 	            </div>
 	            <div class="card-body">
