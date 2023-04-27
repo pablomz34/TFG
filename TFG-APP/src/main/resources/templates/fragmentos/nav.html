@@ -30,6 +30,8 @@
 				<li th:if="${session.usuario}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/logout}">Cerrar sesión</a>
 				</li>
+				
+				
 
 				<!-- Usuario sin loguear-->
 				<li th:unless="${session.usuario}" class="nav-item">
@@ -38,7 +40,11 @@
 				<li th:unless="${session.usuario}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/login}">Iniciar Sesión</a>
 				</li>
+				
+				
 			</ul>
+			
+			<span class="fw-bold text-light fs-5" th:if="${session.usuario}">Bienvenido, [[${session.nombreUsuario}]]</span>
 		</div>
 	</div>
 </nav>
