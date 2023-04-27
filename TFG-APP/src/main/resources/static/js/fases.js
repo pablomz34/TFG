@@ -326,9 +326,10 @@ Vue.component('fase4', {
 			nClusters: '',
 			clusterSeleccionadoCurves: '',
 			clusterSeleccionadoProfile: '',
-			imagenUrl: '',
+			curvasUrl: '',
+			nombreDescargaCurvas: '',
 			curvasCargadas: false,
-			perfilCreado: false,
+			perfilCargado: false,
 			datasetStatistics: [
 				{ nombre: 'Id Prediction', fila: 0, valor: '' },
 				{ nombre: 'Number of variables', fila: 1, valor: '' },
@@ -404,6 +405,8 @@ Vue.component('fase4', {
 
 		createPopulationAndCurves: function() {
 			const THIZ = this;
+			THIZ.curvasCargadas = false;
+			THIZ.perfilesCargados = false;
 			THIZ.error1 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
@@ -437,60 +440,39 @@ Vue.component('fase4', {
 		},
 
 		mostrarClusterSurvivalCurve: function() {
-			console.log(this.clusterSeleccionadoCurves);
+			const THIZ = this;
+			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
+				method: "GET",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						//THIZ.error1 = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(data => {
+					THIZ.curvasUrl = data;
+					THIZ.nombreDescargaCurvas = 'prediccion' + this.idPrediccion + 'cluster' + this.clusterSeleccionadoCurves + '.png';
+					THIZ.curvasCargadas = true;
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
 		},
-		
+
 		mostrarClusterProfile: function() {
 			console.log(this.clusterSeleccionadoProfile);
 		},
-
-		//		createPopulationProfile: function() {
-		//			const THIZ = this;
-		//			THIZ.error2 = '';
-		//			const formData = new FormData();
-		//			THIZ.datosCargados = false;
-		//			THIZ.variableSeleccionada = '';
-		//			$('#cargando').show();
-		//
-		//			formData.append('file', this.$refs.csvFile2.files[0]);
-		//
-		//			fetch(window.location.origin + "/admin/fases/createPopulationProfile", {
-		//				method: "POST",
-		//				body: formData
-		//			})
-		//				.then(async res => {
-		//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-		//						const errorMessage = await res.text();
-		//						THIZ.error2 = "Error: " + errorMessage;
-		//						$('#cargando').hide();
-		//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-		//					}
-		//					return res.json();
-		//				})
-		//				.then(data => {
-		//
-		//					THIZ.datasetStatistics[0].valor = data.id_prediction;
-		//					THIZ.datasetStatistics[1].valor = data.number_of_variables;
-		//					THIZ.datasetStatistics[2].valor = data.number_of_observations;
-		//					THIZ.datasetStatistics[3].valor = data.target_median;
-		//					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
-		//
-		//					for (i = 0; i < data.features.length; i++) {
-		//						THIZ.variables[i] = data.features[i];
-		//					}
-		//
-		//					THIZ.datosCargados = true;
-		//
-		//					$('#cargando').hide();
-		//				})
-		//				.catch(error => console.error(error));
-		//		},
 
 		cambiarSeleccion() {
 			const THIZ = this;
 			THIZ.crear = !this.crear;
 			THIZ.continuar = false;
 			THIZ.curvasAndPerfilesCreados = false;
+			THIZ.curvasCargadas = false;
+			THIZ.perfilesCargados = false;
 			THIZ.descripcionSeleccionada = '';
 		},
 	},
@@ -542,7 +524,7 @@ Vue.component('fase4', {
 		                       		<option v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
 		                    	</select>
 							</div>
-							<div class="form-group mb-3">
+							<div class="form-group mb-2">
 		                        <div class="row justify-content-center">
 		                            <div class="col text-center">
 		                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
@@ -646,12 +628,12 @@ Vue.component('fase4', {
 	        </div> 
 	    </div>
 	    
-	    <!-- <div class="row justify-content-around">
+	    <div class="row justify-content-around">
 	        <div v-if="curvasCargadas" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">
 	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-	                <a v-bind:href="imagenUrl" download="nClustersImagen.png">
-	                    <img id="imagenFase4" v-bind:src="imagenUrl" style="max-width: 100%;"/>
+	                <a v-bind:href="curvasUrl" :download="nombreDescargaCurvas">
+	                    <img id="curvasUrl" v-bind:src="curvasUrl" style="max-width: 100%;"/>    
 	                </a>
 	            </div>
 	        </div>
@@ -661,11 +643,11 @@ Vue.component('fase4', {
 	                <h2>Overview</h2>
 	                <overview :statistics="this.datasetStatistics"/>
 	            </div>
-	        </div>
+	        </div> 
 	        <div v-else class="col-5 mb-2"/>
 	    </div>
 	
-	    <div class="row justify-content-around">
+	    <!-- <div class="row justify-content-around">
 	        <div class="col-5 mb-2"/>
 	        <div v-if="perfilCargado" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">

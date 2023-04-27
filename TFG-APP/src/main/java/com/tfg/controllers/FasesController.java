@@ -416,12 +416,12 @@ public class FasesController {
 		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
 
 		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", rutaPrediccion + File.separator + "allClusters.png",
-				"clustersImages/prediccion" + prediccion.getId() + "/allClusters.png", -1, prediccion.getId());
+				"/clustersImages/prediccion" + prediccion.getId() + "/allClusters.png", -1, prediccion.getId());
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
 			this.guardarImagenes(file,
 					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
 					rutaPrediccion + File.separator +"cluster" + Integer.toString(i) + ".png",
-					"clustersImages/prediccion" + prediccion.getId() + "/cluster" + Integer.toString(i) + ".png", i,
+					"/clustersImages/prediccion" + prediccion.getId() + "/cluster" + Integer.toString(i) + ".png", i,
 					prediccion.getId());
 		}
 
@@ -431,7 +431,7 @@ public class FasesController {
 
 	}
 
-	@PostMapping("/getRutaCluster")
+	@GetMapping("/getRutaCluster")
 	public ResponseEntity<?> getRutaCluster(@RequestParam("clusterNumber") String clusterNumber,
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
