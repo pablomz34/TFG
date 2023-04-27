@@ -331,15 +331,14 @@ Vue.component('fase4', {
 			curvasCargadas: false,
 			perfilCargado: false,
 			datasetStatistics: [
-				{ nombre: 'Id Prediction', fila: 0, valor: '' },
-				{ nombre: 'Number of variables', fila: 1, valor: '' },
-				{ nombre: 'Number of observations', fila: 2, valor: '' },
-				{ nombre: 'Target median', fila: 3, valor: '' },
-				{ nombre: 'Target third quantile', fila: 4, valor: '' },
+				{ nombre: 'Id Prediction', valor: '' },
+				{ nombre: 'Number of variables', valor: '' },
+				{ nombre: 'Number of observations', valor: '' },
+				{ nombre: 'Target median', valor: '' },
+				{ nombre: 'Target third quantile', valor: '' },
 			],
 			variableSeleccionada: '',
-			variables: [{ feature: 'agglomerative', agglomerative: [] }, { feature: 'GENDER', GENDER: [] }, { feature: 'EDUCATION', EDUCATION: [] }, { feature: 'ETHCAT', ETHCAT: [] },
-			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
+			variables: [],
 			error1: '',
 			error2: '',
 		}
@@ -406,7 +405,7 @@ Vue.component('fase4', {
 		createPopulationAndCurves: function() {
 			const THIZ = this;
 			THIZ.curvasCargadas = false;
-			THIZ.perfilesCargados = false;
+			THIZ.perfilCargados = false;
 			THIZ.error1 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
@@ -463,7 +462,33 @@ Vue.component('fase4', {
 		},
 
 		mostrarClusterProfile: function() {
-			console.log(this.clusterSeleccionadoProfile);
+			this.perfilCargado = false;
+			const THIZ = this;
+			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
+				method: "GET",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						//THIZ.error1 = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.json();
+				})
+				.then(data => {
+					THIZ.datasetStatistics[0].valor = data.id_prediction;
+					THIZ.datasetStatistics[1].valor = data.number_of_variables;
+					THIZ.datasetStatistics[2].valor = data.number_of_observations;
+					THIZ.datasetStatistics[3].valor = data.target_median;
+					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
+
+					THIZ.variables = data.features;
+
+					THIZ.perfilCargado = true;
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
 		},
 
 		cambiarSeleccion() {
@@ -472,7 +497,7 @@ Vue.component('fase4', {
 			THIZ.continuar = false;
 			THIZ.curvasAndPerfilesCreados = false;
 			THIZ.curvasCargadas = false;
-			THIZ.perfilesCargados = false;
+			THIZ.perfilCargados = false;
 			THIZ.descripcionSeleccionada = '';
 		},
 	},
@@ -647,241 +672,25 @@ Vue.component('fase4', {
 	        <div v-else class="col-5 mb-2"/>
 	    </div>
 	
-	    <!-- <div class="row justify-content-around">
+	    <div class="row justify-content-around">
 	        <div class="col-5 mb-2"/>
 	        <div v-if="perfilCargado" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">
 	                <h2>Variables</h2>
 	                <div class="col-md-6">
 	                    <select class="form-select col-md-4" name="variables" v-model="variableSeleccionada">
-	                        <option value="" disabled selected>Select columns</option>
+	                        <option value="" disabled selected>Selecciona variable</option>
 	                        <option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
 	                    </select>
 	                </div>
 	                <variables :variable="this.variableSeleccionada"/>
 	            </div>
 	        </div>
-	    </div> -->
+	    </div>
 	</div>
 	`
 });
 
-
-
-//Vue.component('fase5', {
-//	data: function() {
-//		return {
-//			clusterNumberSurvivalCurve: '',
-//			csvFileSurvivalCurve: '',
-//			imagenCreada: false,
-//			imagenUrl: '',
-//			clusterNumberProfile: '',
-//			csvFileProfile: '',
-//			datasetStatistics: [
-//				{ nombre: 'Id Prediction', fila: 0, valor: '' },
-//				{ nombre: 'Number of variables', fila: 1, valor: '' },
-//				{ nombre: 'Number of observations', fila: 2, valor: '' },
-//				{ nombre: 'Target median', fila: 3, valor: '' },
-//				{ nombre: 'Target third quantile', fila: 4, valor: '' },
-//			],
-//			variables: [{ feature: 'GENDER', GENDER: [] }, { feature: 'EDUCATION', EDUCATION: [] }, { feature: 'ETHCAT', ETHCAT: [] },
-//			{ feature: 'WORK_INCOME_TCR', WORK_INCOME_TCR: [] }, { feature: 'PRI_PAYMENT_TCR_KI', PRI_PAYMENT_TCR_KI: [] }, { feature: 'AGE_RANGE', AGE_RANGE: [] }],
-//			variableSeleccionada: '',
-//			datosCargados: false,
-//			error1: '',
-//			error2: '',
-//		}
-//	},
-//
-//
-//	methods: {
-//		createClusterSurvivalCurve() {
-//			const THIZ = this;
-//			THIZ.error1 = '';
-//			const formData = new FormData();
-//			THIZ.imagenCreada = false;
-//			$('#cargando').show();
-//			formData.append('cluster_number', this.clusterNumberSurvivalCurve);
-//			formData.append('file', this.$refs.csvFileSurvivalCurve.files[0]);
-//
-//			fetch(window.location.origin + "/admin/fases/createClusterSurvivalCurve", {
-//				method: "POST",
-//				body: formData
-//			})
-//				.then(async res => {
-//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-//						const errorMessage = await res.text();
-//						THIZ.error1 = "Error: " + errorMessage;
-//						$('#cargando').hide();
-//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-//					}
-//					return res.arrayBuffer();
-//				})
-//				.then(image_bytes => {
-//
-//					const byteArray = new Uint8Array(image_bytes);
-//					const blob = new Blob([byteArray], { type: 'image/png' });
-//					const url = URL.createObjectURL(blob);
-//					THIZ.imagenCreada = true;
-//					THIZ.imagenUrl = url;
-//					$('#cargando').hide();
-//				})
-//				.catch(error => console.error(error));
-//		},
-//
-//		createClusterProfile() {
-//			const THIZ = this;
-//			THIZ.error2 = '';
-//			THIZ.datosCargados = false;
-//			THIZ.variableSeleccionada = '';
-//			const formData = new FormData();
-//			$('#cargando').show();
-//			formData.append('cluster_number', this.clusterNumberProfile);
-//			formData.append('file', this.$refs.csvFileProfile.files[0]);
-//
-//			fetch(window.location.origin + "/admin/fases/createClusterProfile", {
-//				method: "POST",
-//				body: formData
-//			})
-//				.then(async res => {
-//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-//						const errorMessage = await res.text();
-//						THIZ.error2 = "Error: " + errorMessage;
-//						$('#cargando').hide();
-//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-//					}
-//					return res.json();
-//				})
-//				.then(data => {
-//					THIZ.datasetStatistics[0].valor = data.id_prediction;
-//					THIZ.datasetStatistics[1].valor = data.number_of_variables;
-//					THIZ.datasetStatistics[2].valor = data.number_of_observations;
-//					THIZ.datasetStatistics[3].valor = data.target_median;
-//					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
-//
-//					for (i = 0; i < data.features.length; i++) {
-//						THIZ.variables[i] = data.features[i];
-//					}
-//					THIZ.datosCargados = true;
-//					$('#cargando').hide();
-//				})
-//				.catch(error => console.error(error));
-//		},
-//
-//	},
-//
-//
-//	template: `
-//	<div class="container mb-5 mt-5">
-//	    <span>
-//	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
-//	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;" />
-//	        </div>
-//	    </span>
-//	    <div class="row justify-content-around">
-//	        <div v-if="error1 != ''" class="col-5 alert alert-danger">
-//	            {{this.error1}}
-//	        </div>
-//	        <div v-else class="col-5" />
-//	        <div v-if="error2 != ''" class="col-5 alert alert-danger">
-//	            {{this.error2}}
-//	        </div>
-//	        <div v-else class="col-5" />
-//	    </div>
-//	
-//	    <div class="row justify-content-around">
-//	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-//	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-//	                <h2 class="text-center text-white">Curva de cluster</h2>
-//	            </div>
-//	            <div class="card-body">
-//	                <form @submit.prevent="createClusterSurvivalCurve">
-//	                    <div class="form-group mb-3">
-//	                        <label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
-//	                        <input type="number" min="0" class="form-control" v-model="clusterNumberSurvivalCurve" id="clusterNumberSurvivalCurve" required />
-//	                    </div>
-//	
-//	                    <div class="form-group mb-3">
-//	                        <label for="csv1" class="form-label">Archivo csv</label>
-//	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFileSurvivalCurve" required />
-//	                    </div>
-//	
-//	                    <div class="form-group mb-2">
-//	                        <div class="row justify-content-center">
-//	                            <div class="col text-center">
-//	                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Ejecutar</button>
-//	                            </div>
-//	                        </div>
-//	                    </div>
-//	                </form>
-//	            </div>
-//	        </div>
-//	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-//	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-//	                <h2 class="text-center text-white">Perfil de cluster</h2>
-//	            </div>
-//	            <div class="card-body">
-//	                <form @submit.prevent="createClusterProfile">
-//	                    <div class="form-group mb-3">
-//	                        <label class="form-label" for="clusterNumberProfile">Numero de cluster</label>
-//	                        <input type="number" min="0" class="form-control" v-model="clusterNumberProfile" id="clusterNumberProfile" required />
-//	                    </div>
-//	
-//	                    <div class="form-group mb-3">
-//	                        <label for="csv2" class="form-label">Archivo csv</label>
-//	                        <input class="form-control" accept=".csv" type="file" id="csv2" ref="csvFileProfile" required />
-//	                    </div>
-//	
-//	                    <div class="form-group mb-2">
-//	                        <div class="row justify-content-center">
-//	                            <div class="col text-center">
-//	                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Ejecutar</button>
-//	                            </div>
-//	                        </div>
-//	                    </div>
-//	                </form>
-//	            </div>
-//	        </div>
-//	    </div>
-//	
-//	    <div class="row justify-content-around">
-//	        <div v-if="imagenCreada" class="card col-5 rounded-4 p-0 mb-2 shadow">
-//	            <div class="card-body">
-//	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-//	                <a v-bind:href="imagenUrl" download="nClustersImagen.png">
-//	                    <img id="imagenFase5" v-bind:src="imagenUrl" style="max-width: 100%;" />
-//	                </a>
-//	            </div>
-//	        </div>
-//	        <div v-else class="col-5 mb-2" />
-//	        <div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
-//	            <div class="card-body">
-//	                <h2>Overview</h2>
-//	                <overview :statistics="this.datasetStatistics" />
-//	            </div>
-//	        </div>
-//	        <div v-else class="col-5 mb-2" />
-//	    </div>
-//	
-//	    <div class="row justify-content-around">
-//	        <div class="col-5 mb-2" />
-//	        <div v-if="datosCargados" class="card col-5 rounded-4 p-0 mb-2 shadow">
-//	            <div class="card-body">
-//	                <h2>Variables</h2>
-//	                <div class="col-md-6">
-//	                    <select class="form-select col-md-4" name="variables" v-model="variableSeleccionada">
-//	                        <option value="" disabled selected>Select columns</option>
-//	                        <option v-for="variable in variables" :value="variable">{{variable.feature}}</option>
-//	                    </select>
-//	                </div>
-//	                <variables :variable="this.variableSeleccionada" />
-//	            </div>
-//	        </div>
-//	    </div>
-//	</div>
-//
-//	`
-//});
 
 Vue.component('fase5', {
 	data: function() {

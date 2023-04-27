@@ -455,7 +455,7 @@ public class FasesController {
 
 	}
 
-	@PostMapping("/getClusterProfile")
+	@GetMapping("/getClusterProfile")
 	public ResponseEntity<?> getClusterProfile(@RequestParam("clusterNumber") String clusterNumber,
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
