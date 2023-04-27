@@ -1,5 +1,6 @@
 package com.tfg.services;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,13 @@ public class ProfilesService implements IProfilesService {
 		return repos.findByNumClusterAndPrediccion(numCluster, prediccion);
 	}
 		
-	
+	public String findPrediccionFeatures(String descripcionPrediccion){
+		
+		Predicciones prediccion = prediccionesRepo.findByDescripcion(descripcionPrediccion);
+		
+		Profiles profile = repos.findByNumClusterAndPrediccion(-1, prediccion);
+		
+		return profile.getFeatures();
+	}
 
 }

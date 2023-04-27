@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -24,14 +25,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.ImagenesDto;
+import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
+import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 
 @Controller
@@ -39,6 +43,9 @@ import com.tfg.services.IProfilesService;
 public class MedicoController {
 
 	static final String UrlServidor = "https://91c1-83-61-231-12.ngrok-free.app/";
+	
+	@Autowired
+	private IPrediccionesService prediccionesService;
 	
 	@Autowired
 	private IProfilesService profilesService;
@@ -51,17 +58,17 @@ public class MedicoController {
 		return "index_medico";
 	}
 	
-//	@PostMapping(value="/getNewPatientClassification", consumes="application/json")
-//	public ResponseEntity<?> getNewPatientClassification(
-//			@RequestBody HashMap<String, Object> json)
-//			throws IllegalStateException, IOException, ClassNotFoundException {
-//		
+	@PostMapping(value="/getNewPatientClassification", consumes="application/json")
+	public ResponseEntity<?> getNewPatientClassification(@RequestParam("descripcionPrediccion") String descripcionPrediccion,
+			@RequestBody HashMap<String, Object> json)
+			throws IllegalStateException, IOException, ClassNotFoundException {
+		
 //		String error = validarJson(json);
 //		
 //		if(!error.isEmpty()) {
 //			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 //		}
-//		
+		
 //		CloseableHttpClient httpClient = HttpClients.createDefault();
 //
 //		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
@@ -94,18 +101,31 @@ public class MedicoController {
 //
 //		HashMap<String, Object> map = null;
 //		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
-//
-//
-//		int cluster = (int) map.get("Cluster");
-//		
-//		
-//		String rutaImagen = imagenesService.findClusterImage(cluster).getRuta();
-//		ImagenesDto imagen = new ImagenesDto();
-//		imagen.setNCluster(cluster);
-//		imagen.setRuta(rutaImagen);
-//		return new ResponseEntity<>(imagen, HttpStatus.OK);
-//
-//	}
+
+		//Integer numCluster = (Integer) map.get("Cluster");
+		
+		
+		descripcionPrediccion = StringEscapeUtils.escapeJava(descripcionPrediccion);
+		
+		Integer numCluster = 2;
+		
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcionPrediccion);
+		
+		String rutaImagen = imagenesService.findClusterImage(numCluster, prediccion.getId()).getRuta();
+
+		String features = profilesService.findPrediccionFeatures(descripcionPrediccion);
+		
+		HashMap<String, Object> responseMap = new HashMap<String, Object>();
+		
+		responseMap.put("numCluster", numCluster);
+		
+		responseMap.put("rutaImagen", rutaImagen);
+		
+		responseMap.put("clusterData", features);
+		
+		return new ResponseEntity<>(responseMap, HttpStatus.OK);
+
+	}
 	
 //	private String validarJson(HashMap<String, Object> json) throws JsonMappingException, JsonProcessingException {
 //		
@@ -142,17 +162,27 @@ public class MedicoController {
 //		
 //	}
 
-//	@GetMapping("/getFeatures")
-//	public ResponseEntity<HashMap<String, Object>> getFeatures()
-//			throws IllegalStateException, IOException {
-//
-//		Profiles p = profilesService.findProfile();
-//		
-//		HashMap<String, Object> map = null;
-//		map = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
-//
-//		return new ResponseEntity<>(map, HttpStatus.OK);
-//
-//	}
+	@GetMapping("/getFeatures")
+	public ResponseEntity<?> getFeatures(@RequestParam("descripcionPrediccion") String descripcionPrediccion)
+			throws IllegalStateException, IOException {
+
+		String features = profilesService.findPrediccionFeatures(descripcionPrediccion);
+		
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(features, HashMap.class);
+		
+		HashMap<String, Object> featuresMap = new HashMap<String, Object>();
+		
+		featuresMap.put("features", map.get("features"));
+		
+		return new ResponseEntity<>(featuresMap, HttpStatus.OK);
+
+	}
+	
+	
+	@GetMapping("/getDescripcionesPredicciones")
+	public ResponseEntity<?> getDescripcionesPredicciones() {
+		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
+	}
 	
 }
