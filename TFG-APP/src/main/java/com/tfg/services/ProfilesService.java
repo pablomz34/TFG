@@ -17,8 +17,6 @@ import com.tfg.repositories.ProfilesRepository;
 @Transactional
 public class ProfilesService implements IProfilesService {
 
-	
-
 	@Autowired 
 	private PrediccionesRepository prediccionesRepo;
 	
@@ -54,7 +52,7 @@ public class ProfilesService implements IProfilesService {
 		return repos.findByNumClusterAndPrediccion(numCluster, prediccion);
 	}
 		
-	public String findPrediccionFeatures(String descripcionPrediccion){
+	public String findFeaturesAllClusters(String descripcionPrediccion){
 		
 		Predicciones prediccion = prediccionesRepo.findByDescripcion(descripcionPrediccion);
 		

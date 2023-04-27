@@ -113,7 +113,9 @@ public class MedicoController {
 		
 		String rutaImagen = imagenesService.findClusterImage(numCluster, prediccion.getId()).getRuta();
 
-		String features = profilesService.findPrediccionFeatures(descripcionPrediccion);
+		Profiles profile = profilesService.findClusterProfile(numCluster, prediccion.getId());
+		
+		HashMap<String, Object> featuresMap = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
 		
 		HashMap<String, Object> responseMap = new HashMap<String, Object>();
 		
@@ -121,7 +123,7 @@ public class MedicoController {
 		
 		responseMap.put("rutaImagen", rutaImagen);
 		
-		responseMap.put("clusterData", features);
+		responseMap.put("clusterData", featuresMap);
 		
 		return new ResponseEntity<>(responseMap, HttpStatus.OK);
 
@@ -166,7 +168,7 @@ public class MedicoController {
 	public ResponseEntity<?> getFeatures(@RequestParam("descripcionPrediccion") String descripcionPrediccion)
 			throws IllegalStateException, IOException {
 
-		String features = profilesService.findPrediccionFeatures(descripcionPrediccion);
+		String features = profilesService.findFeaturesAllClusters(descripcionPrediccion);
 		
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(features, HashMap.class);
