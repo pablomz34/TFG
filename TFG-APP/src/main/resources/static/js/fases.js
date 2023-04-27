@@ -324,6 +324,8 @@ Vue.component('fase4', {
 			csvFile2: '',
 			curvasAndPerfilesCreados: false,
 			nClusters: '',
+			clusterSeleccionadoCurves: '',
+			clusterSeleccionadoProfile: '',
 			imagenUrl: '',
 			curvasCargadas: false,
 			perfilCreado: false,
@@ -367,6 +369,12 @@ Vue.component('fase4', {
 			})
 			.catch(error => console.error(error));
 
+	},
+
+	computed: {
+		nClustersRange() {
+			return Array.from({ length: this.nClusters }, (_, index) => index);
+		}
 	},
 
 	methods: {
@@ -418,7 +426,7 @@ Vue.component('fase4', {
 
 				})
 				.then(data => {
-					
+
 					THIZ.nClusters = data;
 					THIZ.curvasAndPerfilesCreados = true;
 					$('#cargando').hide();
@@ -428,51 +436,61 @@ Vue.component('fase4', {
 
 		},
 
-//		createPopulationProfile: function() {
-//			const THIZ = this;
-//			THIZ.error2 = '';
-//			const formData = new FormData();
-//			THIZ.datosCargados = false;
-//			THIZ.variableSeleccionada = '';
-//			$('#cargando').show();
-//
-//			formData.append('file', this.$refs.csvFile2.files[0]);
-//
-//			fetch(window.location.origin + "/admin/fases/createPopulationProfile", {
-//				method: "POST",
-//				body: formData
-//			})
-//				.then(async res => {
-//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-//						const errorMessage = await res.text();
-//						THIZ.error2 = "Error: " + errorMessage;
-//						$('#cargando').hide();
-//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-//					}
-//					return res.json();
-//				})
-//				.then(data => {
-//
-//					THIZ.datasetStatistics[0].valor = data.id_prediction;
-//					THIZ.datasetStatistics[1].valor = data.number_of_variables;
-//					THIZ.datasetStatistics[2].valor = data.number_of_observations;
-//					THIZ.datasetStatistics[3].valor = data.target_median;
-//					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
-//
-//					for (i = 0; i < data.features.length; i++) {
-//						THIZ.variables[i] = data.features[i];
-//					}
-//
-//					THIZ.datosCargados = true;
-//
-//					$('#cargando').hide();
-//				})
-//				.catch(error => console.error(error));
-//		},
+		mostrarClusterSurvivalCurve: function() {
+			console.log(this.clusterSeleccionadoCurves);
+		},
+		
+		mostrarClusterProfile: function() {
+			console.log(this.clusterSeleccionadoProfile);
+		},
+
+		//		createPopulationProfile: function() {
+		//			const THIZ = this;
+		//			THIZ.error2 = '';
+		//			const formData = new FormData();
+		//			THIZ.datosCargados = false;
+		//			THIZ.variableSeleccionada = '';
+		//			$('#cargando').show();
+		//
+		//			formData.append('file', this.$refs.csvFile2.files[0]);
+		//
+		//			fetch(window.location.origin + "/admin/fases/createPopulationProfile", {
+		//				method: "POST",
+		//				body: formData
+		//			})
+		//				.then(async res => {
+		//					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+		//						const errorMessage = await res.text();
+		//						THIZ.error2 = "Error: " + errorMessage;
+		//						$('#cargando').hide();
+		//						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+		//					}
+		//					return res.json();
+		//				})
+		//				.then(data => {
+		//
+		//					THIZ.datasetStatistics[0].valor = data.id_prediction;
+		//					THIZ.datasetStatistics[1].valor = data.number_of_variables;
+		//					THIZ.datasetStatistics[2].valor = data.number_of_observations;
+		//					THIZ.datasetStatistics[3].valor = data.target_median;
+		//					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
+		//
+		//					for (i = 0; i < data.features.length; i++) {
+		//						THIZ.variables[i] = data.features[i];
+		//					}
+		//
+		//					THIZ.datosCargados = true;
+		//
+		//					$('#cargando').hide();
+		//				})
+		//				.catch(error => console.error(error));
+		//		},
 
 		cambiarSeleccion() {
 			const THIZ = this;
 			THIZ.crear = !this.crear;
+			THIZ.continuar = false;
+			THIZ.curvasAndPerfilesCreados = false;
 			THIZ.descripcionSeleccionada = '';
 		},
 	},
@@ -553,7 +571,7 @@ Vue.component('fase4', {
 	    </div>
 	
 	    <div v-if="continuar" class="row justify-content-around">
-	        <div class="card col-7 rounded-4 p-0 mb-2 shadow">
+	        <div class="card col-7 rounded-4 p-0 mb-3 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población</h2>
 	            </div>
@@ -576,22 +594,21 @@ Vue.component('fase4', {
 	        </div>
 	    </div>
 	    
-	    <div v-if="curvasAndPerfilesCreados">
-	    	<p>{{nClusters}}</p>
-	    </div>
-	    
-	    <!-- <div class="row justify-content-around">
+	    <div class="row justify-content-around">
 	        <div v-if="curvasAndPerfilesCreados" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Curva de cluster</h2>
 	            </div>
 	            <div class="card-body">
-	                <form @submit.prevent="createClusterSurvivalCurve">
-	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="clusterNumberSurvivalCurve">Numero de cluster</label>
-	                        <input type="number" min="0" class="form-control" v-model="clusterNumberSurvivalCurve" id="clusterNumberSurvivalCurve" required />
-	                    </div>	             
-	
+	                <form @submit.prevent="mostrarClusterSurvivalCurve">
+	                    <div class="form-group mb-3">	                 
+                    		<label for="clusterSeleccionadoCurves" class="form-label">Número de cluster</label>
+							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoCurves" required>
+	                       		<option value="-1">Todas las curvas</option>
+	                       		<option v-for="i in nClustersRange" :value="i">{{i}}</option>
+	                    	</select>
+	                    </div>	                    
+	                    	                                   	           	
 	                    <div class="form-group mb-2">
 	                        <div class="row justify-content-center">
 	                            <div class="col text-center">
@@ -602,15 +619,19 @@ Vue.component('fase4', {
 	                </form>
 	            </div>
 	        </div>
+	        
 	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div v-if="curvasAndPerfilesCreados" class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Perfil de cluster</h2>
 	            </div>
 	            <div class="card-body">
-	                <form @submit.prevent="createClusterProfile">
+	                <form @submit.prevent="mostrarClusterProfile">
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="clusterNumberProfile">Numero de cluster</label>
-	                        <input type="number" min="0" class="form-control" v-model="clusterNumberProfile" id="clusterNumberProfile" required />
+	                        <label for="clusterSeleccionadoProfile" class="form-label">Número de cluster</label>
+							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoProfile" required>
+	                       		<option value="-1">Todas las curvas</option>
+	                       		<option v-for="i in nClustersRange" :value="i">{{i}}</option>
+	                    	</select>
 	                    </div>
 		             	
 	                    <div class="form-group mb-2">
@@ -622,10 +643,10 @@ Vue.component('fase4', {
 	                    </div>
 	                </form>
 	            </div>
-	        </div>
+	        </div> 
 	    </div>
 	    
-	    <div class="row justify-content-around">
+	    <!-- <div class="row justify-content-around">
 	        <div v-if="curvasCargadas" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">
 	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>

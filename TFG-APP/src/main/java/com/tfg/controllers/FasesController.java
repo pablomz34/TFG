@@ -425,7 +425,7 @@ public class FasesController {
 
 		file.delete();
 
-		return new ResponseEntity<>(prediccion.getMaxClusters()+1, HttpStatus.OK);
+		return new ResponseEntity<>(prediccion.getMaxClusters(), HttpStatus.OK);
 
 	}
 
