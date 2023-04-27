@@ -277,7 +277,7 @@ public class FasesController {
 		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
 	}
 
-	@PostMapping("/createOrFindPrediction")
+	@PostMapping("/createOrUpdatePrediction")
 	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)
 			throws UnsupportedEncodingException {
 

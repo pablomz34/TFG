@@ -52,9 +52,9 @@ public class ProfilesService implements IProfilesService {
 		return repos.findByNumClusterAndPrediccion(numCluster, prediccion);
 	}
 		
-	public String findFeaturesAllClusters(String descripcionPrediccion){
+	public String findFeaturesAllClusters(Long idPrediccion){
 		
-		Predicciones prediccion = prediccionesRepo.findByDescripcion(descripcionPrediccion);
+		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
 		
 		Profiles profile = repos.findByNumClusterAndPrediccion(-1, prediccion);
 		

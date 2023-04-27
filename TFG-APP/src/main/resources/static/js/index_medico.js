@@ -11,6 +11,7 @@ new Vue({
 			descripcionSeleccionada: '',
 			datosCargados: false,
 			curvaUrl: '',
+			idPrediccion: '',
 			datasetStatistics: [
 				{ nombre: 'Id Prediction', valor: '' },
 				{ nombre: 'Number of variables', valor: '' },
@@ -42,46 +43,56 @@ new Vue({
 		getPrediccionValues() {
 			const THIZ = this;
 
-			THIZ.isPrediccionSelected = true
-
-			fetch(window.location.origin + "/medico/getFeatures?descripcionPrediccion=" + this.descripcionSeleccionada, {
+			fetch(window.location.origin + "/medico/getIdPrediccion?descripcionPrediccion=" + this.descripcionSeleccionada, {
 				method: "GET"
 			})
-				.then(res => res.json())
-				.then(json => {
-					const THIZ = this;
-					let features = json.features;
+				.then(res => res.text())
+				.then(data => {
+					THIZ.idPrediccion = data
 
-					features.shift();
+					fetch(window.location.origin + "/medico/getFeatures?idPrediccion=" + this.idPrediccion, {
+						method: "GET"
+					})
+						.then(res => res.json())
+						.then(json => {
+							let features = json.features;
 
-					for (let i = 0; i < features.length; i++) {
+							features.shift();
 
-						let inputDict = {};
-						let feature = features[i];
+							for (let i = 0; i < features.length; i++) {
 
-						let arrayFeature = Object.values(feature)[1];
+								let inputDict = {};
+								let feature = features[i];
 
-						inputDict["seleccion"] = '';
+								let arrayFeature = Object.values(feature)[1];
 
-						let inputLabelName = Object.values(feature)[0];
+								inputDict["seleccion"] = '';
 
-						let primerLetraMayuscula = inputLabelName.charAt(0).toUpperCase();
-						let restoString = inputLabelName.slice(1).toLowerCase();
-						inputLabelName = primerLetraMayuscula + restoString;
+								let inputLabelName = Object.values(feature)[0];
 
-						inputDict["nombre"] = inputLabelName;
+								let primerLetraMayuscula = inputLabelName.charAt(0).toUpperCase();
+								let restoString = inputLabelName.slice(1).toLowerCase();
+								inputLabelName = primerLetraMayuscula + restoString;
 
-						inputDict["variables"] = [];
+								inputDict["nombre"] = inputLabelName;
 
-						for (let j = 0; j < arrayFeature.length; j++) {
-							inputDict["variables"].push(String(Object.keys(arrayFeature[j])));
-						}
+								inputDict["variables"] = [];
 
-						THIZ.herramientaPredictivaInputs.push(inputDict);
-					}
+								for (let j = 0; j < arrayFeature.length; j++) {
+									inputDict["variables"].push(String(Object.keys(arrayFeature[j])));
+								}
 
+								THIZ.herramientaPredictivaInputs.push(inputDict);
+							}
+
+						})
+						.catch(error => console.error(error));
 				})
 				.catch(error => console.error(error));
+
+
+
+			THIZ.isPrediccionSelected = true
 		},
 		getNewPatientClassification() {
 			const THIZ = this;
@@ -97,10 +108,7 @@ new Vue({
 			jsonData[this.herramientaPredictivaInputs[4].nombre.toUpperCase()] = this.herramientaPredictivaInputs[4].seleccion;
 			jsonData[this.herramientaPredictivaInputs[5].nombre.toUpperCase()] = this.herramientaPredictivaInputs[5].seleccion;
 
-
-
-
-			fetch(window.location.origin + "/medico/getNewPatientClassification?descripcionPrediccion=" + this.descripcionSeleccionada, {
+			fetch(window.location.origin + "/medico/getNewPatientClassification?idPrediccion=" + this.idPrediccion, {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json' // Tipo de contenido del cuerpo de la solicitud
