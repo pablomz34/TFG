@@ -55,6 +55,9 @@ new Vue({
 					})
 						.then(res => res.json())
 						.then(json => {
+							
+							THIZ.herramientaPredictivaInputs = [];
+							
 							let features = json.features;
 
 							features.shift();
@@ -97,7 +100,6 @@ new Vue({
 		getNewPatientClassification() {
 			const THIZ = this;
 			$('#cargando').show();
-
 
 			let jsonData = {};
 
