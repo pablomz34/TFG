@@ -39,7 +39,9 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
+import com.tfg.entities.Imagenes;
 import com.tfg.entities.Predicciones;
+import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
@@ -429,129 +431,54 @@ public class FasesController {
 
 	}
 
-	@PostMapping(value = "/createClusterSurvivalCurve", consumes = "multipart/form-data")
-	public ResponseEntity<?> createClusterSurvivalCurve(@RequestParam("cluster_number") String cluster_number,
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+	@PostMapping("/getRutaCluster")
+	public ResponseEntity<?> getRutaCluster(@RequestParam("clusterNumber") String clusterNumber,
+			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
-		String error = this.validarInputNumber(cluster_number);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		String error = this.validarInputNumber(cluster_number);
+//		if (!error.isEmpty()) {
+//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		}
+//		error = this.validarInputFile(multipartFile);
+//		if (!error.isEmpty()) {
+//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		}
+
+		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
+
+		if(imagen!=null) {
+			return new ResponseEntity<>(imagen.getRuta(), HttpStatus.OK);
 		}
-		error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		else{
+			return new ResponseEntity<>("No hay imagen asignada para ese cluster", HttpStatus.BAD_REQUEST);
 		}
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createClusterSurvivalCurve?cluster_number="
-				+ Integer.parseInt(cluster_number));
-
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-		// Agregar el archivo al cuerpo de la petición
-
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
-
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
-
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
-
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
-
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
-
-		InputStream responseInputStream = responseEntity.getContent();
-
-		byte[] imageBytes = responseInputStream.readAllBytes();
-
-		// Cerrar el objeto CloseableHttpClient y liberar los recursos
-		httpClient.close();
-
-		file.delete();
-
-		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 
 	}
 
-	@PostMapping(value = "/createClusterProfile", consumes = "multipart/form-data")
-	public ResponseEntity<?> createClusterProfile(@RequestParam("cluster_number") String cluster_number,
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
+	@PostMapping("/getClusterProfile")
+	public ResponseEntity<?> getClusterProfile(@RequestParam("clusterNumber") String clusterNumber,
+			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
-		String error = this.validarInputNumber(cluster_number);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		String error = this.validarInputNumber(cluster_number);
+//		if (!error.isEmpty()) {
+//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		}
+//		error = this.validarInputFile(multipartFile);
+//		if (!error.isEmpty()) {
+//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//		}
+		
+		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
+			
+		if(profile!=null) {
+			HashMap<String, Object> map = null;
+			map = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
+		
+			return new ResponseEntity<>(map, HttpStatus.OK);
 		}
-		error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		else {
+			return new ResponseEntity<>("No hay perfil de población asignado a ese cluster", HttpStatus.BAD_REQUEST);
 		}
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createClusterProfile?cluster_number="
-				+ Integer.parseInt(cluster_number));
-
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-		// Agregar el archivo al cuerpo de la petición
-
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
-
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
-
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
-
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
-
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
-
-		InputStream responseInputStream = responseEntity.getContent();
-
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
-		String line;
-		StringBuilder stringBuilder = new StringBuilder();
-		while ((line = bufferedReader.readLine()) != null) {
-			stringBuilder.append(line);
-		}
-		String jsonString = stringBuilder.toString();
-
-		HashMap<String, Object> map = null;
-		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-
-		file.delete();
-
-		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
 

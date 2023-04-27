@@ -46,7 +46,7 @@ public class ProfilesService implements IProfilesService {
 	}
 
 	@Override
-	public Profiles findProfile(Integer numCluster, Long idPrediccion) {
+	public Profiles findClusterProfile(Integer numCluster, Long idPrediccion) {
 		
 		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
 		

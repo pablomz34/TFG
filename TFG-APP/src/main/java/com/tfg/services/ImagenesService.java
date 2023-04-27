@@ -39,8 +39,11 @@ public class ImagenesService implements IImagenesService {
 	}
 
 	@Override
-	public Imagenes findClusterImage(Integer cluster) {
-		return repos.findByNumCluster(cluster);
+	public Imagenes findClusterImage(Integer numCluster, Long idPrediccion) {
+		
+		Predicciones prediccion = prediccionesRepo.findPrediccionById(idPrediccion);
+		
+		return repos.findByNumClusterAndPrediccion(numCluster, prediccion);
 	}
 
 }
