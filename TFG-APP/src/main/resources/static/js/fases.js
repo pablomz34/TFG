@@ -382,7 +382,7 @@ Vue.component('fase4', {
 			const THIZ = this;
 			$('#cargando').show();
 
-			fetch(window.location.origin + "/admin/fases/createOrFindPrediction?descripcion=" + this.descripcionSeleccionada, {
+			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?descripcion=" + this.descripcionSeleccionada, {
 				method: "POST",
 			})
 				.then(async res => {
@@ -405,7 +405,7 @@ Vue.component('fase4', {
 		createPopulationAndCurves: function() {
 			const THIZ = this;
 			THIZ.curvasCargadas = false;
-			THIZ.perfilCargados = false;
+			THIZ.perfilCargado = false;
 			THIZ.error1 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
@@ -655,6 +655,8 @@ Vue.component('fase4', {
 	    
 	    <div class="row justify-content-around">
 	        <div v-if="curvasCargadas" class="card col-5 rounded-4 p-0 mb-2 shadow">
+	        	<h4 v-if="clusterSeleccionado == -1" class="text-center text-white">Todas las curvas</h4>
+	        	<h4 v-else class="text-center text-white">Cluster {{clusterSeleccionado}}</h4>
 	            <div class="card-body">
 	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
 	                <a v-bind:href="curvasUrl" :download="nombreDescargaCurvas">
@@ -664,6 +666,8 @@ Vue.component('fase4', {
 	        </div>
 	        <div v-else class="col-5 mb-2"/>
 	        <div v-if="perfilCargado" class="card col-5 rounded-4 p-0 mb-2 shadow">
+	       		<h4 v-if="clusterSeleccionado == -1" class="text-center text-white">Todas las curvas</h4>
+	        	<h4 v-else class="text-center text-white">Cluster {{clusterSeleccionado}}</h4>
 	            <div class="card-body">
 	                <h2>Overview</h2>
 	                <overview :statistics="this.datasetStatistics"/>
