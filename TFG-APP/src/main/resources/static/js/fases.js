@@ -655,8 +655,8 @@ Vue.component('fase4', {
 	    
 	    <div class="row justify-content-around">
 	        <div v-if="curvasCargadas" class="card col-5 rounded-4 p-0 mb-2 shadow">
-	        	<h4 v-if="clusterSeleccionado == -1" class="text-center text-white">Todas las curvas</h4>
-	        	<h4 v-else class="text-center text-white">Cluster {{clusterSeleccionado}}</h4>
+	        	<h4 v-if="clusterSeleccionadoCurves == -1" class="text-center text-white">Todas las curvas</h4>
+	        	<h4 v-else class="text-center text-white">Cluster {{clusterSeleccionadoCurves}}</h4>
 	            <div class="card-body">
 	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
 	                <a v-bind:href="curvasUrl" :download="nombreDescargaCurvas">
@@ -666,8 +666,8 @@ Vue.component('fase4', {
 	        </div>
 	        <div v-else class="col-5 mb-2"/>
 	        <div v-if="perfilCargado" class="card col-5 rounded-4 p-0 mb-2 shadow">
-	       		<h4 v-if="clusterSeleccionado == -1" class="text-center text-white">Todas las curvas</h4>
-	        	<h4 v-else class="text-center text-white">Cluster {{clusterSeleccionado}}</h4>
+	       		<h4 v-if="clusterSeleccionadoProfile == -1" class="text-center text-white">Todas las curvas</h4>
+	        	<h4 v-else class="text-center text-white">Cluster {{clusterSeleccionadoProfile}}</h4>
 	            <div class="card-body">
 	                <h2>Overview</h2>
 	                <overview :statistics="this.datasetStatistics"/>

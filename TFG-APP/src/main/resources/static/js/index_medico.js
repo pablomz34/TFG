@@ -21,8 +21,7 @@ new Vue({
 			],
 			variableSeleccionada: '',
 			variables: [],
-			//nombreDescargaCurva: '',
-			numCluster: null
+			nombreDescargaCurvas: '',
 		}
 	},
 
@@ -128,11 +127,10 @@ new Vue({
 					return res.json();
 				})
 				.then(data => {
-
-					console.log(data);
-					THIZ.numCluster = data.numCluster;
+					THIZ.nCluster = data.numCluster;
 					THIZ.curvaUrl = data.rutaImagen;
-					//THIZ.nombreDescargaCurva = 'prediccion' + this.idPrediccion + 'cluster' + this.clusterSeleccionadoCurves + '.png';
+					THIZ.nombreDescargaCurvas = 'prediccion' + this.idPrediccion + 'cluster' + this.nCluster + '.png';
+		
 					THIZ.datasetStatistics[0].valor = data.clusterData.id_prediction;
 					THIZ.datasetStatistics[1].valor = data.clusterData.number_of_variables;
 					THIZ.datasetStatistics[2].valor = data.clusterData.number_of_observations;
@@ -168,7 +166,7 @@ new Vue({
 				<div class="card-body">
 					<form @submit.prevent="getPrediccionValues">	
 						<div class="form-group mb-3">	                 
-                    		<label for="clusterSeleccionadoCurves" class="form-label">Predicciones</label>
+                    		<label for="predicciones" class="form-label">Predicciones</label>
 							<select class="form-select" name="predicciones" v-model="descripcionSeleccionada" required>
 	                       		<option v-for="i in descripciones" :value="i">{{i}}</option>
 	                    	</select>
@@ -227,10 +225,11 @@ new Vue({
 	
 	
 		<div v-if="datosCargados" class="row justify-content-around">
+			<h4 class="text-center text-black">Cluster {{nCluster}}</h4>
 	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">
 	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-	                <a v-bind:href="curvaUrl">
+	                <a v-bind:href="curvaUrl" :download="nombreDescargaCurvas">
 	                    <img id="curvaUrl" v-bind:src="curvaUrl" style="max-width: 100%;"/>    
 	                </a>
 	            </div>
