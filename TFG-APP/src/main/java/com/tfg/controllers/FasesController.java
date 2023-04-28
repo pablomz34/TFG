@@ -278,31 +278,58 @@ public class FasesController {
 	}
 
 	@PostMapping("/createOrUpdatePrediction")
-	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)
+	public ResponseEntity<?> createOrFindPrediction(@RequestParam("crearPrediccion") boolean crearPrediccion, 
+			@RequestParam("descripcion") String descripcion)
 			throws UnsupportedEncodingException {
-
+		
+		
+		if(descripcion==null || descripcion.isEmpty()) {
+			String errorDescripcionVacía = "";
+			
+			if(crearPrediccion) {
+				errorDescripcionVacía = "Por favor, escriba un nombre para la predicción";
+			}
+			else {
+				errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
+			}
+			return new ResponseEntity<>(errorDescripcionVacía,
+					HttpStatus.BAD_REQUEST);
+		}
+		
+		
 		descripcion = StringEscapeUtils.escapeJava(descripcion);
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
+			
+		if(crearPrediccion) {
+			
+			if(prediccion==null) {
 
-		if (prediccion == null) {
+				prediccion = prediccionesService.guardarPrediccion(descripcion);
 
-			prediccion = prediccionesService.guardarPrediccion(descripcion);
+				if (!this.crearCarpetaPrediccion(prediccion)) {
+					return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 
-			if (!this.crearCarpetaPrediccion(prediccion)) {
-				return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
-						HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 			}
-
-			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-		} else {
-
-			if (!this.crearCarpetaPrediccion(prediccion)) {
-				return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
-						HttpStatus.INTERNAL_SERVER_ERROR);
+			else {
+				return new ResponseEntity<>("El nombre de esa prediccion ya está cogido", HttpStatus.BAD_REQUEST);
 			}
+		}
+		else {
+			if(prediccion!=null) {
+				if (!this.crearCarpetaPrediccion(prediccion)) {
+					return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
+							HttpStatus.INTERNAL_SERVER_ERROR);
+				}
 
-			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
+			}
 		}
 
 	}
@@ -673,7 +700,7 @@ public class FasesController {
 	private String validarInputFile(MultipartFile multipartFile) {
 		String contentType = multipartFile.getContentType();
 		if (!contentType.equals("text/csv")) {
-			return "El tipo de archivo no es válido";
+			return "El tipo de archivo no es válido, seleccion un archivo con extensión .csv";
 		}
 		return "";
 	}
