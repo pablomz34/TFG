@@ -41,7 +41,9 @@ new Vue({
 	methods: {
 		getPrediccionValues() {
 			const THIZ = this;
-
+			$('#cargando').show();
+			THIZ.datosCargados = false;
+			THIZ.isPrediccionSelected = false;
 			fetch(window.location.origin + "/medico/getIdPrediccion?descripcionPrediccion=" + this.descripcionSeleccionada, {
 				method: "GET"
 			})
@@ -85,6 +87,8 @@ new Vue({
 								}
 
 								THIZ.herramientaPredictivaInputs.push(inputDict);
+								
+
 							}
 
 						})
@@ -93,11 +97,13 @@ new Vue({
 				.catch(error => console.error(error));
 
 
-
+			$('#cargando').hide();
 			THIZ.isPrediccionSelected = true
 		},
+		
 		getNewPatientClassification() {
 			const THIZ = this;
+			THIZ.datosCargados=false;
 			$('#cargando').show();
 
 			let jsonData = {};

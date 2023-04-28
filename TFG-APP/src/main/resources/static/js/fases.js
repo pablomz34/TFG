@@ -567,14 +567,9 @@ Vue.component('fase4', {
 	    </div>
 	    
 	    <div class="row justify-content-around">
-	        <div v-if="error1 != ''" class="col-5 alert alert-danger">
+	        <div v-if="error1 != ''" class="col-7 alert alert-danger">
 	            {{this.error1}}
-	        </div>
-	        <div v-else class="col-5"/>
-	        <div v-if="error2 != ''" class="col-5 alert alert-danger">
-	            {{this.error2}}
-	        </div>
-	        <div v-else class="col-5"/>
+	        </div>	 
 	    </div>
 	
 	    <div v-if="continuar" class="row justify-content-around">
