@@ -440,6 +440,9 @@ Vue.component('fase4', {
 
 		mostrarClusterSurvivalCurve: function() {
 			const THIZ = this;
+			$('#cargando').show();
+			THIZ.curvasCargadas = false;
+		
 			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
 				method: "GET",
 			})
@@ -462,8 +465,9 @@ Vue.component('fase4', {
 		},
 
 		mostrarClusterProfile: function() {
-			this.perfilCargado = false;
 			const THIZ = this;
+			$('#cargando').show();
+			THIZ.perfilCargado = false;
 			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
 				method: "GET",
 			})
