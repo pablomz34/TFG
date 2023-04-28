@@ -339,6 +339,7 @@ Vue.component('fase4', {
 			],
 			variableSeleccionada: '',
 			variables: [],
+			error0: '',
 			error1: '',
 			error2: '',
 		}
@@ -381,14 +382,16 @@ Vue.component('fase4', {
 		seleccionarPrediccion: function() {
 			const THIZ = this;
 			$('#cargando').show();
-
-			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?descripcion=" + this.descripcionSeleccionada, {
+			
+			THIZ.error0 = '';
+			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?crearPrediccion=" + this.crear + 
+			"&descripcion=" + this.descripcionSeleccionada, {
 				method: "POST",
 			})
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						//THIZ.error2 = "Error: " + errorMessage;
+						THIZ.error0 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -513,6 +516,12 @@ Vue.component('fase4', {
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
+	    
+	     <div class="row justify-content-around">
+	        <div v-if="error0 != ''" class="col-7 alert alert-danger">
+	            {{this.error0}}
+	        </div>	 
+	    </div>
 	    
 	    <div class="row justify-content-around">
 			<div class="card col-7 rounded-4 p-0 mb-3 shadow">
