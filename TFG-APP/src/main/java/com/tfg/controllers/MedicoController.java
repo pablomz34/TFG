@@ -43,32 +43,32 @@ import com.tfg.services.IProfilesService;
 public class MedicoController {
 
 	static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
-	
+
 	@Autowired
 	private IPrediccionesService prediccionesService;
-	
+
 	@Autowired
 	private IProfilesService profilesService;
-	
+
 	@Autowired
 	private IImagenesService imagenesService;
-	
+
 	@GetMapping
 	public String indexMedico() {
 		return "index_medico";
 	}
-	
-	@PostMapping(value="/getNewPatientClassification", consumes="application/json")
+
+	@PostMapping(value = "/getNewPatientClassification", consumes = "application/json")
 	public ResponseEntity<?> getNewPatientClassification(@RequestParam("idPrediccion") String idPrediccion,
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
-		
+
 		String error = validarJson(json, Long.parseLong(idPrediccion));
-		
-		if(!error.isEmpty()) {
+
+		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
@@ -76,12 +76,12 @@ public class MedicoController {
 
 		// Serializar el HashMap a formato JSON
 		Gson gson = new Gson();
-       
-       String jsonString = gson.toJson(json);
-		
+
+		String jsonString = gson.toJson(json);
+
 		StringEntity stringEntity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
 
-	// Establecer el cuerpo de la petición en el objeto HttpPost
+		// Establecer el cuerpo de la petición en el objeto HttpPost
 		httpPost.setEntity(stringEntity);
 
 		// Ejecutar la petición y obtener la respuesta
@@ -95,7 +95,7 @@ public class MedicoController {
 		String line;
 		StringBuilder stringBuilder = new StringBuilder();
 		while ((line = bufferedReader.readLine()) != null) {
-		stringBuilder.append(line);
+			stringBuilder.append(line);
 		}
 		String responseJsonString = stringBuilder.toString();
 
@@ -103,63 +103,62 @@ public class MedicoController {
 		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
 
 		Integer numCluster = (Integer) map.get("Cluster");
-		
-		
+
 		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
-		
-		//Integer numCluster = 2;
-		
+
+		// Integer numCluster = 2;
+
 		String rutaImagen = imagenesService.findClusterImage(numCluster, Long.parseLong(idPrediccion)).getRuta();
 
 		Profiles profile = profilesService.findClusterProfile(numCluster, Long.parseLong(idPrediccion));
-		
+
 		HashMap<String, Object> featuresMap = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
-		
+
 		HashMap<String, Object> responseMap = new HashMap<String, Object>();
-		
+
 		responseMap.put("numCluster", numCluster);
-		
+
 		responseMap.put("rutaImagen", rutaImagen);
-		
+
 		responseMap.put("clusterData", featuresMap);
-		
+
 		return new ResponseEntity<>(responseMap, HttpStatus.OK);
 
 	}
-	
-	private String validarJson(HashMap<String, Object> json, Long idPrediccion) throws JsonMappingException, JsonProcessingException {
-		
+
+	private String validarJson(HashMap<String, Object> json, Long idPrediccion)
+			throws JsonMappingException, JsonProcessingException {
+
 		String s = profilesService.findFeaturesAllClusters(idPrediccion);
-		
+
 		HashMap<String, Object> featuresBDDMap = null;
 		featuresBDDMap = new ObjectMapper().readValue(s, HashMap.class);
-		
+
 		List<HashMap<String, Object>> featuresList = (List<HashMap<String, Object>>) featuresBDDMap.get("features");
-		
+
 		featuresList.remove(0);
-		
-		for(HashMap<String, Object> feature: featuresList) {
-			
+
+		for (HashMap<String, Object> feature : featuresList) {
+
 			String featureName = (String) feature.get("feature");
 			List<HashMap<String, Object>> featureValues = (List<HashMap<String, Object>>) feature.get(featureName);
 			String jsonFeatureValue = (String) json.get(featureName);
-			
-			if(jsonFeatureValue == null || jsonFeatureValue.isEmpty()) {
+
+			if (jsonFeatureValue == null || jsonFeatureValue.isEmpty()) {
 				return "El campo " + featureName + " no puede estar vacío";
 			}
-			
-			Set<String> allFeatureValuesKeys = featureValues.stream()
-                    .flatMap(hashMap -> hashMap.keySet().stream())
-                    .collect(Collectors.toSet());
-			
-			if(!allFeatureValuesKeys.contains(jsonFeatureValue)) {
+
+			Set<String> allFeatureValuesKeys = featureValues.stream().flatMap(hashMap -> hashMap.keySet().stream())
+					.collect(Collectors.toSet());
+
+			if (!allFeatureValuesKeys.contains(jsonFeatureValue)) {
 				return "Elija una de las opciones válidas para el campo " + featureName;
 			}
-					
+
 		}
-		
+
 		return "";
-		
+
 	}
 
 	@GetMapping("/getFeatures")
@@ -167,27 +166,43 @@ public class MedicoController {
 			throws IllegalStateException, IOException {
 
 		String features = profilesService.findFeaturesAllClusters(Long.parseLong(idPrediccion));
-		
+
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(features, HashMap.class);
-		
+
 		HashMap<String, Object> featuresMap = new HashMap<String, Object>();
-		
+
 		featuresMap.put("features", map.get("features"));
-		
+
 		return new ResponseEntity<>(featuresMap, HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("/getIdPrediccion")
 	public ResponseEntity<?> getIdPrediccion(@RequestParam("descripcionPrediccion") String descripcionPrediccion) {
-		return new ResponseEntity<>(prediccionesService.findPrediccionByDescripcion(descripcionPrediccion).getId(), HttpStatus.OK);
+		
+		if (descripcionPrediccion == null || descripcionPrediccion.isEmpty()) {
+			String errorDescripcionVacía = "";
+			errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
+			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
+		}
+		
+		descripcionPrediccion = StringEscapeUtils.escapeJava(descripcionPrediccion);
+
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcionPrediccion);
+		
+		if(prediccion != null) {
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+		}
+		else {
+			return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
+		}
+
 	}
-	
-	
+
 	@GetMapping("/getDescripcionesPredicciones")
 	public ResponseEntity<?> getDescripcionesPredicciones() {
 		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
 	}
-	
+
 }

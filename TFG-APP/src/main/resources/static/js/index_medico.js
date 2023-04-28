@@ -43,12 +43,22 @@ new Vue({
 		getPrediccionValues: function() {
 			const THIZ = this;
 			$('#cargando').show();
+			THIZ.error0 = ''
 			THIZ.datosCargados = false;
 			THIZ.isPrediccionSelected = false;
 			fetch(window.location.origin + "/medico/getIdPrediccion?descripcionPrediccion=" + this.descripcionSeleccionada, {
 				method: "GET"
 			})
-				.then(res => res.text())
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.error0 = errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+
+					return res.text();
+				})
 				.then(data => {
 					THIZ.idPrediccion = data
 
@@ -94,12 +104,13 @@ new Vue({
 
 						})
 						.catch(error => console.error(error));
+						THIZ.isPrediccionSelected = true
 				})
 				.catch(error => console.error(error));
 
-
+			
 			$('#cargando').hide();
-			THIZ.isPrediccionSelected = true
+			
 		},
 
 		getNewPatientClassification: function() {
@@ -197,7 +208,7 @@ new Vue({
 		
 		
 		
-		<div v-if="isPrediccionSelected" class="row col-md-6 offset-md-3 mt-5 mb-5">
+		<div v-if="isPrediccionSelected && error0 == ''" class="row col-md-6 offset-md-3 mt-5 mb-5">
 			<div v-if="error1 != ''" class="alert alert-danger">
 				{{this.error1}}
 			</div>
