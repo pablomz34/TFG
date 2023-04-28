@@ -51,7 +51,7 @@ import com.tfg.services.IUsuariosService;
 @RequestMapping("/admin/fases")
 public class FasesController {
 
-	static final String UrlServidor = "https://91c1-83-61-231-12.ngrok-free.app/";
+	static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
 
 	@Autowired
 	private IUsuariosService usuariosService;

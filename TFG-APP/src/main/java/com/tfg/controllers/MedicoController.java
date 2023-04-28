@@ -42,7 +42,7 @@ import com.tfg.services.IProfilesService;
 @RequestMapping("/medico")
 public class MedicoController {
 
-	static final String UrlServidor = "https://91c1-83-61-231-12.ngrok-free.app/";
+	static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
 	
 	@Autowired
 	private IPrediccionesService prediccionesService;
@@ -63,51 +63,51 @@ public class MedicoController {
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 		
-//		String error = validarJson(json);
-//		
+		//String error = validarJson(json);
+		
 //		if(!error.isEmpty()) {
 //			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 //		}
 		
-//		CloseableHttpClient httpClient = HttpClients.createDefault();
-//
-//		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-//		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/getNewPatientClassification");
-//
-//		// Serializar el HashMap a formato JSON
-//		Gson gson = new Gson();
-//       
-//        String jsonString = gson.toJson(json);
-//		
-//		StringEntity stringEntity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
-//
-//		// Establecer el cuerpo de la petición en el objeto HttpPost
-//		httpPost.setEntity(stringEntity);
-//
-//		// Ejecutar la petición y obtener la respuesta
-//		CloseableHttpResponse response = httpClient.execute(httpPost);
-//
-//		HttpEntity responseEntity = response.getEntity();
-//
-//		InputStream responseInputStream = responseEntity.getContent();
-//
-//		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
-//		String line;
-//		StringBuilder stringBuilder = new StringBuilder();
-//		while ((line = bufferedReader.readLine()) != null) {
-//			stringBuilder.append(line);
-//		}
-//		String responseJsonString = stringBuilder.toString();
-//
-//		HashMap<String, Object> map = null;
-//		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
+		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		//Integer numCluster = (Integer) map.get("Cluster");
+		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/getNewPatientClassification");
+
+		// Serializar el HashMap a formato JSON
+		Gson gson = new Gson();
+       
+       String jsonString = gson.toJson(json);
+		
+		StringEntity stringEntity = new StringEntity(jsonString, ContentType.APPLICATION_JSON);
+
+	// Establecer el cuerpo de la petición en el objeto HttpPost
+		httpPost.setEntity(stringEntity);
+
+		// Ejecutar la petición y obtener la respuesta
+		CloseableHttpResponse response = httpClient.execute(httpPost);
+
+		HttpEntity responseEntity = response.getEntity();
+
+		InputStream responseInputStream = responseEntity.getContent();
+
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
+		String line;
+		StringBuilder stringBuilder = new StringBuilder();
+		while ((line = bufferedReader.readLine()) != null) {
+		stringBuilder.append(line);
+		}
+		String responseJsonString = stringBuilder.toString();
+
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
+
+		Integer numCluster = (Integer) map.get("Cluster");
 		
 		
 		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
 		
-		Integer numCluster = 2;
+		//Integer numCluster = 2;
 		
 		String rutaImagen = imagenesService.findClusterImage(numCluster, Long.parseLong(idPrediccion)).getRuta();
 
