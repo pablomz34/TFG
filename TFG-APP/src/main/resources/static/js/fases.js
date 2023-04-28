@@ -342,6 +342,7 @@ Vue.component('fase4', {
 			error0: '',
 			error1: '',
 			error2: '',
+			error3: ''
 		}
 	},
 
@@ -445,14 +446,15 @@ Vue.component('fase4', {
 			const THIZ = this;
 			$('#cargando').show();
 			THIZ.curvasCargadas = false;
-		
+			
+			THIZ.error2 = '';
 			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
 				method: "GET",
 			})
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						//THIZ.error1 = "Error: " + errorMessage;
+						THIZ.error2 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -470,6 +472,8 @@ Vue.component('fase4', {
 		mostrarClusterProfile: function() {
 			const THIZ = this;
 			$('#cargando').show();
+			
+			THIZ.error3 = '';
 			THIZ.perfilCargado = false;
 			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
 				method: "GET",
@@ -477,7 +481,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						//THIZ.error1 = "Error: " + errorMessage;
+						THIZ.error3 = "Error: " + errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -610,6 +614,20 @@ Vue.component('fase4', {
 	    </div>
 	    
 	    <div class="row justify-content-around">
+	        <div v-if="error2 != ''" class="col-5 alert alert-danger">
+	            {{this.error2}}
+	        </div>	
+	        <div v-if="error2 == ''" class="col-5"></div>
+	        
+	        <div v-if="error3 == ''" class="col-5"></div>
+	         
+	        <div v-if="error3 != ''" class="col-5 alert alert-danger">
+	            {{this.error3}}
+	        </div>	
+	         
+	    </div>
+	    
+	    <div class="row justify-content-around">
 	        <div v-if="curvasAndPerfilesCreados" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Curva de cluster</h2>
@@ -634,6 +652,7 @@ Vue.component('fase4', {
 	                </form>
 	            </div>
 	        </div>
+	        
 	        
 	        <div v-if="curvasAndPerfilesCreados" class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
