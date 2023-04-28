@@ -80,7 +80,7 @@ public class FasesController {
 		HttpStatus status = HttpStatus.BAD_REQUEST;
 		String mensaje;
 		if (ex instanceof MissingServletRequestPartException) {
-			mensaje = "El archivo es obligatorio";
+			mensaje = "Por favor, seleccione un archivo";
 		} else {
 			mensaje = "Ocurrió un error en el servidor: " + ex.getMessage();
 		}
@@ -92,7 +92,7 @@ public class FasesController {
 	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
-		String error = this.validarInputNumber(max_clusters);
+		String error = this.validarInputNumber(max_clusters, 2, 20);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -153,12 +153,12 @@ public class FasesController {
 			@RequestParam("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
 			throws IOException {
 
-		String error = this.validarInputNumber(nClustersAglomerativo);
+		String error = this.validarInputNumber(nClustersAglomerativo, 2, 20);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
-		error = this.validarInputNumber(nClustersKModes);
+		error = this.validarInputNumber(nClustersKModes, 2, 20);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -462,14 +462,14 @@ public class FasesController {
 	public ResponseEntity<?> getRutaCluster(@RequestParam("clusterNumber") String clusterNumber,
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
-//		String error = this.validarInputNumber(cluster_number);
-//		if (!error.isEmpty()) {
-//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//		}
-//		error = this.validarInputFile(multipartFile);
-//		if (!error.isEmpty()) {
-//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//		}
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
+		
+
+		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+
 
 		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
 
@@ -486,14 +486,13 @@ public class FasesController {
 	public ResponseEntity<?> getClusterProfile(@RequestParam("clusterNumber") String clusterNumber,
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
-//		String error = this.validarInputNumber(cluster_number);
-//		if (!error.isEmpty()) {
-//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//		}
-//		error = this.validarInputFile(multipartFile);
-//		if (!error.isEmpty()) {
-//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//		}
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
+		
+
+		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 		
 		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
 			
@@ -679,15 +678,15 @@ public class FasesController {
 
 	}
 
-	private String validarInputNumber(String max_clusters) {
+	private String validarInputNumber(String numClusters, Integer minClusters, Integer maxClusters) {
 
-		if (max_clusters == null || max_clusters.isEmpty()) {
-			return "Es obligatorio rellenar todos los inputs";
+		if (numClusters == null || numClusters.isEmpty()) {
+			return "Por favor escoja un número de cluster";
 
 		}
 		try {
-			Integer n = Integer.parseInt(max_clusters);
-			if (n < 1 || n > 8) {
+			Integer n = Integer.parseInt(numClusters);
+			if (n < minClusters || n >= maxClusters) {
 				return "El valor no está dentro del rango permitido";
 			}
 		} catch (NumberFormatException e) {
