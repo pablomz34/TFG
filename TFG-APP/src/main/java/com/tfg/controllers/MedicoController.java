@@ -63,11 +63,11 @@ public class MedicoController {
 			@RequestBody HashMap<String, Object> json)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 		
-		//String error = validarJson(json);
+		String error = validarJson(json, Long.parseLong(idPrediccion));
 		
-//		if(!error.isEmpty()) {
-//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//		}
+		if(!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 		
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -127,40 +127,40 @@ public class MedicoController {
 
 	}
 	
-//	private String validarJson(HashMap<String, Object> json) throws JsonMappingException, JsonProcessingException {
-//		
-//		Profiles p = profilesService.findProfile();
-//		
-//		HashMap<String, Object> featuresBDDMap = null;
-//		featuresBDDMap = new ObjectMapper().readValue(p.getFeatures(), HashMap.class);
-//		
-//		List<HashMap<String, Object>> featuresList = (List<HashMap<String, Object>>) featuresBDDMap.get("features");
-//		
-//		featuresList.remove(0);
-//		
-//		for(HashMap<String, Object> feature: featuresList) {
-//			
-//			String featureName = (String) feature.get("feature");
-//			List<HashMap<String, Object>> featureValues = (List<HashMap<String, Object>>) feature.get(featureName);
-//			String jsonFeatureValue = (String) json.get(featureName);
-//			
-//			if(jsonFeatureValue == null || jsonFeatureValue.isEmpty()) {
-//				return "El campo " + featureName + " no puedo estar vacío";
-//			}
-//			
-//			Set<String> allFeatureValuesKeys = featureValues.stream()
-//                    .flatMap(hashMap -> hashMap.keySet().stream())
-//                    .collect(Collectors.toSet());
-//			
-//			if(!allFeatureValuesKeys.contains(jsonFeatureValue)) {
-//				return "Elija una de las opciones válidas para el campo " + featureName;
-//			}
-//					
-//		}
-//		
-//		return "";
-//		
-//	}
+	private String validarJson(HashMap<String, Object> json, Long idPrediccion) throws JsonMappingException, JsonProcessingException {
+		
+		String s = profilesService.findFeaturesAllClusters(idPrediccion);
+		
+		HashMap<String, Object> featuresBDDMap = null;
+		featuresBDDMap = new ObjectMapper().readValue(s, HashMap.class);
+		
+		List<HashMap<String, Object>> featuresList = (List<HashMap<String, Object>>) featuresBDDMap.get("features");
+		
+		featuresList.remove(0);
+		
+		for(HashMap<String, Object> feature: featuresList) {
+			
+			String featureName = (String) feature.get("feature");
+			List<HashMap<String, Object>> featureValues = (List<HashMap<String, Object>>) feature.get(featureName);
+			String jsonFeatureValue = (String) json.get(featureName);
+			
+			if(jsonFeatureValue == null || jsonFeatureValue.isEmpty()) {
+				return "El campo " + featureName + " no puede estar vacío";
+			}
+			
+			Set<String> allFeatureValuesKeys = featureValues.stream()
+                    .flatMap(hashMap -> hashMap.keySet().stream())
+                    .collect(Collectors.toSet());
+			
+			if(!allFeatureValuesKeys.contains(jsonFeatureValue)) {
+				return "Elija una de las opciones válidas para el campo " + featureName;
+			}
+					
+		}
+		
+		return "";
+		
+	}
 
 	@GetMapping("/getFeatures")
 	public ResponseEntity<?> getFeatures(@RequestParam("idPrediccion") String idPrediccion)

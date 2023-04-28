@@ -5,7 +5,6 @@ new Vue({
 			herramientaPredictivaInputs: [],
 			nCluster: '',
 			imagenUrl: '',
-			error: '',
 			isPrediccionSelected: false,
 			descripciones: [],
 			descripcionSeleccionada: '',
@@ -22,6 +21,8 @@ new Vue({
 			variableSeleccionada: '',
 			variables: [],
 			nombreDescargaCurvas: '',
+			error0: '',
+			error1: '',
 		}
 	},
 
@@ -39,7 +40,7 @@ new Vue({
 	},
 
 	methods: {
-		getPrediccionValues() {
+		getPrediccionValues: function() {
 			const THIZ = this;
 			$('#cargando').show();
 			THIZ.datosCargados = false;
@@ -56,9 +57,9 @@ new Vue({
 					})
 						.then(res => res.json())
 						.then(json => {
-							
+
 							THIZ.herramientaPredictivaInputs = [];
-							
+
 							let features = json.features;
 
 							features.shift();
@@ -87,7 +88,7 @@ new Vue({
 								}
 
 								THIZ.herramientaPredictivaInputs.push(inputDict);
-								
+
 
 							}
 
@@ -100,10 +101,11 @@ new Vue({
 			$('#cargando').hide();
 			THIZ.isPrediccionSelected = true
 		},
-		
-		getNewPatientClassification() {
+
+		getNewPatientClassification: function() {
 			const THIZ = this;
-			THIZ.datosCargados=false;
+			THIZ.datosCargados = false;
+			THIZ.error1 = '';
 			$('#cargando').show();
 
 			let jsonData = {};
@@ -125,7 +127,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = errorMessage;
+						THIZ.error1 = errorMessage;
 						$('#cargando').hide();
 						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -136,7 +138,7 @@ new Vue({
 					THIZ.nCluster = data.numCluster;
 					THIZ.curvaUrl = data.rutaImagen;
 					THIZ.nombreDescargaCurvas = 'prediccion' + this.idPrediccion + 'cluster' + this.nCluster + '.png';
-		
+
 					THIZ.datasetStatistics[0].valor = data.clusterData.id_prediction;
 					THIZ.datasetStatistics[1].valor = data.clusterData.number_of_variables;
 					THIZ.datasetStatistics[2].valor = data.clusterData.number_of_observations;
@@ -154,7 +156,7 @@ new Vue({
 
 
 	template: `
-	<div class="container col-md-12">
+	<div class="container mb-5 mt-5">
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
@@ -162,8 +164,8 @@ new Vue({
 		</span>
 
 		<div class="row col-md-6 offset-md-3 mt-5 mb-5">
-			<div v-if="error != ''" class="alert alert-danger">
-				{{this.error}}
+			<div v-if="error0 != ''" class="alert alert-danger">
+				{{this.error0}}
 			</div>
 			<div class="card rounded-4 p-0 shadow">
 				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
@@ -196,8 +198,8 @@ new Vue({
 		
 		
 		<div v-if="isPrediccionSelected" class="row col-md-6 offset-md-3 mt-5 mb-5">
-			<div v-if="error != ''" class="alert alert-danger">
-				{{this.error}}
+			<div v-if="error1 != ''" class="alert alert-danger">
+				{{this.error1}}
 			</div>
 			<div class="card rounded-4 p-0 shadow">
 				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
