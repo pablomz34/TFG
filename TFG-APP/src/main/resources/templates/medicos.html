@@ -16,33 +16,48 @@
 						class="text-custom-light-color">cos Registr</span>ados
 				</h2>
 			</div>
-			<div class="table-responsive shadow-lg p-0">
-				<table class="table table-custom-color table-striped-columns table-hover m-0">
-					<thead class="table-custom-color-table-head">
-						<tr>
-							<th class="fs-5 text-white">Nombre</th>
-							<th class="fs-5 text-white">Apellidos</th>
-							<th class="fs-5 text-white">Correo</th>
-							<th class="fs-5 text-white">Dni</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="medico : ${medicos}">
-							<td class="fw-semibold text-light" th:text="${medico.nombre}"></td>
-							<td class="fw-semibold text-light" th:text="${medico.apellidos}"></td>
-							<td class="fw-semibold text-light" th:text="${medico.correo}"></td>
-							<td class="fw-semibold text-light" th:text="${medico.dni}"></td>
-						</tr>
-					</tbody>
-				</table>
+
+			<div id="medicosRegistrados">
+				<div class="table-responsive shadow-lg p-0"
+					style="max-height: 500px !important; overflow-y: auto !important;">
+					<table id="medicosRegistradosTable" class="table table-custom-color table-striped-columns table-hover m-0">
+						<thead class="table-custom-color-table-head">
+							<tr>
+								<th class="fs-5 text-white text-center">Nombre <button @click="howToOrderColumn('nombre')"
+										class="btn btn-unstyled p-0"><i id="icononombre"
+											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+								<th class="fs-5 text-white text-center">Apellidos <button @click="howToOrderColumn('apellidos')"
+										class="btn btn-unstyled p-0"><i id="iconoapellidos"
+											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+								<th class="fs-5 text-white text-center">Correo <button @click="howToOrderColumn('correo')"
+										class="btn btn-unstyled p-0"><i id="iconocorreo"
+											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+								<th class="fs-5 text-white text-center">Dni <button @click="howToOrderColumn('dni')"
+										class="btn btn-unstyled p-0"><i id="iconodni"
+											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="medico : ${medicos}">
+								<td class="fw-semibold text-light" th:text="${medico.nombre}"></td>
+								<td class="fw-semibold text-light" th:text="${medico.apellidos}"></td>
+								<td class="fw-semibold text-light" th:text="${medico.correo}"></td>
+								<td class="fw-semibold text-light" th:text="${medico.dni}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 
 		</div>
 
 		<div th:unless="${#lists.size(medicos) > 0}" class="row">
-
+			<p class="mt-3 text-center  text-custom-color fs-3 fw-bold">¡No hay ningún médico registrado todavía!</p>
 		</div>
 	</div>
+
+
+	<script src="/js/medicos_registrados.js"></script>
 </body>
 
 </html>
