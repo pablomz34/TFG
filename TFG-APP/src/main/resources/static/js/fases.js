@@ -347,30 +347,14 @@ Vue.component('fase4', {
 	},
 
 	created() {
-		const THIZ = this;
-		fetch(window.location.origin + "/admin/fases/getDescripcionesPredicciones", {
-			method: "GET",
-		})
-			.then(async res => {
-				if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-					const errorMessage = await res.text();
-					//THIZ.error1 = "Error: " + errorMessage;
-					$('#cargando').hide();
-					throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-				}
-
-				return res.json();
-
-			})
-			.then(data => {
-
-				for (i = 0; i < data.length; i++) {
-					THIZ.descripciones.push(data[i]);
-				}
-				$('#cargando').hide();
-			})
-			.catch(error => console.error(error));
-
+		this.getDescripciones();
+	},
+	
+	watch: {
+		descripcionSeleccionada(){
+			const THIZ = this;
+			THIZ.continuar = false;
+		}
 	},
 
 	computed: {
@@ -380,13 +364,39 @@ Vue.component('fase4', {
 	},
 
 	methods: {
+		
+		getDescripciones: function(){
+			const THIZ = this;
+			fetch(window.location.origin + "/admin/fases/getDescripcionesPredicciones", {
+				method: "GET",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						//THIZ.error1 = "Error: " + errorMessage;
+						$('#cargando').hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+
+					return res.json();
+
+				})
+				.then(data => {
+
+					for (i = 0; i < data.length; i++) {
+						THIZ.descripciones.push(data[i]);
+					}
+					$('#cargando').hide();
+				})
+				.catch(error => console.error(error));
+		},
+		
 		seleccionarPrediccion: function() {
 			const THIZ = this;
 			$('#cargando').show();
-			
 			THIZ.error0 = '';
-			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?crearPrediccion=" + this.crear + 
-			"&descripcion=" + this.descripcionSeleccionada, {
+			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?crearPrediccion=" + this.crear +
+				"&descripcion=" + this.descripcionSeleccionada, {
 				method: "POST",
 			})
 				.then(async res => {
@@ -400,6 +410,7 @@ Vue.component('fase4', {
 				})
 				.then(data => {
 					THIZ.idPrediccion = data;
+					if(this.crear) THIZ.descripciones.push(this.descripcionSeleccionada);
 					THIZ.continuar = true;
 					$('#cargando').hide();
 				})
@@ -446,7 +457,7 @@ Vue.component('fase4', {
 			const THIZ = this;
 			$('#cargando').show();
 			THIZ.curvasCargadas = false;
-			
+
 			THIZ.error2 = '';
 			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
 				method: "GET",
@@ -472,7 +483,7 @@ Vue.component('fase4', {
 		mostrarClusterProfile: function() {
 			const THIZ = this;
 			$('#cargando').show();
-			
+
 			THIZ.error3 = '';
 			THIZ.perfilCargado = false;
 			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
@@ -558,22 +569,27 @@ Vue.component('fase4', {
 		            	</form>
 					</div>
 					<div v-show="!crear" class="row justify-content-around">
-						<form @submit.prevent="seleccionarPrediccion">
-							<div class="form-group mb-3">
-								<label for="descripcionSeleccionada" class="form-label">Elige una descripción existente para editar la predicción</label>
-								<select class="form-select" name="descripciones" v-model="descripcionSeleccionada" required>
-		                       		<option value="" disabled selected></option>
-		                       		<option v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
-		                    	</select>
-							</div>
-							<div class="form-group mb-2">
-		                        <div class="row justify-content-center">
-		                            <div class="col text-center">
-		                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
-		                            </div>
-		                        </div>
-		                    </div>
-						</form>
+						<div v-if="descripciones.length > 0">
+							<form @submit.prevent="seleccionarPrediccion">
+								<div class="form-group mb-3">
+									<label for="descripcionSeleccionada" class="form-label">Elige una descripción existente para editar la predicción</label>
+									<select class="form-select" name="descripciones" v-model="descripcionSeleccionada" required>
+			                       		<option value="" disabled selected></option>
+			                       		<option v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
+			                    	</select>
+								</div>
+								<div class="form-group mb-2">
+			                        <div class="row justify-content-center">
+			                            <div class="col text-center">
+			                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
+			                            </div>
+			                        </div>
+			                    </div>
+							</form>
+						</div>
+						<div v-else>
+							<p class="mt-3 text-center  text-custom-color fs-5 fw-bold">No hay predicciones disponibles. Crea una para poder continuar</p>
+						</div>
 					</div>
 				</div>
 			</div>

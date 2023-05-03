@@ -182,7 +182,7 @@ new Vue({
 				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 					<h2 class="text-center text-white">Elegir predicción</h2>
 				</div>
-				<div class="card-body">
+				<div v-if="descripciones.length > 0" class="card-body">
 					<form @submit.prevent="getPrediccionValues">	
 						<div class="form-group mb-3">	                 
                     		<label for="predicciones" class="form-label">Predicciones</label>
@@ -190,8 +190,7 @@ new Vue({
 	                       		<option v-for="i in descripciones" :value="i">{{i}}</option>
 	                    	</select>
 	                    </div>
-						
-						
+												
 						<div class="form-group mb-2">
 							<div class="row justify-content-center">
 								<div class="col text-center">
@@ -200,8 +199,10 @@ new Vue({
 								</div>
 							</div>
 						</div>
-						
 					</form>
+				</div>
+				<div v-else>
+					<p class="mt-3 text-center  text-custom-color fs-5 fw-bold">No hay predicciones disponibles</p>
 				</div>
 			</div>
 		</div>

@@ -26,11 +26,11 @@ public class AdminController {
 	}
 	
 	
-	@GetMapping("/medicos")
+	@GetMapping("/medicosRegistrados")
     public String users(Model model){
         List<UsuariosDto> medicos = usuariosService.findAllMedicos();
         model.addAttribute("medicos", medicos);
-        return "medicos";
+        return "medicos_registrados";
     }
 	
 }
