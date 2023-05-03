@@ -996,30 +996,6 @@ new Vue({
 			seleccion: '',
 		}
 	},
-
-	methods: {
-		cambiarSeleccion(seleccion) {
-			const THIZ = this;
-			THIZ.seleccion = seleccion;
-		},
-
-		colorTexto(seleccion) {
-			if (seleccion === this.seleccion) return 'white';
-			else return 'black';
-		},
-
-		colorBoton(seleccion) {
-			if (seleccion === this.seleccion) return '#0D6EFD';
-			else return '#AACDFF'
-		},
-
-		linea(seleccion) {
-			if (seleccion === this.seleccion) return '1.5px solid';
-			else return '1px solid';
-		},
-	},
-
-
 	template: `
 	<div class="container pt-2">		
 	    <div class="col-12 mb-3">
@@ -1061,30 +1037,6 @@ new Vue({
 		  </div>
 		</div>
 				
-    	<!--<div class="row justify-content-center">
-    		<div class="col-12">
-	            <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}" style="width:19%">
-	                <p :style="{color: colorTexto('Fase1')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener nº optimo clusters</p> 
-	            </button>
-	            <button @click="cambiarSeleccion('Fase2')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase2'), border: linea('Fase2')}" style="width:19%">
-	                <p :style="{color: colorTexto('Fase2')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener subpoblaciones</p>
-	            </button>
-	            <button @click="cambiarSeleccion('Fase3')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase3'), border: linea('Fase3')}" style="width:19%">
-	                <p :style="{color: colorTexto('Fase3')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener métricas de varianza</p>
-	            </button>
-	            <button @click="cambiarSeleccion('Fase4')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase4'), border: linea('Fase4')}" style="width:19%">
-	            	<p :style="{color: colorTexto('Fase4')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener gráficas y variables de poblacion</p>
-	            </button>      
-	            <button @click="cambiarSeleccion('Fase5')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase5'), border: linea('Fase5')}" style="width:19%">
-	                <p :style="{color: colorTexto('Fase5')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener rendimiento del modelo</p>
-	            </button>
-	    	</div>	    
-    	</div>
-    	<fase1 v-if="seleccion==='Fase1'"/>
-    	<fase2 v-if="seleccion==='Fase2'"/>
-        <fase3 v-if="seleccion==='Fase3'"/>     
-        <fase4 v-if="seleccion==='Fase4'"/>  
-        <fase5 v-if="seleccion==='Fase5'"/>  --> 
 	</div>
 	`
 })
