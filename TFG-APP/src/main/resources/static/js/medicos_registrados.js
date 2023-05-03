@@ -132,5 +132,5 @@ new Vue({
 			icono.setAttribute("class", "fa-solid fa-arrow-up-z-a fs-5");
 			}
 		}
-	}
+	},
 })

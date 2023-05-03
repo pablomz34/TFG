@@ -12100,21 +12100,6 @@ textarea.form-control-lg {
   color: #fff !important;
 }
 
-::-webkit-scrollbar {
-  width: 10px; /* ancho de la barra de desplazamiento */
-  background-color: rgb(65, 105, 225); /* color de fondo de la barra */
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgb(123, 151, 234); /* color del "pulgador" de la barra */
-  border-radius: 5px; /* redondear las esquinas del "pulgador" */
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(162, 182, 240);
-}
-
 .btn-unstyled {
   color: white !important;
 }
