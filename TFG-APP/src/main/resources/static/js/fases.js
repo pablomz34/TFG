@@ -1025,7 +1025,43 @@ new Vue({
 	    <div class="col-12 mb-3">
 				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
 		</div>
-    	<div class="row justify-content-center">
+		
+		<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist">
+		  <li class="nav-item pt-2" role="presentation">
+		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="nClusters-tab" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
+		  </li>
+		  <li class="nav-item pt-2" role="presentation">
+		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="subPopulations-tab" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false">Subpoblaciones</button>
+		  </li>
+		  <li class="nav-item pt-2" role="presentation">
+		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="varianceMetrics-tab" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
+		  </li>
+		  <li class="nav-item pt-2" role="presentation">
+		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="populationProfilesGraphics-tab" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
+		  </li>
+		  <li class="nav-item pt-2" role="presentation">
+		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="modelPerformance-tab" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
+		  </li>
+		</ul>
+		<div class="tab-content" id="pills-tabContent">
+		  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
+		  	<fase1 />
+		  </div>
+		  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
+		  	<fase2 />
+		  </div>
+		  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
+		  	<fase3 />
+		  </div>
+		  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
+		  	<fase4 />
+		  </div>
+		  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
+		  	<fase5 />
+		  </div>
+		</div>
+				
+    	<!--<div class="row justify-content-center">
     		<div class="col-12">
 	            <button @click="cambiarSeleccion('Fase1')" type="button" class="btn btn-md" :style="{backgroundColor: colorBoton('Fase1'), border: linea('Fase1')}" style="width:19%">
 	                <p :style="{color: colorTexto('Fase1')}" style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Obtener nº optimo clusters</p> 
@@ -1048,7 +1084,7 @@ new Vue({
     	<fase2 v-if="seleccion==='Fase2'"/>
         <fase3 v-if="seleccion==='Fase3'"/>     
         <fase4 v-if="seleccion==='Fase4'"/>  
-        <fase5 v-if="seleccion==='Fase5'"/>   
+        <fase5 v-if="seleccion==='Fase5'"/>  --> 
 	</div>
 	`
 })
