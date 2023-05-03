@@ -7,6 +7,23 @@
 <body class="bg-light-subtle">
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
+	
+	<style>
+	 		.table-responsive::-webkit-scrollbar {
+			  width: 10px; /* ancho de la barra de desplazamiento */
+			  background-color: rgb(65,105,225); /* color de fondo de la barra */
+			  border-radius: 5px;
+			}
+			
+			.table-responsive::-webkit-scrollbar-thumb {
+			  background-color: rgb(123, 151, 234); /* color del "pulgador" de la barra */
+			  border-radius: 5px; /* redondear las esquinas del "pulgador" */
+			}
+			
+			.table-responsive::-webkit-scrollbar-thumb:hover {
+			  background: rgb(162, 182, 240);
+			}
+	</style>
 
 	<div class="container">
 		<div th:if="${#lists.size(medicos) > 0}" class="row justify-content-center my-3">
