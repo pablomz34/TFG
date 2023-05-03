@@ -38,32 +38,23 @@ public class Usuarios {
 	@Column(name = "apellidos", nullable = false)
 	private String apellidos;
 	
-	/*@Column(name = "telefono", nullable = false, length = 9)
-	private String telefono; */
-	
 	@Column(name  = "correo", nullable = false, unique=true)
 	private String correo; 
 	
 	@Column(name = "password", nullable = false)
 	private String password;
 	
-	/* @Column(name = "contador_errores_password", nullable = false, columnDefinition="Int default '0'")
-	private Integer contadorErroresPassword;
-	
-	@Column(name = "bloqueado", nullable = false)
-	private Boolean bloqueado;
-	
-	@Column(name = "hospital")
+	/* @Column(name = "hospital")
 	private String hospital;
 	
 	@Column(name = "cargo")
 	private String cargo;
 	
 	@Column(name = "departamento")
-	private String departamento;*/
+	private String departamento;
 	
-	@Column(name = "dado_alta")
-	private Boolean dadoAlta;
+	@Column(name = "telefono", nullable = false, length = 9)
+	private String telefono; */
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinTable(
