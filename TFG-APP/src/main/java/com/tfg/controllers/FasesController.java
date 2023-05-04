@@ -88,8 +88,8 @@ public class FasesController {
 		return ResponseEntity.status(status).body(mensaje);
 	}
 
-	@PostMapping(value = "/getNClusters", consumes = "multipart/form-data")
-	public ResponseEntity<?> getNClusters(@RequestParam("max_clusters") String max_clusters,
+	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
+	public ResponseEntity<?> getOptimalNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
 		String error = this.validarInputNumber(max_clusters, 2, 20);

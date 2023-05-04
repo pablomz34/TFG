@@ -18,7 +18,7 @@ Vue.component('fase1', {
 			formData.append('max_clusters', this.nClusters);
 			formData.append('file', this.$refs.csvFile.files[0]);
 			THIZ.error = '';
-			fetch(window.location.origin + "/admin/fases/getNClusters", {
+			fetch(window.location.origin + "/admin/fases/getOptimalNClusters", {
 				method: "POST",
 				body: formData
 			})
@@ -67,8 +67,8 @@ Vue.component('fase1', {
 	            <div class="card-body">
 	                <form @submit.prevent="getOptimalNClusters">
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="nClusters">Numero de clusters</label>
-	                        <input type="number" min="1" max="8" class="form-control" v-model="nClusters" id="nClusters" required />
+	                        <label class="form-label" for="nClusters">Número de clusters</label>
+	                        <input type="number" min="2" max="20" class="form-control" v-model="nClusters" id="nClusters" required />
 	                    </div>
 	                    <div class="form-group mb-3">
 	                        <label for="csv" class="form-label">Archivo csv</label>
@@ -179,12 +179,12 @@ Vue.component('fase2', {
 	            <div class="card-body">
 	                <form @submit.prevent="getSubPopulations">
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="nClusters">Numero de clusters del algoritmo aglomerativo</label>
+	                        <label class="form-label" for="nClusters">Número de clusters del algoritmo aglomerativo</label>
 	                        <input type="number" min="1" max="8" class="form-control" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required />
 	                    </div>
 	
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="nClusters">Numero de clusters del algoritmo kmodes</label>
+	                        <label class="form-label" for="nClusters">Número de clusters del algoritmo kmodes</label>
 	                        <input type="number" min="1" max="8" class="form-control" v-model="nClustersKModes" id="nClustersKModes" required />
 	                    </div>
 	
