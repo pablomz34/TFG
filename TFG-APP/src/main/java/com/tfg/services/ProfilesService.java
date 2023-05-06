@@ -58,6 +58,8 @@ public class ProfilesService implements IProfilesService {
 		
 		Profiles profile = repos.findByNumClusterAndPrediccion(-1, prediccion);
 		
+		if(profile == null) return "";
+		
 		return profile.getFeatures();
 	}
 

@@ -65,6 +65,16 @@ new Vue({
 					fetch(window.location.origin + "/medico/getFeatures?idPrediccion=" + this.idPrediccion, {
 						method: "GET"
 					})
+						.then(async res => {
+							if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+								const errorMessage = await res.text();
+								THIZ.error0 = errorMessage;
+								$('#cargando').hide();
+								throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
+							}
+
+							return res.text();
+						})
 						.then(res => res.json())
 						.then(json => {
 
@@ -101,16 +111,16 @@ new Vue({
 
 
 							}
-
+							THIZ.isPrediccionSelected = true
 						})
 						.catch(error => console.error(error));
-						THIZ.isPrediccionSelected = true
+
 				})
 				.catch(error => console.error(error));
 
-			
+
 			$('#cargando').hide();
-			
+
 		},
 
 		getNewPatientClassification: function() {
@@ -162,19 +172,55 @@ new Vue({
 					$('#cargando').hide();
 				})
 				.catch(error => console.error(error));
+		},
+
+//		descargarPdf: function() {
+//			var element = document.getElementById("container");
+//			var options = {
+//				scale: 0.5 // Ajustar la escala para que la imagen se ajuste al ancho de la página del PDF
+//			};
+//
+//			// Generar una imagen de "miElemento" usando html2canvas
+//			html2canvas(element, options).then(function(canvas) {
+//				// Crear un objeto PDF usando jsPDF
+//				var pdf = new jsPDF();
+//
+//				// Calcular la posición x para centrar la imagen horizontalmente
+//				var positionX = pdf.internal.pageSize.width - canvas.width / 2;
+//
+//				// Agregar la imagen al PDF en la posición calculada
+//				pdf.addImage(canvas.toDataURL("image/jpeg"), 'JPEG', positionX, 10);
+//
+//				// Descargar el PDF
+//				pdf.save("miDocumento.pdf");
+//			});
+//		},
+		
+		descargarPdf: function() {
+			html2canvas(document.querySelector('#container')).then((canvas) => {
+				let base64image = canvas.toDataURL('imagen/png');
+				
+				let pdf = new jsPDF('p', 'px', [1600,1131]);
+				
+				pdf.addImage(base64image, 'PNG', 15, 15, 1100, 360);
+				pdf.save('miDocumento.pdf');
+			});
 		}
 	},
 
 
 	template: `
 	<div class="container mb-5 mt-5">
+	
+		<button @click="descargarPdf">Descargar Pdf</button>
+		
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
    			 </div>
 		</span>
 
-		<div class="row col-md-6 offset-md-3 mt-5 mb-5">
+		<div id="container" class="row col-md-6 offset-md-3 mt-5 mb-5">
 			<div v-if="error0 != ''" class="alert alert-danger">
 				{{this.error0}}
 			</div>

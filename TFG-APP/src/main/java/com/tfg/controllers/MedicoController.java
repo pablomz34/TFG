@@ -166,7 +166,11 @@ public class MedicoController {
 			throws IllegalStateException, IOException {
 
 		String features = profilesService.findFeaturesAllClusters(Long.parseLong(idPrediccion));
-
+		
+		if(features == "") {
+			return new ResponseEntity<>("No hay datos asignados a esta prediccion", HttpStatus.BAD_REQUEST);
+		}
+		
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(features, HashMap.class);
 
