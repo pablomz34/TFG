@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="~{fragmentos/head.html}"></head>
+<title>Login</title>
+
+<body class="bg-light-subtle">
+
+	<header th:insert="~{fragmentos/nav.html}"></header>
+
+	<div class="row justify-content-center mt-5">
+		<div class="card col-md-6 mb-3 shadow m-0 p-0 rounded-5">
+			<div class="row g-0">
+				<div class="col-md-3 bg-custom-color bg-gradient bg-opacity-75 rounded-start-5">
+					<div class="row">
+						<h2 class="text-center text-white">Editar usuario</h2>
+					</div>
+				</div>
+				<div class="col-md-9">
+					<div class="card-body">
+						<form>
+							<div class="row mb-3">
+								<label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
+
+								<div class="col-sm-9 position-relative">
+									<input type="text" id="nombre" name="nombre" class="form-control"
+										th:placeholder="${usuario.nombre}" disabled />
+									<button
+										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
+										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<label for="apellidos" class="col-sm-3 col-form-label">Apellidos</label>
+								<div class="col-sm-9 position-relative">
+									<input type="text" id="apellidos" name="apellidos" class="form-control"
+										th:placeholder="${usuario.apellidos}" disabled />
+									<button
+										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
+										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<label for="correo" class="col-sm-3 col-form-label">Correo</label>
+								<div class="col-sm-9 position-relative">
+									<input type="text" id="correo" name="correo" class="form-control"
+										th:placeholder="${usuario.correo}" disabled />
+									<button
+										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
+										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<label for="dni" class="col-sm-3 col-form-label">NIF/NIE</label>
+								<div class="col-sm-9 position-relative">
+									<input type="text" id="dni" name="dni" class="form-control"
+										th:placeholder="${usuario.dni}" disabled />
+									<button
+										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
+										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="row mb-3">
+								<label for="password" class="col-sm-3 col-form-label">Contraseña</label>
+								<div class="col-sm-9 position-relative">
+									<input type="text" id="password" name="password" class="form-control"
+										th:placeholder="${usuario.password}" disabled />
+									<button
+										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
+										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="form-group mb-2">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button class="btn btn-outline-custom-color fs-5 fw-semibold"
+											type="submit">Guardar cambios</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

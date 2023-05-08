@@ -36,6 +36,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 				authentication.getPrincipal()).getUsername();
 		Usuarios usuario = medicosService.findUsuariosByCorreo(correo);		
 		
+		session.setAttribute("idUsuario", usuario.getId());
 		session.setAttribute("usuario", usuario.getCorreo());
 		session.setAttribute("nombreUsuario", usuario.getNombre());
 		session.setAttribute("rol", usuario.getRoles().get(0).getNombre());

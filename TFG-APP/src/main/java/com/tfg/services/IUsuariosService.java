@@ -16,5 +16,7 @@ public interface IUsuariosService {
 	
 	public Usuarios findUsuariosByDni(String dni);
 	
+	public Usuarios findUsuarioById(Long idUsuario);
+	
 	public List<UsuariosDto> findAllMedicos();
 }

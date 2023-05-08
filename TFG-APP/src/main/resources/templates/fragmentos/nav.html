@@ -52,8 +52,7 @@
 							<i class="fa-solid fa-user"></i> [[${session.nombreUsuario}]]
 						</a>
 						<ul class="dropdown-menu dropdown-menu-end">
-							<li><a class="dropdown-item fs-6 fw-semibold" aria-current="page" th:href="@{/modificarUsuario}">Editar
-									usuario <i class="fa-solid fa-pen-to-square"></i></a></li>
+							<li><a class="dropdown-item fs-6 fw-semibold" aria-current="page" th:href="@{/perfilUsuario/{idUsuario}(idUsuario=${session.idUsuario})}">Mi perfil <i class="fa-solid fa-pen-to-square"></i></a></li>
 							<li><a class="dropdown-item fs-6 fw-semibold" aria-current="page" th:href="@{/logout}">Cerrar sesión <i
 										class="fa-solid fa-right-from-bracket"></i></a></li>
 						</ul>
