@@ -3431,8 +3431,8 @@ textarea.form-control-lg {
   --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
   --bs-dropdown-divider-margin-y: 0.5rem;
   --bs-dropdown-box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  --bs-dropdown-link-color: var(--bs-body-color);
-  --bs-dropdown-link-hover-color: var(--bs-body-color);
+  --bs-dropdown-link-color: rgb(123, 151, 234);
+  --bs-dropdown-link-hover-color: rgb(123, 151, 234);
   --bs-dropdown-link-hover-bg: var(--bs-tertiary-bg);
   --bs-dropdown-link-active-color: #fff;
   --bs-dropdown-link-active-bg: #0d6efd;
@@ -3958,12 +3958,12 @@ textarea.form-control-lg {
   --bs-navbar-color: rgb(233, 233, 233);
   --bs-navbar-hover-color: #fff;
   --bs-navbar-disabled-color: rgba(var(--bs-emphasis-color-rgb), 0.3);
-  --bs-navbar-active-color: rgba(var(--bs-emphasis-color-rgb), 1);
+  --bs-navbar-active-color: #fff;
   --bs-navbar-brand-padding-y: 0.3125rem;
   --bs-navbar-brand-margin-end: 1rem;
   --bs-navbar-brand-font-size: 1.25rem;
-  --bs-navbar-brand-color: rgba(var(--bs-emphasis-color-rgb), 1);
-  --bs-navbar-brand-hover-color: rgba(var(--bs-emphasis-color-rgb), 1);
+  --bs-navbar-brand-color: #fff;
+  --bs-navbar-brand-hover-color: #fff;
   --bs-navbar-nav-link-padding-x: 0.5rem;
   --bs-navbar-toggler-padding-y: 0.25rem;
   --bs-navbar-toggler-padding-x: 0.75rem;
@@ -6343,8 +6343,8 @@ textarea.form-control-lg {
   --bs-offcanvas-height: 30vh;
   --bs-offcanvas-padding-x: 1rem;
   --bs-offcanvas-padding-y: 1rem;
-  --bs-offcanvas-color: var(--bs-body-color);
-  --bs-offcanvas-bg: var(--bs-body-bg);
+  --bs-offcanvas-color: rgb(255, 255, 255);
+  --bs-offcanvas-bg: rgb(123, 151, 234);
   --bs-offcanvas-border-width: var(--bs-border-width);
   --bs-offcanvas-border-color: var(--bs-border-color-translucent);
   --bs-offcanvas-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -12106,6 +12106,16 @@ textarea.form-control-lg {
 
 .btn-unstyled:hover {
   color: rgb(211, 221, 248) !important;
+}
+
+.btn-editUser {
+  color: rgb(65, 105, 225) !important;
+  background-color: transparent !important;
+  border-style: none;
+}
+
+.btn-editUser:hover {
+  color: rgb(123, 151, 234) !important;
 }
 
 /*# sourceMappingURL=styles.css.map */

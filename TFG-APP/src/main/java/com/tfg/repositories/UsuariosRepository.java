@@ -16,5 +16,7 @@ public interface UsuariosRepository extends JpaRepository<Usuarios, Long> {
 	
 	Usuarios findByDni(String dni);
 	
+	Usuarios findUsuarioById(Long idUsuario);
+	
 	List<Usuarios> findByRoles(Roles rol);
 }

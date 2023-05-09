@@ -9,7 +9,13 @@ $input-btn-focus-box-shadow: none;
 $form-file-button-color:     #fff;
 $form-file-button-bg:       rgb(65,105,225);
 $form-file-button-hover-bg:    rgb(99, 132, 231);
+$navbar-light-active-color: #fff;
 
+$offcanvas-color: rgb(255, 255, 255);
+
+$dropdown-link-color:               rgb(123, 151, 234);
+
+$offcanvas-bg-color:               rgb(123, 151, 234) ;
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/variables-dark";
@@ -49,4 +55,14 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 
 .btn-unstyled:hover{
 	color: rgb(211, 221, 248) !important;
+}
+
+.btn-editUser{
+	color: rgb(65,105,225) !important;
+	background-color: transparent !important;
+	border-style: none;
+}
+
+.btn-editUser:hover{
+	color: rgb(123, 151, 234) !important;
 }

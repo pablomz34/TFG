@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
@@ -26,6 +27,8 @@ import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Usuarios;
 import com.tfg.services.IUsuariosService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -36,6 +39,10 @@ public class AuthController {
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
+	
+	
+	@Autowired
+	private HttpSession session;
 	 
 	@GetMapping("/admin/fases")
     public String fases(){
@@ -108,6 +115,22 @@ public class AuthController {
         
     }
     
+    @GetMapping("/perfilUsuario/{idUsuario}")
+    public String editarUsuario(@PathVariable("idUsuario") Long idUsuario, Model model,
+    		HttpServletRequest request){
+    	
+    	Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
+    	if(idUsuario.longValue()!=sessionIdUsuario.longValue()) {
+    	    
+    		return "redirect:/";
+    	}
+    	 	
+    	Usuarios usuario = usuariosService.findUsuarioById(idUsuario);
+    	
+    	model.addAttribute("usuario", usuario);
+    	
+        return "perfilUsuario";
+    }
     
     @GetMapping("/login")
     public String login(){

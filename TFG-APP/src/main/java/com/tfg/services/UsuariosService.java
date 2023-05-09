@@ -88,6 +88,11 @@ public class UsuariosService implements IUsuariosService {
 		return rolesRep.save(rol);
 	}
 
+	@Override
+	public Usuarios findUsuarioById(Long idUsuario) {
+		return usuariosRep.findUsuarioById(idUsuario);
+	}
+
 
 
 }
