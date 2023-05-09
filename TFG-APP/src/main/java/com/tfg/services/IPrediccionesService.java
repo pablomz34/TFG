@@ -18,4 +18,8 @@ public interface IPrediccionesService {
 	public void guardarMaxClusters(Integer maxClusters, Long id);
 
 	public List<String> getDescripciones(); 
+	
+	public List<Predicciones> getAll();
+	
+	public boolean borrarPrediccion(Long id);
 }

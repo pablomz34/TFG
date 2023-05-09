@@ -17,4 +17,5 @@ public interface PrediccionesRepository extends JpaRepository<Predicciones, Long
 	public Predicciones findPrediccionById(Long id);
 	
 	public List<Predicciones> findAll();
+	
 }

@@ -26,6 +26,9 @@
 				<li th:if="${session.usuario}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/medico}">Herramienta predictiva</a>
 				</li>
+				<li th:if="${session.usuario != null and session.rol == 'ROLE_ADMIN'}" class="nav-item">
+					<a class="nav-link" aria-current="page" th:href="@{/admin/predicciones}">Predicciones</a>
+				</li>
 				
 				<li th:if="${session.usuario}" class="nav-item">
 					<a class="nav-link" aria-current="page" th:href="@{/logout}">Cerrar sesión</a>
