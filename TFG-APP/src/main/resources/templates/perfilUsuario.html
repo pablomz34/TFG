@@ -18,82 +18,92 @@
 				</div>
 				<div class="col-md-9">
 					<div class="card-body">
-						<form>
-							<div class="row mb-3">
-								<label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
+						<div id="perfilUsuarioApp" th:attr="data-usuarioNombre=${usuario.nombre},data-usuarioApellidos=${usuario.apellidos},
+						data-usuarioCorreo=${usuario.correo},data-usuarioDni=${usuario.dni},data-usuarioPassword=${usuario.password}">
+							<form>
+								<div class="row mb-3">
+									<label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
 
-								<div class="col-sm-9 position-relative">
-									<input type="text" id="nombre" name="nombre" class="form-control" style="padding-right: 35px !important;"
-										th:placeholder="${usuario.nombre}" disabled />
-									<button
-										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
-										<i class="fa-solid fa-pen fs-5 text-custom-color m-1"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="row mb-3">
-								<label for="apellidos" class="col-sm-3 col-form-label">Apellidos</label>
-								<div class="col-sm-9 position-relative">
-									<input type="text" id="apellidos" name="apellidos" class="form-control" style="padding-right: 35px !important;"
-										th:placeholder="${usuario.apellidos}" disabled />
-									<button
-										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
-										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="row mb-3">
-								<label for="correo" class="col-sm-3 col-form-label">Correo</label>
-								<div class="col-sm-9 position-relative">
-									<input type="text" id="correo" name="correo" class="form-control" style="padding-right: 35px !important;"
-										th:placeholder="${usuario.correo}" disabled />
-									<button
-										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
-										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="row mb-3">
-								<label for="dni" class="col-sm-3 col-form-label">NIF/NIE</label>
-								<div class="col-sm-9 position-relative">
-									<input type="text" id="dni" name="dni" class="form-control" style="padding-right: 35px !important;"
-										th:placeholder="${usuario.dni}" disabled />
-									<button
-										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
-										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="row mb-3">
-								<label for="password" class="col-sm-3 col-form-label">Contraseña</label>
-								<div class="col-sm-9 position-relative">
-									<input type="text" id="password" name="password" class="form-control" style="padding-right: 35px !important;"
-										th:placeholder="${usuario.password}" disabled />
-									<button
-										class="position-absolute top-50 end-0 translate-middle btn btn-unstyled p-0 m-0">
-										<i class="fa-solid fa-pen fs-5 text-custom-color p-1"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="form-group mb-2">
-								<div class="row justify-content-center">
-									<div class="col text-center">
-										<button class="btn btn-outline-custom-color fs-5 fw-semibold"
-											type="submit">Guardar cambios</button>
+									<div class="col-sm-9 position-relative">
+										<input type="text" id="nombre" name="nombre" class="form-control"
+											style="padding-right: 35px !important;" :placeholder="nombreUsuario"
+											disabled />
+										<button @click="modificarNombre"
+											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+											<i class="fa-solid fa-pen fs-5 m-1"></i>
+										</button>
 									</div>
 								</div>
-							</div>
-						</form>
+
+								<div class="row mb-3">
+									<label for="apellidos" class="col-sm-3 col-form-label">Apellidos</label>
+									<div class="col-sm-9 position-relative">
+										<input type="text" id="apellidos" name="apellidos" class="form-control"
+											style="padding-right: 35px !important;"
+											:placeholder="apellidosUsuario" disabled />
+										<button @click="modificarApellidos"
+											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+											<i class="fa-solid fa-pen fs-5  p-1"></i>
+										</button>
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<label for="correo" class="col-sm-3 col-form-label">Correo</label>
+									<div class="col-sm-9 position-relative">
+										<input type="text" id="correo" name="correo" class="form-control"
+											style="padding-right: 35px !important;" :placeholder="correoUsuario"
+											disabled />
+										<button @click="modificarCorreo"
+											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+											<i class="fa-solid fa-pen fs-5 p-1"></i>
+										</button>
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<label for="dni" class="col-sm-3 col-form-label">NIF/NIE</label>
+									<div class="col-sm-9 position-relative">
+										<input type="text" id="dni" name="dni" class="form-control"
+											style="padding-right: 35px !important;" :placeholder="dniUsuario"
+											disabled />
+										<button @click="modificarDni"
+											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+											<i class="fa-solid fa-pen fs-5 p-1"></i>
+										</button>
+									</div>
+								</div>
+
+								<div class="row mb-3">
+									<label for="password" class="col-sm-3 col-form-label">Contraseña</label>
+									<div class="col-sm-9 position-relative">
+										<input type="password" id="password" name="password" class="form-control"
+											style="padding-right: 35px !important;" :placeholder="placeholderPassword"
+											disabled />
+										<button @click="modificarPassword"
+											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+											<i class="fa-solid fa-pen fs-5 p-1"></i>
+										</button>
+									</div>
+								</div>
+
+								<div class="form-group mb-2">
+									<div class="row justify-content-center">
+										<div class="col text-center">
+											<button class="btn btn-outline-custom-color fs-5 fw-semibold"
+												type="submit">Guardar cambios</button>
+										</div>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	
+	<script src="/js/perfilUsuario.js"></script>
 
 </body>
 

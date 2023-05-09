@@ -12108,4 +12108,14 @@ textarea.form-control-lg {
   color: rgb(211, 221, 248) !important;
 }
 
+.btn-editUser {
+  color: rgb(65, 105, 225) !important;
+  background-color: transparent !important;
+  border-style: none;
+}
+
+.btn-editUser:hover {
+  color: rgb(123, 151, 234) !important;
+}
+
 /*# sourceMappingURL=styles.css.map */
