@@ -8,27 +8,26 @@
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 
-	<div class="row justify-content-center mt-5">
-		<div class="card col-md-6 mb-3 shadow m-0 p-0 rounded-5">
-			<div class="row g-0">
-				<div class="col-md-3 bg-custom-color bg-gradient bg-opacity-75 rounded-start-5">
-					<div class="row">
-						<h2 class="text-center text-white">Editar usuario</h2>
+	<div id="perfilUsuarioApp" th:data-idUsuario="${session.idUsuario}">
+		<div class="row justify-content-center mt-5">
+			<div class="card col-md-6 mb-3 shadow m-0 p-0 rounded-5">
+				<div class="row g-0">
+					<div class="col-md-3 bg-custom-color bg-gradient bg-opacity-75 rounded-start-5">
+						<div class="row">
+							<h2 class="text-center text-white">Editar usuario</h2>
+						</div>
 					</div>
-				</div>
-				<div class="col-md-9">
-					<div class="card-body">
-						<div id="perfilUsuarioApp" th:attr="data-usuarioNombre=${usuario.nombre},data-usuarioApellidos=${usuario.apellidos},
-						data-usuarioCorreo=${usuario.correo},data-usuarioDni=${usuario.dni},data-usuarioPassword=${usuario.password}">
+					<div class="col-md-9">
+						<div class="card-body">
 							<form>
 								<div class="row mb-3">
 									<label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
 
 									<div class="col-sm-9 position-relative">
 										<input type="text" id="nombre" name="nombre" class="form-control"
-											style="padding-right: 35px !important;" :placeholder="nombreUsuario"
-											disabled />
-										<button @click="modificarNombre"
+											style="padding-right: 35px !important;"
+											:placeholder="usuario.nombre.placeholder" disabled />
+										<button @click="showToast('nombre', 'cambiarNombreModal')" type="button"
 											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
 											<i class="fa-solid fa-pen fs-5 m-1"></i>
 										</button>
@@ -40,8 +39,8 @@
 									<div class="col-sm-9 position-relative">
 										<input type="text" id="apellidos" name="apellidos" class="form-control"
 											style="padding-right: 35px !important;"
-											:placeholder="apellidosUsuario" disabled />
-										<button @click="modificarApellidos"
+											:placeholder="usuario.apellidos.placeholder" disabled />
+										<button @click="showToast('apellidos', 'cambiarApellidosModal')" type="button"
 											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
 											<i class="fa-solid fa-pen fs-5  p-1"></i>
 										</button>
@@ -52,9 +51,9 @@
 									<label for="correo" class="col-sm-3 col-form-label">Correo</label>
 									<div class="col-sm-9 position-relative">
 										<input type="text" id="correo" name="correo" class="form-control"
-											style="padding-right: 35px !important;" :placeholder="correoUsuario"
-											disabled />
-										<button @click="modificarCorreo"
+											style="padding-right: 35px !important;"
+											:placeholder="usuario.correo.placeholder" disabled />
+										<button @click="showToast('correo', 'cambiarCorreoModal')" type="button"
 											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
 											<i class="fa-solid fa-pen fs-5 p-1"></i>
 										</button>
@@ -65,9 +64,9 @@
 									<label for="dni" class="col-sm-3 col-form-label">NIF/NIE</label>
 									<div class="col-sm-9 position-relative">
 										<input type="text" id="dni" name="dni" class="form-control"
-											style="padding-right: 35px !important;" :placeholder="dniUsuario"
-											disabled />
-										<button @click="modificarDni"
+											style="padding-right: 35px !important;"
+											:placeholder="usuario.dni.placeholder" disabled />
+										<button @click="showToast('dni', 'cambiarDniModal')" type="button"
 											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
 											<i class="fa-solid fa-pen fs-5 p-1"></i>
 										</button>
@@ -78,32 +77,198 @@
 									<label for="password" class="col-sm-3 col-form-label">Contraseña</label>
 									<div class="col-sm-9 position-relative">
 										<input type="password" id="password" name="password" class="form-control"
-											style="padding-right: 35px !important;" :placeholder="placeholderPassword"
-											disabled />
-										<button @click="modificarPassword"
+											style="padding-right: 35px !important;"
+											:placeholder="usuario.password.placeholder" disabled />
+										<button @click="showToast('password', 'cambiarPasswordModal')" type="button"
 											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
 											<i class="fa-solid fa-pen fs-5 p-1"></i>
 										</button>
 									</div>
 								</div>
-
-								<div class="form-group mb-2">
-									<div class="row justify-content-center">
-										<div class="col text-center">
-											<button class="btn btn-outline-custom-color fs-5 fw-semibold"
-												type="submit">Guardar cambios</button>
-										</div>
-									</div>
-								</div>
 							</form>
+
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
+
+		<div id="validationBackErrorToast" class="toast position-absolute top-50 start-50 translate-middle"
+			data-bs-autohide="false" role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="toast-header bg-danger bg-gradient bg-opacity-75">
+				<strong class="me-auto fs-5"><i class="fa-sharp fa-solid fa-circle-exclamation fa-flip"></i>
+					Aviso</strong>
+				<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+			<div class="toast-body">
+				<strong class="text-danger" :value="backErrorMessage"></strong>
+			</div>
+		</div>
+
+
+		<div class="modal fade" id="cambiarNombreModal" tabindex="-1" aria-labelledby="cambiarNombreModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-custom-light-color">
+						<h1 class="modal-title fs-5 text-white" id="cambiarNombreModalLabel">Cambiar nombre</h1>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+
+						<div v-if="backErrorMessage != ''" class="alert alert-danger">
+							{{backErrorMessage}}
+						</div>
+
+						<form>
+							<div class="form-group mb-3">
+								<label for="nuevoNombre" class="form-label fs-6">Nuevo nombre</label>
+								<input type="text" class="form-control" id="nuevoNombre"
+									v-model="usuario.nombre.valorModificado">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button @click="cambiarNombre" type="button"
+							class="btn btn-outline-custom-color fs-5">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade" id="cambiarApellidosModal" tabindex="-1" aria-labelledby="cambiarApellidosModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-custom-light-color">
+						<h1 class="modal-title fs-5 text-white" id="cambiarApellidosModalLabel">Cambiar apellidos</h1>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+
+						<div v-if="backErrorMessage != ''" class="alert alert-danger">
+							{{backErrorMessage}}
+						</div>
+
+						<form>
+							<div class="form-group mb-3">
+								<label for="nuevosApellidos" class="form-label fs-6">Nuevos apellidos</label>
+								<input type="text" class="form-control" id="nuevosApellidos"
+									v-model="usuario.apellidos.valorModificado">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button @click="cambiarNombre" type="button"
+							class="btn btn-outline-custom-color fs-5">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade" id="cambiarCorreoModal" tabindex="-1" aria-labelledby="cambiarCorreoModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-custom-light-color">
+						<h1 class="modal-title fs-5 text-white" id="cambiarCorreoModalLabel">Cambiar correo</h1>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+
+						<div v-if="backErrorMessage != ''" class="alert alert-danger">
+							{{backErrorMessage}}
+						</div>
+
+						<form>
+							<div class="form-group mb-3">
+								<label for="nuevoCorreo" class="form-label fs-6">Nuevo correo</label>
+								<input type="text" class="form-control" id="nuevoCorreo"
+									v-model="usuario.correo.valorModificado">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button @click="cambiarNombre" type="button"
+							class="btn btn-outline-custom-color fs-5">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade" id="cambiarDniModal" tabindex="-1" aria-labelledby="cambiarDniModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-custom-light-color">
+						<h1 class="modal-title fs-5 text-white" id="cambiarDniModalLabel">Cambiar NIF/NIE</h1>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+
+						<div v-if="backErrorMessage != ''" class="alert alert-danger">
+							{{backErrorMessage}}
+						</div>
+
+						<form>
+							<div class="form-group mb-3">
+								<label for="nuevoDni" class="form-label fs-6">Nuevo NIF/NIE</label>
+								<input type="text" class="form-control" id="nuevoDni"
+									v-model="usuario.dni.valorModificado">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button @click="cambiarNombre" type="button"
+							class="btn btn-outline-custom-color fs-5">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="modal fade" id="cambiarPasswordModal" tabindex="-1" aria-labelledby="cambiarPasswordModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header bg-custom-light-color">
+						<h1 class="modal-title fs-5 text-white" id="cambiarPasswordModalLabel">Cambiar contraseña</h1>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+
+						<div v-if="backErrorMessage != ''" class="alert alert-danger">
+							{{backErrorMessage}}
+						</div>
+
+						<form>
+							<div class="form-group mb-3">
+								<label for="nuevaPassword" class="form-label fs-6">Nueva contraseña</label>
+								<input type="password" class="form-control" id="nuevaPassword"
+									v-model="usuario.password.valorModificado">
+							</div>
+							<div class="form-group mb-3">
+								<label for="repetirNuevaPassword" class="form-label fs-6">Repetir nueva contraseña</label>
+								<input type="password" class="form-control" id="repetirNuevaPassword"
+									v-model="usuario.password.repeatPassword">
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button @click="cambiarNombre" type="button"
+							class="btn btn-outline-custom-color fs-5">Guardar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 	</div>
-	
-	<script src="/js/perfilUsuario.js"></script>
+
+	<script type="module" src="/js/perfilUsuario.js"></script>
 
 </body>
 

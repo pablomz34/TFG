@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 
@@ -124,15 +126,74 @@ public class AuthController {
     	    
     		return "redirect:/";
     	}
-    	 	
-    	Usuarios usuario = usuariosService.findUsuarioById(idUsuario);
-    	
-    	model.addAttribute("usuario", usuario);
     	
         return "perfilUsuario";
     }
     
-    @GetMapping("/login")
+    
+    @GetMapping("/obtenerDatosPerfilUsuario")
+    @Transactional
+    public ResponseEntity<?> obtenerDatosPerfilUsuario(@RequestParam("idUsuario") String idUsuario){
+		
+    	
+    	Long id = Long.parseLong(idUsuario);
+    	
+    	Usuarios usuario = usuariosService.findUsuarioById(id);
+    	
+    	HashMap<String, Object> map = new HashMap<String, Object>();
+    	
+    	map.put("nombre", usuario.getNombre());
+    	
+    	map.put("apellidos", usuario.getApellidos());
+    	
+    	map.put("correo", usuario.getCorreo());
+    	
+    	map.put("dni", usuario.getDni());
+    	
+    	map.put("password", usuario.getPassword());	
+    	
+    	return new ResponseEntity<>(map, HttpStatus.OK);	
+    }
+    
+    @PostMapping(value="/cambiarNombreUsuario", consumes="application/json")
+    @Transactional
+    public ResponseEntity<?> cambiarNombreUsuario(@RequestParam("idUsuario") String idUsuario,
+    		@RequestBody HashMap<String, Object> json){
+		
+    	Long id = Long.parseLong(idUsuario);
+    	
+    	String nombre = (String) json.get("nombre");
+    	
+    	
+    	String error = validarNombreUsuario(nombre);
+    	
+    	if(!error.isEmpty()) {
+    		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);	
+    	
+    	}
+    	
+    	usuariosService.updateUsuarioNombre(id, nombre);
+    	
+		return new ResponseEntity("", HttpStatus.OK);	
+    }
+    
+    
+    
+    private String validarNombreUsuario(String nombre) {
+		
+    	if(nombre==null || nombre.isEmpty()) {
+    		return "El nuevo nombre no puede ser vacío";
+    	}
+    	
+    	if(!nombre.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*(?:\\s+[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*)*$")) {
+    		return "El nuevo nombre debe contener únicamente letras, no puede contener números ni carácteres extraños";
+    	}
+    	
+		return "";
+	}
+
+
+	@GetMapping("/login")
     public String login(){
     	
     	if(RedirectLoginRegistro()) {

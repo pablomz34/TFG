@@ -18,5 +18,7 @@ public interface IUsuariosService {
 	
 	public Usuarios findUsuarioById(Long idUsuario);
 	
+	public void updateUsuarioNombre(Long idUsuario, String nombre);
+	
 	public List<UsuariosDto> findAllMedicos();
 }

@@ -93,6 +93,19 @@ public class UsuariosService implements IUsuariosService {
 		return usuariosRep.findUsuarioById(idUsuario);
 	}
 
+	@Override
+	public void updateUsuarioNombre(Long idUsuario, String nombre) {
+		
+		Usuarios usuario = usuariosRep.findUsuarioById(idUsuario);
+		
+		
+		if(usuario!=null) {
+			usuario.setNombre(nombre);
+			
+			usuariosRep.save(usuario);
+		}	
+	}
+
 
 
 }
