@@ -129,7 +129,7 @@ new Vue({
 
 				if (regex.test(input_name.text)) {
 
-					fetch(window.location.origin + "/registro/comprobarCorreo?correo=" + encodeURIComponent(input_name.text), {
+					fetch(window.location.origin + "/comprobarCorreoUnico?correo=" + encodeURIComponent(input_name.text), {
 						method: "GET"
 					})
 						.then(res => res.json())
@@ -169,7 +169,7 @@ new Vue({
 
 					if (this.validarDigitoDeControlDni(input_name.text)) {
 
-						fetch(window.location.origin + "/registro/comprobarDNI?dni=" + encodeURIComponent(input_name.text), {
+						fetch(window.location.origin + "/comprobarDNIUnico?dni=" + encodeURIComponent(input_name.text), {
 							method: "GET"
 						})
 							.then(res => res.json())

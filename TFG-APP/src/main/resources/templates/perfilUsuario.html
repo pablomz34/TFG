@@ -124,8 +124,12 @@
 						<form>
 							<div class="form-group mb-3">
 								<label for="nuevoNombre" class="form-label fs-6">Nuevo nombre</label>
-								<input type="text" class="form-control" id="nuevoNombre"
-									v-model="usuario.nombre.valorModificado">
+								<input type="text" :class="usuario.nombre.validationInputClass" class="form-control" id="nuevoNombre"
+									v-on:keyup="validarNombre" v-model="usuario.nombre.valorModificado">
+								<p v-if="usuario.nombre.validationInputMessage!=''"
+									:class="usuario.nombre.validationInputMessageClass">
+									{{usuario.nombre.validationInputMessage}}
+								</p>
 							</div>
 						</form>
 					</div>
@@ -155,8 +159,12 @@
 						<form>
 							<div class="form-group mb-3">
 								<label for="nuevosApellidos" class="form-label fs-6">Nuevos apellidos</label>
-								<input type="text" class="form-control" id="nuevosApellidos"
-									v-model="usuario.apellidos.valorModificado">
+								<input type="text" :class="usuario.apellidos.validationInputClass" class="form-control" id="nuevosApellidos"
+									v-on:keyup="validarApellidos" v-model="usuario.apellidos.valorModificado">
+								<p v-if="usuario.apellidos.validationInputMessage!=''"
+									:class="usuario.apellidos.validationInputMessageClass">
+									{{usuario.apellidos.validationInputMessage}}
+								</p>
 							</div>
 						</form>
 					</div>
@@ -186,8 +194,12 @@
 						<form>
 							<div class="form-group mb-3">
 								<label for="nuevoCorreo" class="form-label fs-6">Nuevo correo</label>
-								<input type="text" class="form-control" id="nuevoCorreo"
-									v-model="usuario.correo.valorModificado">
+								<input type="text" :class="usuario.correo.validationInputClass" class="form-control" id="nuevoCorreo"
+									v-on:keyup="validarCorreo" v-model="usuario.correo.valorModificado">
+								<p v-if="usuario.correo.validationInputMessage!=''"
+									:class="usuario.correo.validationInputMessageClass">
+									{{usuario.correo.validationInputMessage}}
+								</p>
 							</div>
 						</form>
 					</div>
@@ -217,8 +229,12 @@
 						<form>
 							<div class="form-group mb-3">
 								<label for="nuevoDni" class="form-label fs-6">Nuevo NIF/NIE</label>
-								<input type="text" class="form-control" id="nuevoDni"
-									v-model="usuario.dni.valorModificado">
+								<input type="text" :class="usuario.dni.validationInputClass" class="form-control" id="nuevoDni"
+									v-on:keyup="validarDni" v-model="usuario.dni.valorModificado">
+								<p v-if="usuario.dni.validationInputMessage!=''"
+									:class="usuario.dni.validationInputMessageClass">
+									{{usuario.dni.validationInputMessage}}
+								</p>
 							</div>
 						</form>
 					</div>
@@ -248,13 +264,21 @@
 						<form>
 							<div class="form-group mb-3">
 								<label for="nuevaPassword" class="form-label fs-6">Nueva contraseña</label>
-								<input type="password" class="form-control" id="nuevaPassword"
-									v-model="usuario.password.valorModificado">
+								<input type="password" :class="usuario.password.validationInputClass" class="form-control" id="nuevaPassword"
+									v-on:keyup="validarPassword" v-model="usuario.password.valorModificado">
+								<p v-if="usuario.password.validationInputMessage!=''"
+									:class="usuario.password.validationInputMessageClass">
+									{{usuario.password.validationInputMessage}}
+								</p>
 							</div>
 							<div class="form-group mb-3">
 								<label for="repetirNuevaPassword" class="form-label fs-6">Repetir nueva contraseña</label>
-								<input type="password" class="form-control" id="repetirNuevaPassword"
-									v-model="usuario.password.repeatPassword">
+								<input type="password" :class="usuario.repeatPassword.validationInputClass" class="form-control" id="repetirNuevaPassword"
+									 v-on:keyup="validarRepeatPassword" v-model="usuario.repeatPassword.valorRepeatedPassword">
+								<p v-if="usuario.repeatPassword.validationInputMessage!=''"
+									:class="usuario.repeatPassword.validationInputMessageClass">
+									{{usuario.repeatPassword.validationInputMessage}}
+								</p>
 							</div>
 						</form>
 					</div>

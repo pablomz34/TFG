@@ -54,7 +54,7 @@ public class SpringSecurity implements CommandLineRunner {
     	.csrf().disable()
     	.authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/images/**", "/js/**", "/python/**", "/css/**", "/node_modules/**", "/sass/**").permitAll()
-                                .requestMatchers("/registro/**", "/login/**", "/", "/index").permitAll()
+                                .requestMatchers("/registro/**", "/login/**", "/", "/index", "/comprobarDNIUnico", "/comprobarCorreoUnico").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/medico/**", "/clustersImages/**", "/perfilUsuario/**", "/obtenerDatosPerfilUsuario/**",
                                 		"/cambiarDatoPerfilUsuario/**").hasAnyRole("ADMIN", "MEDICO")

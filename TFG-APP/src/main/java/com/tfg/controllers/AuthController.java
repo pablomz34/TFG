@@ -76,7 +76,7 @@ public class AuthController {
 		return "registro";
 	}
 
-	@GetMapping("/registro/comprobarCorreo")
+	@GetMapping("/comprobarCorreoUnico")
 	@Transactional
 	public ResponseEntity<?> comprobarCorreo(@RequestParam("correo") String correo) {
 
@@ -86,7 +86,7 @@ public class AuthController {
 		return new ResponseEntity<>(correoExiste, HttpStatus.OK);
 	}
 
-	@GetMapping("/registro/comprobarDNI")
+	@GetMapping("/comprobarDNIUnico")
 	@Transactional
 	public ResponseEntity<?> comprobarDNI(@RequestParam("dni") String dni) {
 
