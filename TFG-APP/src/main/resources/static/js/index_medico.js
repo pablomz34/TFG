@@ -73,9 +73,8 @@ new Vue({
 								throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 							}
 
-							return res.text();
+							return res.json();
 						})
-						.then(res => res.json())
 						.then(json => {
 
 							THIZ.herramientaPredictivaInputs = [];
@@ -174,35 +173,35 @@ new Vue({
 				.catch(error => console.error(error));
 		},
 
-//		descargarPdf: function() {
-//			var element = document.getElementById("container");
-//			var options = {
-//				scale: 0.5 // Ajustar la escala para que la imagen se ajuste al ancho de la página del PDF
-//			};
-//
-//			// Generar una imagen de "miElemento" usando html2canvas
-//			html2canvas(element, options).then(function(canvas) {
-//				// Crear un objeto PDF usando jsPDF
-//				var pdf = new jsPDF();
-//
-//				// Calcular la posición x para centrar la imagen horizontalmente
-//				var positionX = pdf.internal.pageSize.width - canvas.width / 2;
-//
-//				// Agregar la imagen al PDF en la posición calculada
-//				pdf.addImage(canvas.toDataURL("image/jpeg"), 'JPEG', positionX, 10);
-//
-//				// Descargar el PDF
-//				pdf.save("miDocumento.pdf");
-//			});
-//		},
-		
+		//		descargarPdf: function() {
+		//			var element = document.getElementById("container");
+		//			var options = {
+		//				scale: 0.5 // Ajustar la escala para que la imagen se ajuste al ancho de la página del PDF
+		//			};
+		//
+		//			// Generar una imagen de "miElemento" usando html2canvas
+		//			html2canvas(element, options).then(function(canvas) {
+		//				// Crear un objeto PDF usando jsPDF
+		//				var pdf = new jsPDF();
+		//
+		//				// Calcular la posición x para centrar la imagen horizontalmente
+		//				var positionX = pdf.internal.pageSize.width - canvas.width / 2;
+		//
+		//				// Agregar la imagen al PDF en la posición calculada
+		//				pdf.addImage(canvas.toDataURL("image/jpeg"), 'JPEG', positionX, 10);
+		//
+		//				// Descargar el PDF
+		//				pdf.save("miDocumento.pdf");
+		//			});
+		//		},
+
 		descargarPdf: function() {
 			html2canvas(document.querySelector('#container')).then((canvas) => {
 				let base64image = canvas.toDataURL('imagen/png');
-				
-				let pdf = new jsPDF('p', 'px', [1600,1131]);
-				
-				pdf.addImage(base64image, 'PNG', 15, 15, 1100, 360);
+				console.log(base64image)
+				let pdf = new jsPDF('p', 'px', 'a4');
+
+				pdf.addImage(base64image, 'PNG', 15, 15, base64image.width, base64image.height);
 				pdf.save('miDocumento.pdf');
 			});
 		}
@@ -219,76 +218,76 @@ new Vue({
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
    			 </div>
 		</span>
-
-		<div id="container" class="row col-md-6 offset-md-3 mt-5 mb-5">
-			<div v-if="error0 != ''" class="alert alert-danger">
-				{{this.error0}}
-			</div>
-			<div class="card rounded-4 p-0 shadow">
-				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-					<h2 class="text-center text-white">Elegir predicción</h2>
+		<div id="container">
+			<div class="row col-md-6 offset-md-3 mt-5 mb-5">
+				<div v-if="error0 != ''" class="alert alert-danger">
+					{{this.error0}}
 				</div>
-				<div v-if="descripciones.length > 0" class="card-body">
-					<form @submit.prevent="getPrediccionValues">	
-						<div class="form-group mb-3">	                 
-                    		<label for="predicciones" class="form-label">Predicciones</label>
-							<select class="form-select" name="predicciones" v-model="descripcionSeleccionada" required>
-	                       		<option v-for="i in descripciones" :value="i">{{i}}</option>
-	                    	</select>
-	                    </div>
-												
-						<div class="form-group mb-2">
-							<div class="row justify-content-center">
-								<div class="col text-center">
-									<button class="btn btn-outline-custom-color fs-5 fw-semibold"
-										type="submit">Continuar</button>
+				<div class="card rounded-4 p-0 shadow">
+					<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+						<h2 class="text-center text-white">Elegir predicción</h2>
+					</div>
+					<div v-if="descripciones.length > 0" class="card-body">
+						<form @submit.prevent="getPrediccionValues">	
+							<div class="form-group mb-3">	                 
+	                    		<label for="predicciones" class="form-label">Predicciones</label>
+								<select class="form-select" name="predicciones" v-model="descripcionSeleccionada" required>
+		                       		<option v-for="i in descripciones" :value="i">{{i}}</option>
+		                    	</select>
+		                    </div>
+													
+							<div class="form-group mb-2">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button class="btn btn-outline-custom-color fs-5 fw-semibold"
+											type="submit">Continuar</button>
+									</div>
 								</div>
 							</div>
-						</div>
-					</form>
+						</form>
+					</div>
+					<div v-else>
+						<p class="mt-3 text-center  text-custom-color fs-5 fw-bold">No hay predicciones disponibles</p>
+					</div>
 				</div>
-				<div v-else>
-					<p class="mt-3 text-center  text-custom-color fs-5 fw-bold">No hay predicciones disponibles</p>
+			</div>
+			
+			
+			
+			<div v-if="isPrediccionSelected && error0 == ''" class="row col-md-6 offset-md-3 mt-5 mb-5">
+				<div v-if="error1 != ''" class="alert alert-danger">
+					{{this.error1}}
+				</div>
+				<div class="card rounded-4 p-0 shadow">
+					<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+						<h2 class="text-center text-white">Herramienta predictiva</h2>
+					</div>
+					<div class="card-body">
+						<form @submit.prevent="getNewPatientClassification">
+						
+							<div class="form-group mb-3" v-for="i in this.herramientaPredictivaInputs">
+								<label>{{i.nombre}}</label>
+								<select class="form-select" name="herramientaPredictivaInputs" v-model="i.seleccion" required>
+									<option value="" disabled selected></option>
+									<option v-for="variable in i.variables" :value="variable">{{variable}}</option>
+								</select>
+							</div>
+							
+							
+							<div class="form-group mb-2">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button class="btn btn-outline-custom-color fs-5 fw-semibold"
+											type="submit">Calcular</button>
+									</div>
+								</div>
+							</div>
+							
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
-		
-		
-		
-		<div v-if="isPrediccionSelected && error0 == ''" class="row col-md-6 offset-md-3 mt-5 mb-5">
-			<div v-if="error1 != ''" class="alert alert-danger">
-				{{this.error1}}
-			</div>
-			<div class="card rounded-4 p-0 shadow">
-				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-					<h2 class="text-center text-white">Herramienta predictiva</h2>
-				</div>
-				<div class="card-body">
-					<form @submit.prevent="getNewPatientClassification">
-					
-						<div class="form-group mb-3" v-for="i in this.herramientaPredictivaInputs">
-							<label>{{i.nombre}}</label>
-							<select class="form-select" name="herramientaPredictivaInputs" v-model="i.seleccion" required>
-								<option value="" disabled selected></option>
-								<option v-for="variable in i.variables" :value="variable">{{variable}}</option>
-							</select>
-						</div>
-						
-						
-						<div class="form-group mb-2">
-							<div class="row justify-content-center">
-								<div class="col text-center">
-									<button class="btn btn-outline-custom-color fs-5 fw-semibold"
-										type="submit">Calcular</button>
-								</div>
-							</div>
-						</div>
-						
-					</form>
-				</div>
-			</div>
-		</div>
-	
 	
 		<div v-if="datosCargados" class="row justify-content-around">
 			<h4 class="text-center text-black">Cluster {{nCluster}}</h4>
