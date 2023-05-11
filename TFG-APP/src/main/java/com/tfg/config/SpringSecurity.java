@@ -57,7 +57,7 @@ public class SpringSecurity implements CommandLineRunner {
                                 .requestMatchers("/registro/**", "/login/**", "/", "/index").permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/medico/**", "/clustersImages/**", "/perfilUsuario/**", "/obtenerDatosPerfilUsuario/**",
-                                		"/cambiarNombreUsuario/**").hasAnyRole("ADMIN", "MEDICO")
+                                		"/cambiarDatoPerfilUsuario/**").hasAnyRole("ADMIN", "MEDICO")
                 ).formLogin(
                         form -> form
                                 .loginPage("/login")

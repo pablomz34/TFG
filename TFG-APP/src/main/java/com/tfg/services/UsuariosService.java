@@ -50,7 +50,6 @@ public class UsuariosService implements IUsuariosService {
 		}
 		medico.setRoles(Arrays.asList(rol));
 
-		
 		usuariosRep.save(medico);
 
 	}
@@ -59,7 +58,6 @@ public class UsuariosService implements IUsuariosService {
 	public Usuarios findUsuariosByCorreo(String correo) {
 		return usuariosRep.findByCorreo(correo);
 	}
-	
 
 	@Override
 	public Usuarios findUsuariosByDni(String dni) {
@@ -94,18 +92,30 @@ public class UsuariosService implements IUsuariosService {
 	}
 
 	@Override
-	public void updateUsuarioNombre(Long idUsuario, String nombre) {
-		
+	public void updateDatoPerfilUsuario(Long idUsuario, String dato, String columnName) {
+
 		Usuarios usuario = usuariosRep.findUsuarioById(idUsuario);
-		
-		
-		if(usuario!=null) {
-			usuario.setNombre(nombre);
+
+		if (usuario != null) {
+
+			if (columnName.equals("nombre")) {
+				usuario.setNombre(dato);
+			}
+			if (columnName.equals("apellidos")) {
+				usuario.setApellidos(dato);
+			}
+			if (columnName.equals("correo")) {
+				usuario.setCorreo(dato);
+			}
+			if (columnName.equals("dni")) {
+				usuario.setDni(dato);
+			}
+			if (columnName.equals("password")) {
+				usuario.setPassword(passwordEncoder.encode(dato));
+			}
 			
 			usuariosRep.save(usuario);
-		}	
+		}
 	}
-
-
 
 }

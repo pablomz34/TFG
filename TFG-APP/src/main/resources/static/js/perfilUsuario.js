@@ -89,24 +89,42 @@ new Vue({
 
 		showToast(inputName, toastName) {
 			const THIZ = this;
-			
-			if(this.usuario[inputName].modal.length===0){
+
+			THIZ.backErrorMessage = '';
+
+			let stringModalInputs = "#" + toastName + " input";
+
+			let inputs = document.querySelectorAll(stringModalInputs);
+
+			for (let i = 0; i < inputs.length; i++) {
+				inputs[i].value = "";
+			}
+
+			if (this.usuario[inputName].modal.length === 0) {
 				let modal = new bootstrap.Modal(document.getElementById(toastName));
 				THIZ.usuario[inputName].modal = modal;
 			}
-		
-			this.usuario[inputName].modal.show();	
 			
+
+			this.usuario[inputName].modal.show();
+
 		},
-		cambiarDato(inputName, url) {
+		cambiarDatoPerfilUsuario(inputName) {
 
 			const THIZ = this;
-			THIZ.backErrorMessage = '';
 			let json = {}
-			
-			json[inputName] = this.usuario[inputName].valorModificado;
 
-			fetch(window.location.origin + "/" + url +"?idUsuario=" + this.idUsuario, {
+			json["dato"] = this.usuario[inputName].valorModificado;
+			json["columnName"] = inputName;
+
+			if (inputName === 'password') {
+				json["repeatPassword"] = this.usuario[inputName].repeatPassword;
+			}
+			else {
+				json["repeatPassword"] = '';
+			}
+
+			fetch(window.location.origin + "/cambiarDatoPerfilUsuario?idUsuario=" + this.idUsuario, {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json' // Tipo de contenido del cuerpo de la solicitud
@@ -120,7 +138,7 @@ new Vue({
 						THIZ.backErrorMessage = message;
 					}
 					else {
-						this.usuario.nombre.modal.hide();
+						this.usuario[inputName].modal.hide();
 						this.obtenerDatosUsuario();
 					}
 
