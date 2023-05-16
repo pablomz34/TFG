@@ -39,6 +39,7 @@
   --bs-dark: #212529;
   --bs-custom-color: rgb(65, 105, 225);
   --bs-custom-light-color: rgb(123, 151, 234);
+  --bs-custom-extra-light-color: rgb(250, 251, 254);
   --bs-primary-rgb: 13, 110, 253;
   --bs-secondary-rgb: 108, 117, 125;
   --bs-success-rgb: 25, 135, 84;
@@ -49,6 +50,7 @@
   --bs-dark-rgb: 33, 37, 41;
   --bs-custom-color-rgb: 65, 105, 225;
   --bs-custom-light-color-rgb: 123, 151, 234;
+  --bs-custom-extra-light-color-rgb: 250, 251, 254;
   --bs-primary-text-emphasis: #052c65;
   --bs-secondary-text-emphasis: #2b2f32;
   --bs-success-text-emphasis: #0a3622;
@@ -3146,6 +3148,23 @@ textarea.form-control-lg {
   --bs-btn-disabled-border-color: rgb(123, 151, 234);
 }
 
+.btn-custom-extra-light-color {
+  --bs-btn-color: #000;
+  --bs-btn-bg: rgb(250, 251, 254);
+  --bs-btn-border-color: rgb(250, 251, 254);
+  --bs-btn-hover-color: #000;
+  --bs-btn-hover-bg: #fbfcfe;
+  --bs-btn-hover-border-color: #fbfbfe;
+  --bs-btn-focus-shadow-rgb: 213, 213, 216;
+  --bs-btn-active-color: #000;
+  --bs-btn-active-bg: #fbfcfe;
+  --bs-btn-active-border-color: #fbfbfe;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #000;
+  --bs-btn-disabled-bg: rgb(250, 251, 254);
+  --bs-btn-disabled-border-color: rgb(250, 251, 254);
+}
+
 .btn-outline-primary {
   --bs-btn-color: #0d6efd;
   --bs-btn-border-color: #0d6efd;
@@ -3313,6 +3332,23 @@ textarea.form-control-lg {
   --bs-btn-disabled-color: rgb(123, 151, 234);
   --bs-btn-disabled-bg: transparent;
   --bs-btn-disabled-border-color: rgb(123, 151, 234);
+  --bs-gradient: none;
+}
+
+.btn-outline-custom-extra-light-color {
+  --bs-btn-color: rgb(250, 251, 254);
+  --bs-btn-border-color: rgb(250, 251, 254);
+  --bs-btn-hover-color: #000;
+  --bs-btn-hover-bg: rgb(250, 251, 254);
+  --bs-btn-hover-border-color: rgb(250, 251, 254);
+  --bs-btn-focus-shadow-rgb: 250, 251, 254;
+  --bs-btn-active-color: #000;
+  --bs-btn-active-bg: rgb(250, 251, 254);
+  --bs-btn-active-border-color: rgb(250, 251, 254);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: rgb(250, 251, 254);
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: rgb(250, 251, 254);
   --bs-gradient: none;
 }
 
@@ -4968,6 +5004,13 @@ textarea.form-control-lg {
   --bs-alert-link-color: var(--bs-custom-light-color-text-emphasis);
 }
 
+.alert-custom-extra-light-color {
+  --bs-alert-color: var(--bs-custom-extra-light-color-text-emphasis);
+  --bs-alert-bg: var(--bs-custom-extra-light-color-bg-subtle);
+  --bs-alert-border-color: var(--bs-custom-extra-light-color-border-subtle);
+  --bs-alert-link-color: var(--bs-custom-extra-light-color-text-emphasis);
+}
+
 @keyframes progress-bar-stripes {
   0% {
     background-position-x: 1rem;
@@ -5397,6 +5440,19 @@ textarea.form-control-lg {
   --bs-list-group-active-color: var(--bs-custom-light-color-bg-subtle);
   --bs-list-group-active-bg: var(--bs-custom-light-color-text-emphasis);
   --bs-list-group-active-border-color: var(--bs-custom-light-color-text-emphasis);
+}
+
+.list-group-item-custom-extra-light-color {
+  --bs-list-group-color: var(--bs-custom-extra-light-color-text-emphasis);
+  --bs-list-group-bg: var(--bs-custom-extra-light-color-bg-subtle);
+  --bs-list-group-border-color: var(--bs-custom-extra-light-color-border-subtle);
+  --bs-list-group-action-hover-color: var(--bs-emphasis-color);
+  --bs-list-group-action-hover-bg: var(--bs-custom-extra-light-color-border-subtle);
+  --bs-list-group-action-active-color: var(--bs-emphasis-color);
+  --bs-list-group-action-active-bg: var(--bs-custom-extra-light-color-border-subtle);
+  --bs-list-group-active-color: var(--bs-custom-extra-light-color-bg-subtle);
+  --bs-list-group-active-bg: var(--bs-custom-extra-light-color-text-emphasis);
+  --bs-list-group-active-border-color: var(--bs-custom-extra-light-color-text-emphasis);
 }
 
 .btn-close {
@@ -6990,6 +7046,11 @@ textarea.form-control-lg {
   background-color: RGBA(123, 151, 234, var(--bs-bg-opacity, 1)) !important;
 }
 
+.text-bg-custom-extra-light-color {
+  color: #000 !important;
+  background-color: RGBA(250, 251, 254, var(--bs-bg-opacity, 1)) !important;
+}
+
 .link-primary {
   color: RGBA(var(--bs-primary-rgb, var(--bs-link-opacity, 1)));
   text-decoration-color: RGBA(var(--bs-primary-rgb), var(--bs-link-underline-opacity, 1));
@@ -7078,6 +7139,15 @@ textarea.form-control-lg {
 .link-custom-light-color:hover, .link-custom-light-color:focus {
   color: RGBA(149, 172, 238, var(--bs-link-opacity, 1));
   text-decoration-color: RGBA(149, 172, 238, var(--bs-link-underline-opacity, 1));
+}
+
+.link-custom-extra-light-color {
+  color: RGBA(var(--bs-custom-extra-light-color-rgb, var(--bs-link-opacity, 1)));
+  text-decoration-color: RGBA(var(--bs-custom-extra-light-color-rgb), var(--bs-link-underline-opacity, 1));
+}
+.link-custom-extra-light-color:hover, .link-custom-extra-light-color:focus {
+  color: RGBA(251, 252, 254, var(--bs-link-opacity, 1));
+  text-decoration-color: RGBA(251, 252, 254, var(--bs-link-underline-opacity, 1));
 }
 
 .link-body-emphasis {
@@ -7515,6 +7585,10 @@ textarea.form-control-lg {
   --bs-focus-ring-color: rgba(var(--bs-custom-light-color-rgb), var(--bs-focus-ring-opacity));
 }
 
+.focus-ring-custom-extra-light-color {
+  --bs-focus-ring-color: rgba(var(--bs-custom-extra-light-color-rgb), var(--bs-focus-ring-opacity));
+}
+
 .position-static {
   position: static !important;
 }
@@ -7683,6 +7757,11 @@ textarea.form-control-lg {
 .border-custom-light-color {
   --bs-border-opacity: 1;
   border-color: rgba(var(--bs-custom-light-color-rgb), var(--bs-border-opacity)) !important;
+}
+
+.border-custom-extra-light-color {
+  --bs-border-opacity: 1;
+  border-color: rgba(var(--bs-custom-extra-light-color-rgb), var(--bs-border-opacity)) !important;
 }
 
 .border-black {
@@ -8646,6 +8725,11 @@ textarea.form-control-lg {
   color: rgba(var(--bs-custom-light-color-rgb), var(--bs-text-opacity)) !important;
 }
 
+.text-custom-extra-light-color {
+  --bs-text-opacity: 1;
+  color: rgba(var(--bs-custom-extra-light-color-rgb), var(--bs-text-opacity)) !important;
+}
+
 .text-black {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-black-rgb), var(--bs-text-opacity)) !important;
@@ -8858,6 +8942,11 @@ textarea.form-control-lg {
   text-decoration-color: rgba(var(--bs-custom-light-color-rgb), var(--bs-link-underline-opacity)) !important;
 }
 
+.link-underline-custom-extra-light-color {
+  --bs-link-underline-opacity: 1;
+  text-decoration-color: rgba(var(--bs-custom-extra-light-color-rgb), var(--bs-link-underline-opacity)) !important;
+}
+
 .link-underline {
   --bs-link-underline-opacity: 1;
   text-decoration-color: rgba(var(--bs-link-color-rgb), var(--bs-link-underline-opacity, 1)) !important;
@@ -8959,6 +9048,11 @@ textarea.form-control-lg {
 .bg-custom-light-color {
   --bs-bg-opacity: 1;
   background-color: rgba(var(--bs-custom-light-color-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.bg-custom-extra-light-color {
+  --bs-bg-opacity: 1;
+  background-color: rgba(var(--bs-custom-extra-light-color-rgb), var(--bs-bg-opacity)) !important;
 }
 
 .bg-black {
@@ -12116,6 +12210,86 @@ textarea.form-control-lg {
 
 .btn-editUser:hover {
   color: rgb(123, 151, 234) !important;
+}
+
+.perfil-input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  color: rgb(123, 151, 234);
+  border-top: none;
+  border-left: none;
+  border-bottom: 4px solid;
+  border-right: none;
+  animation: color-movement 2s infinite linear;
+  border-image-slice: 1;
+  border-image-width: 0 0 4px 0;
+}
+
+@keyframes color-movement {
+  0% {
+    border-image-source: linear-gradient(to right, rgb(230, 235, 251), rgb(132, 158, 236), rgb(34, 80, 217));
+  }
+  50% {
+    border-image-source: linear-gradient(to right, rgb(34, 80, 217), rgb(230, 235, 251), rgb(132, 158, 236));
+  }
+  100%, 0% {
+    border-image-source: linear-gradient(to right, rgb(132, 158, 236), rgb(34, 80, 217), rgb(230, 235, 251));
+  }
+}
+.perfil-input:focus {
+  outline: none;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-container label {
+  position: absolute;
+  left: 5%;
+  top: -30%;
+  color: rgb(123, 151, 234);
+  padding: 0 5px;
+  background-color: white;
+}
+
+.input-container i {
+  position: absolute;
+  right: 0%;
+  padding-right: 15px;
+  top: 25%;
+}
+
+.input-container input {
+  border: 3px solid rgb(123, 151, 234);
+  display: block;
+  width: 100%;
+  padding: 5px;
+  padding-right: 40px;
+  margin-top: 10px;
+  margin: 0px !important;
+  /* Ajusta este valor según tu diseño */
+}
+
+.input-container input:focus {
+  outline: none;
+}
+
+.custom-is-invalid input {
+  border: 3px solid red;
+}
+
+.custom-is-invalid label {
+  color: red;
+}
+
+.custom-is-valid input {
+  border: 3px solid green;
+}
+
+.custom-is-valid label {
+  color: rgb(0, 128, 0);
 }
 
 /*# sourceMappingURL=styles.css.map */

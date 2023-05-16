@@ -4,92 +4,92 @@
 <head th:insert="~{fragmentos/head.html}"></head>
 <title>Login</title>
 
-<body class="bg-light-subtle">
+<body class="bg-custom-extra-light-color">
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 
 	<div id="perfilUsuarioApp" th:data-idUsuario="${session.idUsuario}">
 		<div class="row justify-content-center mt-5">
-			<div class="card col-md-6 mb-3 shadow m-0 p-0 rounded-5">
-				<div class="row g-0">
-					<div class="col-md-3 bg-custom-color bg-gradient bg-opacity-75 rounded-start-5">
-						<div class="row">
-							<h2 class="text-center text-white">Editar usuario</h2>
+			<div class="col-10">
+				<form>
+
+					<div class="row g-3 mb-3">
+						<div class="col-md-6">
+							<label for="nombre" class="text-custom-light-color fs-5 fw-bold form-label">Nombre</label>
+
+							<div class="position-relative">
+								<input type="text" id="nombre" name="nombre" class="perfil-input"
+									style="padding-right: 35px !important;" :placeholder="usuario.nombre.placeholder"
+									disabled />
+								<button @click="showToast('nombre', 'cambiarNombreModal')" type="button"
+									class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+									<i class="fa-solid fa-pen fs-5 m-1"></i>
+								</button>
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<label for="apellidos"
+								class="text-custom-light-color fs-5 fw-bold form-label">Apellidos</label>
+							<div class="position-relative">
+								<input type="text" id="apellidos" name="apellidos" class="perfil-input"
+									style="padding-right: 35px !important;" :placeholder="usuario.apellidos.placeholder"
+									disabled />
+								<button @click="showToast('apellidos', 'cambiarApellidosModal')" type="button"
+									class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+									<i class="fa-solid fa-pen fs-5  p-1"></i>
+								</button>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-9">
-						<div class="card-body">
-							<form>
-								<div class="row mb-3">
-									<label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
 
-									<div class="col-sm-9 position-relative">
-										<input type="text" id="nombre" name="nombre" class="form-control"
-											style="padding-right: 35px !important;"
-											:placeholder="usuario.nombre.placeholder" disabled />
-										<button @click="showToast('nombre', 'cambiarNombreModal')" type="button"
-											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
-											<i class="fa-solid fa-pen fs-5 m-1"></i>
-										</button>
-									</div>
-								</div>
+					<div class="row g-3 mb-3">
 
-								<div class="row mb-3">
-									<label for="apellidos" class="col-sm-3 col-form-label">Apellidos</label>
-									<div class="col-sm-9 position-relative">
-										<input type="text" id="apellidos" name="apellidos" class="form-control"
-											style="padding-right: 35px !important;"
-											:placeholder="usuario.apellidos.placeholder" disabled />
-										<button @click="showToast('apellidos', 'cambiarApellidosModal')" type="button"
-											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
-											<i class="fa-solid fa-pen fs-5  p-1"></i>
-										</button>
-									</div>
-								</div>
+						<div class="col-md-6">
+							<label for="correo" class="text-custom-light-color fs-5 fw-bold form-label">Correo</label>
+							<div class="position-relative">
+								<input type="text" id="correo" name="correo" class="perfil-input"
+									style="padding-right: 35px !important;" :placeholder="usuario.correo.placeholder"
+									disabled />
+								<button @click="showToast('correo', 'cambiarCorreoModal')" type="button"
+									class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+									<i class="fa-solid fa-pen fs-5 p-1"></i>
+								</button>
+							</div>
+						</div>
 
-								<div class="row mb-3">
-									<label for="correo" class="col-sm-3 col-form-label">Correo</label>
-									<div class="col-sm-9 position-relative">
-										<input type="text" id="correo" name="correo" class="form-control"
-											style="padding-right: 35px !important;"
-											:placeholder="usuario.correo.placeholder" disabled />
-										<button @click="showToast('correo', 'cambiarCorreoModal')" type="button"
-											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
-											<i class="fa-solid fa-pen fs-5 p-1"></i>
-										</button>
-									</div>
-								</div>
-
-								<div class="row mb-3">
-									<label for="dni" class="col-sm-3 col-form-label">NIF/NIE</label>
-									<div class="col-sm-9 position-relative">
-										<input type="text" id="dni" name="dni" class="form-control"
-											style="padding-right: 35px !important;"
-											:placeholder="usuario.dni.placeholder" disabled />
-										<button @click="showToast('dni', 'cambiarDniModal')" type="button"
-											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
-											<i class="fa-solid fa-pen fs-5 p-1"></i>
-										</button>
-									</div>
-								</div>
-
-								<div class="row mb-3">
-									<label for="password" class="col-sm-3 col-form-label">Contraseña</label>
-									<div class="col-sm-9 position-relative">
-										<input type="password" id="password" name="password" class="form-control"
-											style="padding-right: 35px !important;"
-											:placeholder="usuario.password.placeholder" disabled />
-										<button @click="showToast('password', 'cambiarPasswordModal')" type="button"
-											class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
-											<i class="fa-solid fa-pen fs-5 p-1"></i>
-										</button>
-									</div>
-								</div>
-							</form>
-
+						<div class="col-md-6">
+							<label for="dni" class="text-custom-light-color fs-5 fw-bold form-label">NIF/NIE</label>
+							<div class="position-relative">
+								<input type="text" id="dni" name="dni" class="perfil-input"
+									style="padding-right: 35px !important;" :placeholder="usuario.dni.placeholder"
+									disabled />
+								<button @click="showToast('dni', 'cambiarDniModal')" type="button"
+									class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+									<i class="fa-solid fa-pen fs-5 p-1"></i>
+								</button>
+							</div>
 						</div>
 					</div>
-				</div>
+
+					<div class="row g-3 justify-content-center mb-3">
+
+						<div class="col-md-6 mb-3">
+							<label for="password"
+								class="text-custom-light-color fs-5 fw-bold form-label">Contraseña</label>
+							<div class="position-relative">
+								<input type="password" id="password" name="password" class="perfil-input"
+									style="padding-right: 35px !important;" :placeholder="usuario.password.placeholder"
+									disabled />
+								<button @click="showToast('password', 'cambiarPasswordModal')" type="button"
+									class="position-absolute top-50 end-0 translate-middle btn-editUser p-0 m-0">
+									<i class="fa-solid fa-pen fs-5 p-1"></i>
+								</button>
+							</div>
+						</div>
+
+					</div>
+				</form>
 			</div>
 		</div>
 
@@ -109,11 +109,12 @@
 
 		<div class="modal fade" id="cambiarNombreModal" tabindex="-1" aria-labelledby="cambiarNombreModalLabel"
 			aria-hidden="true">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header bg-custom-light-color">
 						<h1 class="modal-title fs-5 text-white" id="cambiarNombreModalLabel">Cambiar nombre</h1>
-						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 
@@ -121,34 +122,44 @@
 							{{backErrorMessage}}
 						</div>
 
-						<form>
-							<div class="form-group mb-3">
-								<label for="nuevoNombre" class="form-label fs-6">Nuevo nombre</label>
-								<input type="text" :class="usuario.nombre.validationInputClass" class="form-control" id="nuevoNombre"
-									v-on:keyup="validarNombre" v-model="usuario.nombre.valorModificado">
+						<form @submit.prevent="cambiarDatoPerfilUsuario('nombre')">
+							<div class="form-group mb-4">
+								<div class="input-container mt-2" :class="usuario.nombre.validationInputClass">
+									<label for="nuevoNombre" class="fw-semibold">Nuevo
+										nombre</label>
+									<input type="text" id="nuevoNombre" v-on:keyup="validarNombre"
+										v-model="usuario.nombre.valorModificado">
+									<i v-if="usuario.nombre.validationIconClass != ''"
+										:class="usuario.nombre.validationIconClass" class="fs-5"></i>
+								</div>
 								<p v-if="usuario.nombre.validationInputMessage!=''"
-									:class="usuario.nombre.validationInputMessageClass">
+									:class="usuario.nombre.validationInputMessageClass" class="m-0">
 									{{usuario.nombre.validationInputMessage}}
 								</p>
 							</div>
+
+							<div class="form-group">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button type="submit" class="btn btn-outline-custom-color fs-5">Guardar</button>
+									</div>
+								</div>
+							</div>
 						</form>
-					</div>
-					<div class="modal-footer justify-content-center">
-						<button @click="cambiarDatoPerfilUsuario('nombre')" type="button"
-							class="btn btn-outline-custom-color fs-5">Guardar</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		
+
+
 		<div class="modal fade" id="cambiarApellidosModal" tabindex="-1" aria-labelledby="cambiarApellidosModalLabel"
 			aria-hidden="true">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header bg-custom-light-color">
 						<h1 class="modal-title fs-5 text-white" id="cambiarApellidosModalLabel">Cambiar apellidos</h1>
-						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 
@@ -156,34 +167,43 @@
 							{{backErrorMessage}}
 						</div>
 
-						<form>
-							<div class="form-group mb-3">
-								<label for="nuevosApellidos" class="form-label fs-6">Nuevos apellidos</label>
-								<input type="text" :class="usuario.apellidos.validationInputClass" class="form-control" id="nuevosApellidos"
-									v-on:keyup="validarApellidos" v-model="usuario.apellidos.valorModificado">
+						<form @submit.prevent="cambiarDatoPerfilUsuario('apellidos')">
+							<div class="form-group mb-4">
+								<div class="input-container mt-2" :class="usuario.apellidos.validationInputClass">
+									<label for="nuevosApellidos" class="fw-semibold">Nuevos apellidos</label>
+									<input type="text" id="nuevosApellidos" v-on:keyup="validarApellidos"
+										v-model="usuario.apellidos.valorModificado">
+									<i v-if="usuario.apellidos.validationIconClass != ''"
+										:class="usuario.apellidos.validationIconClass" class="fs-5"></i>
+								</div>
 								<p v-if="usuario.apellidos.validationInputMessage!=''"
-									:class="usuario.apellidos.validationInputMessageClass">
+									:class="usuario.apellidos.validationInputMessageClass" class="m-0">
 									{{usuario.apellidos.validationInputMessage}}
 								</p>
 							</div>
+
+							<div class="form-group">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button type="submit" class="btn btn-outline-custom-color fs-5">Guardar</button>
+									</div>
+								</div>
+							</div>
 						</form>
-					</div>
-					<div class="modal-footer justify-content-center">
-						<button @click="cambiarDatoPerfilUsuario('apellidos')" type="button"
-							class="btn btn-outline-custom-color fs-5">Guardar</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		
+
+
 		<div class="modal fade" id="cambiarCorreoModal" tabindex="-1" aria-labelledby="cambiarCorreoModalLabel"
 			aria-hidden="true">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header bg-custom-light-color">
 						<h1 class="modal-title fs-5 text-white" id="cambiarCorreoModalLabel">Cambiar correo</h1>
-						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 
@@ -191,34 +211,42 @@
 							{{backErrorMessage}}
 						</div>
 
-						<form>
-							<div class="form-group mb-3">
-								<label for="nuevoCorreo" class="form-label fs-6">Nuevo correo</label>
-								<input type="text" :class="usuario.correo.validationInputClass" class="form-control" id="nuevoCorreo"
-									v-on:keyup="validarCorreo" v-model="usuario.correo.valorModificado">
+						<form @submit.prevent="cambiarDatoPerfilUsuario('correo')">
+							<div class="form-group mb-4">
+								<div class="input-container mt-2" :class="usuario.correo.validationInputClass">
+									<label for="nuevoCorreo" class="fw-semibold">Nuevo correo</label>
+									<input type="text" id="nuevoCorreo" v-on:keyup="validarCorreo"
+										v-model="usuario.correo.valorModificado">
+									<i v-if="usuario.correo.validationIconClass != ''"
+										:class="usuario.correo.validationIconClass" class="fs-5"></i>
+								</div>
 								<p v-if="usuario.correo.validationInputMessage!=''"
-									:class="usuario.correo.validationInputMessageClass">
+									:class="usuario.correo.validationInputMessageClass" class="m-0">
 									{{usuario.correo.validationInputMessage}}
 								</p>
 							</div>
+							<div class="form-group">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button type="submit" class="btn btn-outline-custom-color fs-5">Guardar</button>
+									</div>
+								</div>
+							</div>
 						</form>
-					</div>
-					<div class="modal-footer justify-content-center">
-						<button @click="cambiarDatoPerfilUsuario('correo')" type="button"
-							class="btn btn-outline-custom-color fs-5">Guardar</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		
+
+
 		<div class="modal fade" id="cambiarDniModal" tabindex="-1" aria-labelledby="cambiarDniModalLabel"
 			aria-hidden="true">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header bg-custom-light-color">
 						<h1 class="modal-title fs-5 text-white" id="cambiarDniModalLabel">Cambiar NIF/NIE</h1>
-						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 
@@ -226,34 +254,42 @@
 							{{backErrorMessage}}
 						</div>
 
-						<form>
-							<div class="form-group mb-3">
-								<label for="nuevoDni" class="form-label fs-6">Nuevo NIF/NIE</label>
-								<input type="text" :class="usuario.dni.validationInputClass" class="form-control" id="nuevoDni"
-									v-on:keyup="validarDni" v-model="usuario.dni.valorModificado">
+						<form @submit.prevent="cambiarDatoPerfilUsuario('dni')">
+							<div class="form-group mb-4">
+								<div class="input-container mt-2" :class="usuario.dni.validationInputClass">
+									<label for="nuevoDni" class="fw-semibold">Nuevo NIF/NIE</label>
+									<input type="text" id="nuevoDni" v-on:keyup="validarDni"
+										v-model="usuario.dni.valorModificado">
+									<i v-if="usuario.dni.validationIconClass != ''"
+										:class="usuario.dni.validationIconClass" class="fs-5"></i>
+								</div>
 								<p v-if="usuario.dni.validationInputMessage!=''"
-									:class="usuario.dni.validationInputMessageClass">
+									:class="usuario.dni.validationInputMessageClass" class="m-0">
 									{{usuario.dni.validationInputMessage}}
 								</p>
 							</div>
+							<div class="form-group">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button type="submit" class="btn btn-outline-custom-color fs-5">Guardar</button>
+									</div>
+								</div>
+							</div>
 						</form>
-					</div>
-					<div class="modal-footer justify-content-center">
-						<button @click="cambiarDatoPerfilUsuario('dni')" type="button"
-							class="btn btn-outline-custom-color fs-5">Guardar</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		
+
+
 		<div class="modal fade" id="cambiarPasswordModal" tabindex="-1" aria-labelledby="cambiarPasswordModalLabel"
 			aria-hidden="true">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header bg-custom-light-color">
 						<h1 class="modal-title fs-5 text-white" id="cambiarPasswordModalLabel">Cambiar contraseña</h1>
-						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+						<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+							aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
 
@@ -261,30 +297,39 @@
 							{{backErrorMessage}}
 						</div>
 
-						<form>
-							<div class="form-group mb-3">
-								<label for="nuevaPassword" class="form-label fs-6">Nueva contraseña</label>
-								<input type="password" :class="usuario.password.validationInputClass" class="form-control" id="nuevaPassword"
-									v-on:keyup="validarPassword" v-model="usuario.password.valorModificado">
+						<form @submit.prevent="cambiarDatoPerfilUsuario('password')">
+							<div class="form-group mb-4">
+								<div class="input-container mt-2" :class="usuario.password.validationInputClass">
+									<label for="nuevaPassword" class="fw-semibold">Nueva contraseña</label>
+									<input type="password" id="nuevaPassword" v-on:keyup="validarPassword"
+										v-model="usuario.password.valorModificado">
+									<i v-if="usuario.password.validationIconClass != ''" :class="usuario.password.validationIconClass" class="fs-5"></i>
+								</div>
 								<p v-if="usuario.password.validationInputMessage!=''"
-									:class="usuario.password.validationInputMessageClass">
+									:class="usuario.password.validationInputMessageClass" class="m-0">
 									{{usuario.password.validationInputMessage}}
 								</p>
 							</div>
-							<div class="form-group mb-3">
-								<label for="repetirNuevaPassword" class="form-label fs-6">Repetir nueva contraseña</label>
-								<input type="password" :class="usuario.repeatPassword.validationInputClass" class="form-control" id="repetirNuevaPassword"
-									 v-on:keyup="validarRepeatPassword" v-model="usuario.repeatPassword.valorRepeatedPassword">
+							<div class="form-group mb-4">
+								<div class="input-container mt-2" :class="usuario.repeatPassword.validationInputClass">
+									<label for="repetirNuevaPassword" class="fw-semibold">Repetir contraseña</label>
+									<input type="password" id="repetirNuevaPassword" v-on:keyup="validarRepeatPassword"
+										v-model="usuario.repeatPassword.valorRepeatedPassword">
+									<i v-if="usuario.repeatPassword.validationIconClass != ''" :class="usuario.repeatPassword.validationIconClass" class="fs-5"></i>
+								</div>
 								<p v-if="usuario.repeatPassword.validationInputMessage!=''"
-									:class="usuario.repeatPassword.validationInputMessageClass">
+									:class="usuario.repeatPassword.validationInputMessageClass" class="m-0">
 									{{usuario.repeatPassword.validationInputMessage}}
 								</p>
 							</div>
+							<div class="form-group">
+								<div class="row justify-content-center">
+									<div class="col text-center">
+										<button type="submit" class="btn btn-outline-custom-color fs-5">Guardar</button>
+									</div>
+								</div>
+							</div>
 						</form>
-					</div>
-					<div class="modal-footer justify-content-center">
-						<button @click="cambiarDatoPerfilUsuario('password')" type="button"
-							class="btn btn-outline-custom-color fs-5">Guardar</button>
 					</div>
 				</div>
 			</div>

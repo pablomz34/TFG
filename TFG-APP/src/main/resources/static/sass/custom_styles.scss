@@ -23,7 +23,8 @@ $offcanvas-bg-color:               rgb(123, 151, 234) ;
 //#7B68EE
 $custom-colors: (
   "custom-color": rgb(65,105,225),
-  "custom-light-color": rgb(123, 151, 234)
+  "custom-light-color": rgb(123, 151, 234),
+  "custom-extra-light-color": rgb(250, 251, 254)
 );
 
 // Merge the maps
@@ -65,4 +66,88 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 
 .btn-editUser:hover{
 	color: rgb(123, 151, 234) !important;
+}
+
+
+.perfil-input {
+	display: block;
+	width: 100%;
+	padding: 8px;
+	color: rgb(123, 151, 234);
+	border-top: none;
+	border-left: none;
+	border-bottom: 4px solid;
+	border-right: none;
+	animation: color-movement 2s infinite linear;
+	border-image-slice: 1;
+	border-image-width: 0 0 4px 0;
+}
+
+@keyframes color-movement {
+	0% {
+		border-image-source: linear-gradient(to right,rgb(230, 235, 251),  rgb(132, 158, 236) , rgb(34, 80, 217));
+	}
+	
+	50% {
+		border-image-source: linear-gradient(to right, rgb(34, 80, 217), rgb(230, 235, 251),  rgb(132, 158, 236));
+	}
+	100%, 0% {
+		border-image-source: linear-gradient(to right,  rgb(132, 158, 236),  rgb(34, 80, 217), rgb(230, 235, 251));
+	}
+}
+
+.perfil-input:focus {
+	outline: none;
+}
+
+
+.input-container {
+	position: relative;
+}
+
+.input-container label {
+	position: absolute;
+	left: 5%;
+	top: -30%;
+	color: rgb(123, 151, 234);
+	padding: 0 5px;
+	background-color: white;
+}
+
+.input-container i {
+	position: absolute;
+	right: 0%;
+	padding-right: 15px;
+	top: 25%;
+}
+
+.input-container input {
+	border: 3px solid rgb(123, 151, 234);
+	display: block;
+	width: 100%;
+	padding: 5px;
+	padding-right: 40px;
+	margin-top: 10px;
+	margin: 0px !important;
+	/* Ajusta este valor según tu diseño */
+}
+
+.input-container input:focus{
+	outline: none;
+}
+
+.custom-is-invalid input{
+	border: 3px solid red;
+}
+
+.custom-is-invalid label{
+	color: red;
+}
+
+.custom-is-valid input{
+	border: 3px solid green;
+}
+
+.custom-is-valid label{
+	color: rgb(0, 128, 0);
 }
