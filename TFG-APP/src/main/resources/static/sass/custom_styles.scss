@@ -16,6 +16,9 @@ $offcanvas-color: rgb(255, 255, 255);
 $dropdown-link-color:               rgb(123, 151, 234);
 
 $offcanvas-bg-color:               rgb(123, 151, 234) ;
+
+$form-check-input-checked-bg-color:        rgb(65,105,225);
+
 @import "../node_modules/bootstrap/scss/functions";
 @import "../node_modules/bootstrap/scss/variables";
 @import "../node_modules/bootstrap/scss/variables-dark";
@@ -105,7 +108,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	position: relative;
 }
 
-.input-container label {
+.input-container-label {
 	position: absolute;
 	left: 5%;
 	top: -30%;
@@ -114,18 +117,18 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	background-color: white;
 }
 
-.input-container i {
+.input-container-i {
 	position: absolute;
 	right: 0%;
 	padding-right: 15px;
 	top: 25%;
 }
 
-.input-container input {
+.input-container-input {
 	border: 3px solid rgb(123, 151, 234);
 	display: block;
 	width: 100%;
-	padding: 5px;
+	padding: 8px;
 	padding-right: 40px;
 	margin-top: 10px;
 	margin: 0px !important;
@@ -150,4 +153,9 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 
 .custom-is-valid label{
 	color: rgb(0, 128, 0);
+}
+
+.btn-unstyled:focus{
+	outline: none;
+	border: none;
 }

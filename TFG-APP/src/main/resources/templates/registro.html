@@ -24,104 +24,123 @@
 				</div>
 				<div class="card-body">
 					<div id="registrationValidation">
-						<form @submit.prevent="handleSubmit" class="position-relative" id="formRegistro" method="post"
-							role="form" th:action="@{/registro/guardar}" th:object="${medico}">
-							<div class="form-group mb-3">
-								<label :class="inputs.nombre.validationMessageClass" class="form-label">Nombre</label>
-								<input class="form-control" :class=[inputs.nombre.borderClass] id="nombre" name="nombre"
-									placeholder="Nombre" th:field="*{nombre}" type="text" v-model="inputs.nombre.text"
-									v-on:keyup="validar_nombre()" />
-								<p v-if="inputs.nombre.validationMessage!=''"
-									:class="inputs.nombre.validationMessageClass">
-									{{inputs.nombre.validationMessage}}
+						<form @submit.prevent="handleSubmit" class="position-relative align-items-center"
+							id="formRegistro" method="post" role="form" th:action="@{/registro/guardar}"
+							th:object="${medico}">
+							<div class="form-group mb-4">
+
+								<div class="input-container mt-3" :class="inputs.nombre.validationInputClass">
+									<label class="input-container-label fw-semibold">Nombre</label>
+									<input class="input-container-input"  id="nombre"
+										name="nombre" th:field="*{nombre}" type="text" v-model="inputs.nombre.text"
+										v-on:keyup="validar_nombre()" />
+									<i v-if="inputs.nombre.validationIconClass != ''"
+										:class="inputs.nombre.validationIconClass" class="input-container-i fs-5"></i>
+								</div>
+								<p v-if="inputs.nombre.validationInputMessage!=''"
+									:class="inputs.nombre.validationInputMessageClass">
+									{{inputs.nombre.validationInputMessage}}
 								</p>
 								<p th:errors="*{nombre}" class="text-danger" th:if="${#fields.hasErrors('nombre')}">
 								</p>
 							</div>
 
-							<div class="form-group mb-3">
-								<label :class="inputs.apellidos.validationMessageClass"
-									class="form-label">Apellidos</label>
-								<input class="form-control" :class=[inputs.apellidos.borderClass] id="apellidos"
-									name="apellidos" placeholder="Apellidos" th:field="*{apellidos}" type="text"
-									v-model="inputs.apellidos.text" v-on:keyup="validar_apellidos()" />
-								<p v-if="inputs.apellidos.validationMessage!=''"
-									:class="inputs.apellidos.validationMessageClass">
-									{{inputs.apellidos.validationMessage}}</p>
+							<div class="form-group mb-4">
+
+								<div class="input-container" :class="inputs.apellidos.validationInputClass">
+									<label class="input-container-label fw-semibold">Apellidos</label>
+									<input class="input-container-input" 
+										id="apellidos" name="apellidos" th:field="*{apellidos}" type="text"
+										v-model="inputs.apellidos.text" v-on:keyup="validar_apellidos()" />
+									<i v-if="inputs.apellidos.validationIconClass != ''"
+										:class="inputs.apellidos.validationIconClass" class="input-container-i fs-5"></i>
+								</div>
+								<p v-if="inputs.apellidos.validationInputMessage!=''"
+									:class="inputs.apellidos.validationInputMessageClass">
+									{{inputs.apellidos.validationInputMessage}}</p>
 								<p th:errors="*{apellidos}" class="text-danger"
 									th:if="${#fields.hasErrors('apellidos')}"></p>
 							</div>
 
-							<div class="form-group mb-3">
-								<label :class="inputs.correo.validationMessageClass" class="form-label">Correo</label>
-								<input class="form-control" :class=[inputs.correo.borderClass] id="correo" name="correo"
-									placeholder="Correo" th:field="*{correo}" type="email" v-model="inputs.correo.text"
-									v-on:keyup="validar_correo()" />
-								<p v-if="inputs.correo.validationMessage!=''"
-									:class="inputs.correo.validationMessageClass">{{inputs.correo.validationMessage}}
+							<div class="form-group mb-4">
+
+								<div class="input-container" :class="inputs.correo.validationInputClass">
+									<label class="input-container-label fw-semibold">Correo</label>
+									<input class="input-container-input"  id="correo"
+										name="correo" th:field="*{correo}" type="email" v-model="inputs.correo.text"
+										v-on:keyup="validar_correo()" />
+									<i v-if="inputs.correo.validationIconClass != ''"
+										:class="inputs.correo.validationIconClass" class="input-container-i fs-5"></i>
+								</div>
+								<p v-if="inputs.correo.validationInputMessage!=''"
+									:class="inputs.correo.validationInputMessageClass">{{inputs.correo.validationInputMessage}}
 								</p>
 								<p th:errors="*{correo}" class="text-danger" th:if="${#fields.hasErrors('correo')}"></p>
 							</div>
 
-							<div class="form-group mb-3">
-								<label :class="inputs.dni.validationMessageClass" class="form-label">NIF/NIE</label>
-								<input class="form-control" :class=[inputs.dni.borderClass] id="dni" name="dni"
-									placeholder="NIF/NIE" th:field="*{dni}" type="dni" v-model="inputs.dni.text"
-									v-on:keyup="validar_dni()" />
-								<p v-if="inputs.dni.validationMessage!=''" :class="inputs.dni.validationMessageClass">
-									{{inputs.dni.validationMessage}}</p>
+							<div class="form-group mb-4">
+								<div class="input-container" :class="inputs.dni.validationInputClass">
+									<label class="input-container-label fw-semibold">NIF/NIE</label>
+									<input class="input-container-input" id="dni"
+										name="dni" th:field="*{dni}" type="dni" v-model="inputs.dni.text"
+										v-on:keyup="validar_dni()" />
+									<i v-if="inputs.dni.validationIconClass != ''"
+										:class="inputs.dni.validationIconClass" class="input-container-i fs-5"></i>
+								</div>
+								<p v-if="inputs.dni.validationInputMessage!=''" :class="inputs.dni.validationInputMessageClass">
+									{{inputs.dni.validationInputMessage}}</p>
 								<p th:errors="*{dni}" class="text-danger" th:if="${#fields.hasErrors('dni')}"></p>
 							</div>
 
-							<div class="form-group mb-3">
-								<label :class="inputs.password.validationMessageClass"
-									class="form-label">Contraseña</label>
+							<div class="form-group mb-4">
 
-								<div class="input-group mb-2">
-									<input class="form-control" :class=[inputs.password.borderClass] id="password"
-										name="password" placeholder="Password" th:field="*{password}" type="password"
+								<div class="input-container" :class="inputs.password.validationInputClass">
+									<label class="input-container-label fw-semibold">Contraseña</label>
+
+									<input class="input-container-input" 
+										id="password" name="password" th:field="*{password}" type="password"
 										v-model="inputs.password.text" v-on:keyup="validar_password()"
 										aria-describedby="button-password" />
-									<button class="btn btn-custom-color" type="button" id="button-password"
-										@mousedown="onMouseDown('password', 'button-password')"
-										@touchstart="onMouseDown('password', 'button-password')"
-										@mouseleave="onMouseLeave('password', 'button-password')"
-										@touchend="onMouseLeave('password', 'button-password')"
-										@mouseup="onMouseUp('password', 'button-password')"
-										@touchcancel="onMouseUp('password', 'button-password')"><i id="icon-password"
-											class="fa-solid fa-eye-slash fs-5"></i></button>
-								</div>
+									<i v-if="inputs.password.validationIconClass != ''"
+										:class="inputs.password.validationIconClass" class="input-container-i fs-5"></i>
 
-								<p v-if="inputs.password.validationMessage!=''"
-									:class="inputs.password.validationMessageClass">
-									{{inputs.password.validationMessage}}</p>
+								</div>
+								<p v-if="inputs.password.validationInputMessage!=''"
+									:class="inputs.password.validationInputMessageClass">
+									{{inputs.password.validationInputMessage}}</p>
 								<p th:errors="*{password}" class="text-danger" th:if="${#fields.hasErrors('password')}">
 								</p>
 							</div>
 
 
-							<div class="form-group mb-3">
-								<label :class="inputs.repeatPassword.validationMessageClass" class="form-label">Repetir
-									Contraseña</label>
-								<div class="input-group mb-2">
-									<input class="form-control" :class=[inputs.repeatPassword.borderClass]
-										id="repeatPassword" name="repeatPassword" placeholder="Repeat password"
-										th:field="*{repeatPassword}" type="password"
-										v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
-									<button class="btn btn-custom-color" type="button" id="button-repeatPassword"
-										@mousedown="onMouseDown('repeatPassword', 'button-repeatPassword')"
-										@touchstart="onMouseDown('repeatPassword', 'button-repeatPassword')"
-										@mouseleave="onMouseLeave('repeatPassword', 'button-repeatPassword')"
-										@touchend="onMouseLeave('repeatPassword', 'button-repeatPassword')"
-										@mouseup="onMouseUp('repeatPassword', 'button-repeatPassword')"
-										@touchcancel="onMouseUp('repeatPassword', 'button-repeatPassword')"><i
-											id="icon-repeatPassword" class="fa-solid fa-eye-slash fs-5"></i></button>
+							<div class="form-group mb-2">
+
+								<div class="input-container" :class="inputs.repeatPassword.validationInputClass">
+									<label class="input-container-label fw-semibold">Repetir
+										Contraseña</label>
+									<input class="col input-container-input" 
+										id="repeatPassword" name="repeatPassword" th:field="*{repeatPassword}"
+										type="password" v-model="inputs.repeatPassword.text"
+										v-on:keyup="validar_repeatPassword()" />
+									<i v-if="inputs.repeatPassword.validationIconClass != ''"
+										:class="inputs.repeatPassword.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
-								<p v-if="inputs.repeatPassword.validationMessage!=''"
-									:class="inputs.repeatPassword.validationMessageClass">
-									{{inputs.repeatPassword.validationMessage}}</p>
+								<p v-if="inputs.repeatPassword.validationInputMessage!=''"
+									:class="inputs.repeatPassword.validationInputMessageClass">
+									{{inputs.repeatPassword.validationInputMessage}}</p>
 								<p th:errors="*{repeatPassword}" class="text-danger"
 									th:if="${#fields.hasErrors('repeatPassword')}"></p>
+							</div>
+
+							<div class="row justify-content-center mb-4">
+								<div class="col-auto">
+									<div class="form-check form-switch">
+										<input @click="mostrar_passwords" class="form-check-input" type="checkbox" role="switch"
+											id="flexSwitchCheckDefault">
+										<label class="form-check-label" for="flexSwitchCheckDefault">Mostrar contraseñas
+										</label>
+									</div>
+								</div>
 							</div>
 
 							<div class="form-group mb-2">

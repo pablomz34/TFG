@@ -5,49 +5,55 @@ new Vue({
 	data: function() {
 		return {
 			
-			isMouseDown: false,
+			mostrarPasswords: false,
 			inputs: {
 				nombre: {
 					text: '',
-					borderClass: '',
 					valido: false,
-					validationMessage: '',
-					validationMessageClass: ''
+					validationInputClass: '',
+					validationInputMessage: '',
+					validationInputMessageClass: '',
+					validationIconClass: ''
 				},
 				apellidos: {
 					text: '',
-					borderClass: '',
 					valido: false,
-					validationMessage: '',
-					validationMessageClass: ''
+					validationInputClass: '',
+					validationInputMessage: '',
+					validationInputMessageClass: '',
+					validationIconClass: ''
 				},
 				correo: {
 					text: '',
-					borderClass: '',
 					valido: false,
-					validationMessage: '',
-					validationMessageClass: ''
+					validationInputClass: '',
+					validationInputMessage: '',
+					validationInputMessageClass: '',
+					validationIconClass: ''
 				},
 				dni: {
 					text: '',
-					borderClass: '',
 					valido: false,
-					validationMessage: '',
-					validationMessageClass: ''
+					validationInputClass: '',
+					validationInputMessage: '',
+					validationInputMessageClass: '',
+					validationIconClass: ''
 				},
 				password: {
 					text: '',
-					borderClass: '',
 					valido: false,
-					validationMessage: '',
-					validationMessageClass: ''
+					validationInputClass: '',
+					validationInputMessage: '',
+					validationInputMessageClass: '',
+					validationIconClass: ''
 				},
 				repeatPassword: {
 					text: '',
-					borderClass: '',
 					valido: false,
-					validationMessage: '',
-					validationMessageClass: ''
+					validationInputClass: '',
+					validationInputMessage: '',
+					validationInputMessageClass: '',
+					validationIconClass: ''
 				}
 			}
 		}
@@ -55,11 +61,12 @@ new Vue({
 
 	methods: {
 
-		actualizar_variables(variable, borderClass, validationMessage, validationMessageClass, valido) {
-			variable.borderClass = borderClass;
-			variable.validationMessage = validationMessage;
-			variable.validationMessageClass = validationMessageClass;
+		actualizar_variables(variable, validationInputClass, validationInputMessage, validationInputMessageClass, valido, validationIconClass) {
+			variable.validationInputClass = validationInputClass;
+			variable.validationInputMessage = validationInputMessage;
+			variable.validationInputMessageClass = validationInputMessageClass;
 			variable.valido = valido;
+			variable.validationIconClass = validationIconClass;
 		},
 
 		validar_nombre() {
@@ -67,8 +74,8 @@ new Vue({
 
 			if (input_name.text == '') {
 
-				this.actualizar_variables(input_name, 'is-invalid',
-					"El nombre no puede estar vacío", "text-danger", false);
+				this.actualizar_variables(input_name, 'custom-is-invalid',
+					"El nombre no puede estar vacío", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 			}
 			else {
 
@@ -76,13 +83,13 @@ new Vue({
 
 				if (regex.test(input_name.text)) {
 
-					this.actualizar_variables(input_name, 'is-valid',
-						"El nombre es correcto", "text-success", true);
+					this.actualizar_variables(input_name, 'custom-is-valid',
+						"El nombre es correcto", "text-success", true, "text-success fa-solid fa-check");
 				}
 				else {
 
-					this.actualizar_variables(input_name, 'is-invalid',
-						"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", false);
+					this.actualizar_variables(input_name, 'custom-is-invalid',
+						"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 				}
 			}
 		},
@@ -92,8 +99,8 @@ new Vue({
 
 			if (input_name.text == '') {
 
-				this.actualizar_variables(input_name, 'is-invalid',
-					"Los apellidos no puede estar vacíos", "text-danger", false);
+				this.actualizar_variables(input_name, 'custom-is-invalid',
+					"Los apellidos no puede estar vacíos", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 			}
 			else {
 
@@ -101,13 +108,13 @@ new Vue({
 
 				if (regex.test(input_name.text)) {
 
-					this.actualizar_variables(input_name, 'is-valid',
-						"Los apellidos son correctos", "text-success", true);
+					this.actualizar_variables(input_name, 'custom-is-valid',
+						"Los apellidos son correctos", "text-success", true, "text-success fa-solid fa-check");
 				}
 				else {
 
-					this.actualizar_variables(input_name, 'is-invalid',
-						"Los apellidos no puede contener números ni caracteres no alfanuméricos", "text-danger", false);
+					this.actualizar_variables(input_name, 'custom-is-invalid',
+						"Los apellidos no puede contener números ni caracteres no alfanuméricos", "text-danger", false,"text-danger fa-solid fa-circle-xmark");
 				}
 			}
 
@@ -119,8 +126,8 @@ new Vue({
 
 			if (input_name.text == '') {
 
-				this.actualizar_variables(input_name, 'is-invalid',
-					"El correo no puede estar vacío", "text-danger", false);
+				this.actualizar_variables(input_name, 'custom-is-invalid',
+					"El correo no puede estar vacío", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 
 			}
 			else {
@@ -135,20 +142,20 @@ new Vue({
 						.then(res => res.json())
 						.then(medico => {
 							if (medico) {
-								this.actualizar_variables(input_name, 'is-invalid',
-									"El correo ya está registrado", "text-danger", false);
+								this.actualizar_variables(input_name, 'custom-is-invalid',
+									"El correo ya está registrado", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 							}
 							else {
-								this.actualizar_variables(input_name, 'is-valid',
-									"El correo es válido", "text-success", true);
+								this.actualizar_variables(input_name, 'custom-is-valid',
+									"El correo es válido", "text-success", true, "text-success fa-solid fa-check");
 							}
 						})
 						.catch(err => console.log(err));
 				}
 				else {
 
-					this.actualizar_variables(input_name, 'is-invalid',
-						"El correo tiene que tener un formato válido, ejemplo: prueba@gmail.com", "text-danger", false);
+					this.actualizar_variables(input_name, 'custom-is-invalid',
+						"El correo tiene que tener un formato válido, ejemplo: prueba@gmail.com", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 
 				}
 			}
@@ -158,8 +165,8 @@ new Vue({
 			let input_name = this.inputs.dni;
 
 			if (input_name.text == '') {
-				this.actualizar_variables(input_name, 'is-invalid',
-					"El NIF/NIE no puede estar vacío", "text-danger", false);
+				this.actualizar_variables(input_name, 'custom-is-invalid',
+					"El NIF/NIE no puede estar vacío", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 			}
 			else {
 
@@ -175,27 +182,27 @@ new Vue({
 							.then(res => res.json())
 							.then(medico => {
 								if (medico) {
-									this.actualizar_variables(input_name, 'is-invalid',
-										"El NIF/NIE ya está en uso", "text-danger", false);
+									this.actualizar_variables(input_name, 'custom-is-invalid',
+										"El NIF/NIE ya está en uso", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 								}
 								else {
-									this.actualizar_variables(input_name, 'is-valid',
-										"El NIF/NIE es válido", "text-success", true);
+									this.actualizar_variables(input_name, 'custom-is-valid',
+										"El NIF/NIE es válido", "text-success", true, "text-success fa-solid fa-check");
 								}
 							})
 							.catch(err => console.log(err));
 
 					}
 					else {
-						this.actualizar_variables(input_name, 'is-invalid',
-							"El dígito de control del NIF/NIE no es válido", "text-danger", false);
+						this.actualizar_variables(input_name, 'custom-is-invalid',
+							"El dígito de control del NIF/NIE no es válido", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 					}
 
 
 				}
 				else {
-					this.actualizar_variables(input_name, 'is-invalid',
-						"El NIF/NIE tiene que tener un formato válido, ejemplo: 12345678Z o X1234567L", "text-danger", false);
+					this.actualizar_variables(input_name, 'custom-is-invalid',
+						"El NIF/NIE tiene que tener un formato válido, ejemplo: 12345678Z o X1234567L", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 				}
 			}
 		},
@@ -228,86 +235,56 @@ new Vue({
 			let input_name = this.inputs.password;
 
 			if (input_name.text == '') {
-				this.actualizar_variables(input_name, 'is-invalid',
-					"La contraseña no puede estar vacía", "text-danger", false);
+				this.actualizar_variables(input_name, 'custom-is-invalid',
+					"La contraseña no puede estar vacía", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 			}
 			else {
 
 				const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/;
 
 				if (regex.test(input_name.text)) {
-					this.actualizar_variables(input_name, 'is-valid',
-						"Las contraseña es correcta", "text-success", true);
+					this.actualizar_variables(input_name, 'custom-is-valid',
+						"Las contraseña es correcta", "text-success", true, "text-sucess fa-solid fa-check");
 				}
 				else {
-					this.actualizar_variables(input_name, 'is-invalid',
-						"La contraseña debe tener un mínimo de 8 caracteres de longitud y también una letra minúscula y otra mayúscula, un caracter no alfanumérico y un número", "text-danger", false);
+					this.actualizar_variables(input_name, 'custom-is-invalid',
+						"La contraseña debe tener un mínimo de 8 caracteres de longitud y también una letra minúscula y otra mayúscula, un caracter no alfanumérico y un número", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 				}
 			}
 		},
-
-		onMouseLeave(inputName, buttonName) {
+		
+		mostrar_passwords(){
+			let passwordInput = document.getElementById('password');
+			let repeatPasswrodInput =  document.getElementById('repeatPassword');
 			
-			if (this.isMouseDown) {
-				
-				this.onMouseUp(inputName, buttonName);
-			}
-		},
-
-		onMouseDown(inputName, buttonName) {
-			let passwordInput = document.getElementById(inputName);
-			let icon = document.getElementById(buttonName).firstElementChild;
-
-			icon.setAttribute("class", "fa-solid fa-eye fs-5");
-			passwordInput.setAttribute("type", "text");
-			
-			this.isMouseDown = true;
-
-		},
-
-		onMouseUp(inputName, buttonName) {
-			let passwordInput = document.getElementById(inputName);
-			let icon = document.getElementById(buttonName).firstElementChild;
-
-			icon.setAttribute("class", "fa-solid fa-eye-slash fs-5");
-			passwordInput.setAttribute("type", "password");
-			
-			this.isMouseDown = false;
-			
-		},
-
-		changePasswordInput() {
-			let passwordInput = document.getElementById(inputName);
-			let icon = document.getElementById(buttonName).firstElementChild;
-			let type_input = passwordInput.getAttribute("type");
-
-			if (type_input == 'password') {
-				icon.setAttribute("class", "fa-solid fa-eye fs-5");
+			if(!this.mostrarPasswords){
 				passwordInput.setAttribute("type", "text");
+				repeatPasswrodInput.setAttribute("type", "text");
+				this.mostrarPasswords = true;
 			}
-			else if (type_input == 'text') {
-				icon.setAttribute("class", "fa-solid fa-eye-slash fs-5");
+			else{
 				passwordInput.setAttribute("type", "password");
+				repeatPasswrodInput.setAttribute("type", "password");
+				this.mostrarPasswords = false;
 			}
-
 		},
 		validar_repeatPassword() {
 
 			let input_name = this.inputs.repeatPassword;
 
 			if (input_name.text == '') {
-				this.actualizar_variables(input_name, 'is-invalid',
-					"Por favor, repita la contraseña", "text-danger", false);
+				this.actualizar_variables(input_name, 'custom-is-invalid',
+					"Por favor, repita la contraseña", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 			}
 			else {
 
 				if (input_name.text == this.inputs.password.text) {
-					this.actualizar_variables(input_name, 'is-valid',
-						"Las contraseñas coinciden", "text-success", true);
+					this.actualizar_variables(input_name, 'custom-is-valid',
+						"Las contraseñas coinciden", "text-success", true, "text-success fa-solid fa-check");
 				}
 				else {
-					this.actualizar_variables(input_name, 'is-invalid',
-						"Las contraseñas no coinciden", "text-danger", false);
+					this.actualizar_variables(input_name, 'custom-is-invalid',
+						"Las contraseñas no coinciden", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
 				}
 			}
 		},

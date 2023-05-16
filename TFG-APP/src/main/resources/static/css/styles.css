@@ -2391,8 +2391,8 @@ textarea.form-control-lg {
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 .form-check-input:checked {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
+  background-color: rgb(65, 105, 225);
+  border-color: rgb(65, 105, 225);
 }
 .form-check-input:checked[type=checkbox] {
   --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
@@ -12245,7 +12245,7 @@ textarea.form-control-lg {
   position: relative;
 }
 
-.input-container label {
+.input-container-label {
   position: absolute;
   left: 5%;
   top: -30%;
@@ -12254,18 +12254,18 @@ textarea.form-control-lg {
   background-color: white;
 }
 
-.input-container i {
+.input-container-i {
   position: absolute;
   right: 0%;
   padding-right: 15px;
   top: 25%;
 }
 
-.input-container input {
+.input-container-input {
   border: 3px solid rgb(123, 151, 234);
   display: block;
   width: 100%;
-  padding: 5px;
+  padding: 8px;
   padding-right: 40px;
   margin-top: 10px;
   margin: 0px !important;
@@ -12290,6 +12290,11 @@ textarea.form-control-lg {
 
 .custom-is-valid label {
   color: rgb(0, 128, 0);
+}
+
+.btn-unstyled:focus {
+  outline: none;
+  border: none;
 }
 
 /*# sourceMappingURL=styles.css.map */

@@ -125,12 +125,12 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('nombre')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.nombre.validationInputClass">
-									<label for="nuevoNombre" class="fw-semibold">Nuevo
+									<label for="nuevoNombre" class="input-container-label fw-semibold">Nuevo
 										nombre</label>
-									<input type="text" id="nuevoNombre" v-on:keyup="validarNombre"
-										v-model="usuario.nombre.valorModificado">
+									<input class="input-container-input" type="text" id="nuevoNombre"
+										v-on:keyup="validarNombre" v-model="usuario.nombre.valorModificado">
 									<i v-if="usuario.nombre.validationIconClass != ''"
-										:class="usuario.nombre.validationIconClass" class="fs-5"></i>
+										:class="usuario.nombre.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.nombre.validationInputMessage!=''"
 									:class="usuario.nombre.validationInputMessageClass" class="m-0">
@@ -170,11 +170,13 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('apellidos')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.apellidos.validationInputClass">
-									<label for="nuevosApellidos" class="fw-semibold">Nuevos apellidos</label>
-									<input type="text" id="nuevosApellidos" v-on:keyup="validarApellidos"
-										v-model="usuario.apellidos.valorModificado">
+									<label for="nuevosApellidos" class="input-container-label fw-semibold">Nuevos
+										apellidos</label>
+									<input class="input-container-input" type="text" id="nuevosApellidos"
+										v-on:keyup="validarApellidos" v-model="usuario.apellidos.valorModificado">
 									<i v-if="usuario.apellidos.validationIconClass != ''"
-										:class="usuario.apellidos.validationIconClass" class="fs-5"></i>
+										:class="usuario.apellidos.validationIconClass"
+										class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.apellidos.validationInputMessage!=''"
 									:class="usuario.apellidos.validationInputMessageClass" class="m-0">
@@ -214,11 +216,12 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('correo')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.correo.validationInputClass">
-									<label for="nuevoCorreo" class="fw-semibold">Nuevo correo</label>
-									<input type="text" id="nuevoCorreo" v-on:keyup="validarCorreo"
-										v-model="usuario.correo.valorModificado">
+									<label for="nuevoCorreo" class="input-container-label fw-semibold">Nuevo
+										correo</label>
+									<input class="input-container-input" type="text" id="nuevoCorreo"
+										v-on:keyup="validarCorreo" v-model="usuario.correo.valorModificado">
 									<i v-if="usuario.correo.validationIconClass != ''"
-										:class="usuario.correo.validationIconClass" class="fs-5"></i>
+										:class="usuario.correo.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.correo.validationInputMessage!=''"
 									:class="usuario.correo.validationInputMessageClass" class="m-0">
@@ -257,11 +260,12 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('dni')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.dni.validationInputClass">
-									<label for="nuevoDni" class="fw-semibold">Nuevo NIF/NIE</label>
-									<input type="text" id="nuevoDni" v-on:keyup="validarDni"
-										v-model="usuario.dni.valorModificado">
+									<label for="nuevoDni" class="input-container-label fw-semibold">Nuevo
+										NIF/NIE</label>
+									<input class="input-container-input" type="text" id="nuevoDni"
+										v-on:keyup="validarDni" v-model="usuario.dni.valorModificado">
 									<i v-if="usuario.dni.validationIconClass != ''"
-										:class="usuario.dni.validationIconClass" class="fs-5"></i>
+										:class="usuario.dni.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.dni.validationInputMessage!=''"
 									:class="usuario.dni.validationInputMessageClass" class="m-0">
@@ -300,10 +304,13 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('password')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.password.validationInputClass">
-									<label for="nuevaPassword" class="fw-semibold">Nueva contraseña</label>
-									<input type="password" id="nuevaPassword" v-on:keyup="validarPassword"
-										v-model="usuario.password.valorModificado">
-									<i v-if="usuario.password.validationIconClass != ''" :class="usuario.password.validationIconClass" class="fs-5"></i>
+									<label for="nuevaPassword" class="input-container-label fw-semibold">Nueva
+										contraseña</label>
+									<input class="input-container-input" type="password" id="nuevaPassword"
+										v-on:keyup="validarPassword" v-model="usuario.password.valorModificado">
+									<i v-if="usuario.password.validationIconClass != ''"
+										:class="usuario.password.validationIconClass"
+										class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.password.validationInputMessage!=''"
 									:class="usuario.password.validationInputMessageClass" class="m-0">
@@ -312,10 +319,11 @@
 							</div>
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.repeatPassword.validationInputClass">
-									<label for="repetirNuevaPassword" class="fw-semibold">Repetir contraseña</label>
-									<input type="password" id="repetirNuevaPassword" v-on:keyup="validarRepeatPassword"
+									<label for="repetirNuevaPassword" class="input-container-label fw-semibold">Repetir contraseña</label>
+									<input class="input-container-input" type="password" id="repetirNuevaPassword" v-on:keyup="validarRepeatPassword"
 										v-model="usuario.repeatPassword.valorRepeatedPassword">
-									<i v-if="usuario.repeatPassword.validationIconClass != ''" :class="usuario.repeatPassword.validationIconClass" class="fs-5"></i>
+									<i v-if="usuario.repeatPassword.validationIconClass != ''"
+										:class="usuario.repeatPassword.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.repeatPassword.validationInputMessage!=''"
 									:class="usuario.repeatPassword.validationInputMessageClass" class="m-0">
