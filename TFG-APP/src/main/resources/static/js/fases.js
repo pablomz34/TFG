@@ -67,12 +67,16 @@ Vue.component('fase1', {
 	            <div class="card-body">
 	                <form @submit.prevent="getOptimalNClusters">
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="nClusters">Número de clusters</label>
-	                        <input type="number" min="2" max="20" class="form-control" v-model="nClusters" id="nClusters" required />
+                    		<div class="input-container">
+		                        <label class="input-container-label fw-bold" for="nClusters">Nº de clusters</label>
+		                        <input type="number" min="2" max="20" class="input-container-input pe-1" v-model="nClusters" id="nClusters" required />
+	                    	</div>
 	                    </div>
 	                    <div class="form-group mb-3">
-	                        <label for="csv" class="form-label">Archivo csv</label>
-	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required />
+	                    	<div class="input-container">
+		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo Csv</label>
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
+	                   		</div>
 	                    </div>
 	                    <div class="form-group mb-2">
 	                        <div class="row justify-content-center">
@@ -179,18 +183,24 @@ Vue.component('fase2', {
 	            <div class="card-body">
 	                <form @submit.prevent="getSubPopulations">
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="nClusters">Número de clusters del algoritmo aglomerativo</label>
-	                        <input type="number" min="1" max="8" class="form-control" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required />
+	                    	<div class="input-container">
+		                        <label class="input-container-label fw-bold" for="nClusters">Nº de clusters del algoritmo aglomerativo</label>
+		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required />
+	                   		</div>
 	                    </div>
 	
 	                    <div class="form-group mb-3">
-	                        <label class="form-label" for="nClusters">Número de clusters del algoritmo kmodes</label>
-	                        <input type="number" min="1" max="8" class="form-control" v-model="nClustersKModes" id="nClustersKModes" required />
+	                    	<div class="input-container">
+		                        <label class="input-container-label fw-bold" for="nClusters">Nº de clusters del algoritmo kmodes</label>
+		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="nClustersKModes" id="nClustersKModes" required />
+	                    	</div>
 	                    </div>
 	
 	                    <div class="form-group mb-3">
-	                        <label for="csv" class="form-label">Archivo csv</label>
-	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required />
+	                    	<div class="input-container">
+		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
+                   			</div>
 	                    </div>
 	
 	                    <div class="form-group mb-2">
@@ -269,8 +279,10 @@ Vue.component('fase3', {
 	            <div class="card-body">
 	                <form @submit.prevent="getVarianceMetrics">
 	                    <div class="form-group mb-3">
-	                        <label for="csv" class="form-label">Archivo csv</label>
-	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required />
+                    		<div class="input-container">
+		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
+	                    	</div>
 	                    </div>
 	
 	                    <div class="form-group mb-2">
@@ -556,8 +568,10 @@ Vue.component('fase4', {
 					<div v-show="crear" class="row justify-content-around">
 						<form @submit.prevent="seleccionarPrediccion">
 							<div class="form-group mb-3">
-		                        <label for="descripcionSeleccionada" class="form-label">Introduce una descripcion de la nueva predicción</label>
-		                        <input type="text" maxlength="50" class="form-control" v-model="descripcionSeleccionada" id="descripcionSeleccionada" required>
+								<div class="input-container">
+			                        <label for="descripcionSeleccionada" class="input-container-label fw-bold">Introduce una descripcion de la nueva predicción</label>
+			                        <input type="text" maxlength="50" class="input-container-input pe-1" v-model="descripcionSeleccionada" id="descripcionSeleccionada" required>
+		                    	</div>
 		                    </div>
 		                    <div class="form-group mb-2">
 		                        <div class="row justify-content-center">
@@ -804,8 +818,10 @@ Vue.component('fase5', {
 	            <div class="card-body">
 	                <form @submit.prevent="getModelPerformance">
 	                    <div class="form-group mb-3">
-	                        <label for="csv" class="form-label">Archivo csv</label>
-	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel" required />
+	                    	<div class="input-container">
+		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel" required />
+                   			</div>
 	                    </div>
 	
 	                    <div class="form-group mb-2">

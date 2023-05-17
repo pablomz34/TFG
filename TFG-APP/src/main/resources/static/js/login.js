@@ -4,40 +4,24 @@ new Vue({
 	el: "#loginForm",
 	data: function() {
 		return {
-			isMouseDown: false,
-			inputName: "password",
-			buttonName: "button-password"
+			mostrarPassword: false
 		}
 	},
 	
 	methods: {
-		onMouseLeave() {
+		
+		mostrar_password(){
+			let passwordInput = document.getElementById('password');			
 			
-			if (this.isMouseDown) {
-				this.onMouseUp();
+			if(!this.mostrarPassword){
+				passwordInput.setAttribute("type", "text");	
+				this.mostrarPassword = true;
+			}
+			else{
+				passwordInput.setAttribute("type", "password");
+				this.mostrarPassword = false;
 			}
 		},
-
-		onMouseDown() {
-			let passwordInput = document.getElementById(this.inputName);
-			let icon = document.getElementById(this.buttonName).firstElementChild;
-
-			icon.setAttribute("class", "fa-solid fa-eye fs-5");
-			passwordInput.setAttribute("type", "text");
-			
-			this.isMouseDown = true;
-
-		},
-
-		onMouseUp() {
-			let passwordInput = document.getElementById(this.inputName);
-			let icon = document.getElementById(this.buttonName).firstElementChild;
-
-			icon.setAttribute("class", "fa-solid fa-eye-slash fs-5");
-			passwordInput.setAttribute("type", "password");
-			
-			this.isMouseDown = false;
-			
-		}
+		
 	}
 })

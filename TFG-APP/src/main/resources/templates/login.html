@@ -26,30 +26,43 @@
 						</div>
 						<div class="card-body">
 							<form method="post" role="form" th:action="@{/login}" class="form-horizontal">
-								<div class="form-group mb-3">
-									<label class="control-label">Correo</label>
-									<input type="text" id="username" name="username" class="form-control"
-										placeholder="Introduce correo electronico" />
+								<div class="form-group mb-4 mt-2">
+									<div class="input-container">
+										<label class="input-container-label fw-bold">Correo</label>
+										<input type="text" id="username" name="username"
+											class="input-container-input" />
+									</div>
 								</div>
 
 								<div class="form-group mb-3">
-									<label class="control-label">Contraseña</label>
-									<div class="input-group mb-3">
-										<input type="password" id="password" name="password" class="form-control"
-											placeholder="Introduce contraseña" />
-										<button class="btn btn-custom-color" type="button" id="button-password"
-											@mousedown="onMouseDown" @touchstart="onMouseDown"
-											@mouseleave="onMouseLeave" @touchend="onMouseLeave" @mouseup="onMouseUp"
-											@touchcancel="onMouseUp"><i id="icon-password"
-												class="fa-solid fa-eye-slash fs-5"></i></button>
+
+									<div class="input-container">
+										<label class="input-container-label fw-bold">Contraseña</label>
+
+										<input type="password" id="password" name="password"
+											class="input-container-input" />
 									</div>
 								</div>
+
+								<div class="row justify-content-center mb-3">
+									<div class="col-auto">
+										<div class="form-check form-switch">
+											<input @click="mostrar_password" class="form-check-input" type="checkbox"
+												role="switch" id="flexSwitchCheckDefault">
+											<label class="form-check-label" for="flexSwitchCheckDefault">Mostrar
+												contraseña
+											</label>
+										</div>
+									</div>
+								</div>
+
 
 								<div class="form-group mb-2">
 									<div class="row justify-content-center">
 										<div class="col text-center">
 											<button class="btn btn-outline-custom-color fs-5 fw-semibold"
-												type="submit">Iniciar sesión</button>
+												type="submit">Iniciar
+												sesión</button>
 										</div>
 									</div>
 								</div>
@@ -57,7 +70,8 @@
 									<div class="row justify-content-center">
 										<div class="col text-center">
 											<span class="fst-italic"> ¿No estás registrado?
-												<a th:href="@{/registro}" class="text-decoration-none">Regístrate aquí</a>
+												<a th:href="@{/registro}" class="text-decoration-none">Regístrate
+													aquí</a>
 											</span>
 										</div>
 									</div>

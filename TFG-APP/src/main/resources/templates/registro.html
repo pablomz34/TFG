@@ -30,10 +30,9 @@
 							<div class="form-group mb-4">
 
 								<div class="input-container mt-3" :class="inputs.nombre.validationInputClass">
-									<label class="input-container-label fw-semibold">Nombre</label>
-									<input class="input-container-input"  id="nombre"
-										name="nombre" th:field="*{nombre}" type="text" v-model="inputs.nombre.text"
-										v-on:keyup="validar_nombre()" />
+									<label class="input-container-label fw-bold">Nombre</label>
+									<input class="input-container-input" id="nombre" name="nombre" th:field="*{nombre}"
+										type="text" v-model="inputs.nombre.text" v-on:keyup="validar_nombre()" />
 									<i v-if="inputs.nombre.validationIconClass != ''"
 										:class="inputs.nombre.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -48,12 +47,13 @@
 							<div class="form-group mb-4">
 
 								<div class="input-container" :class="inputs.apellidos.validationInputClass">
-									<label class="input-container-label fw-semibold">Apellidos</label>
-									<input class="input-container-input" 
-										id="apellidos" name="apellidos" th:field="*{apellidos}" type="text"
-										v-model="inputs.apellidos.text" v-on:keyup="validar_apellidos()" />
+									<label class="input-container-label fw-bold">Apellidos</label>
+									<input class="input-container-input" id="apellidos" name="apellidos"
+										th:field="*{apellidos}" type="text" v-model="inputs.apellidos.text"
+										v-on:keyup="validar_apellidos()" />
 									<i v-if="inputs.apellidos.validationIconClass != ''"
-										:class="inputs.apellidos.validationIconClass" class="input-container-i fs-5"></i>
+										:class="inputs.apellidos.validationIconClass"
+										class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="inputs.apellidos.validationInputMessage!=''"
 									:class="inputs.apellidos.validationInputMessageClass">
@@ -65,29 +65,29 @@
 							<div class="form-group mb-4">
 
 								<div class="input-container" :class="inputs.correo.validationInputClass">
-									<label class="input-container-label fw-semibold">Correo</label>
-									<input class="input-container-input"  id="correo"
-										name="correo" th:field="*{correo}" type="email" v-model="inputs.correo.text"
-										v-on:keyup="validar_correo()" />
+									<label class="input-container-label fw-bold">Correo</label>
+									<input class="input-container-input" id="correo" name="correo" th:field="*{correo}"
+										type="email" v-model="inputs.correo.text" v-on:keyup="validar_correo()" />
 									<i v-if="inputs.correo.validationIconClass != ''"
 										:class="inputs.correo.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="inputs.correo.validationInputMessage!=''"
-									:class="inputs.correo.validationInputMessageClass">{{inputs.correo.validationInputMessage}}
+									:class="inputs.correo.validationInputMessageClass">
+									{{inputs.correo.validationInputMessage}}
 								</p>
 								<p th:errors="*{correo}" class="text-danger" th:if="${#fields.hasErrors('correo')}"></p>
 							</div>
 
 							<div class="form-group mb-4">
 								<div class="input-container" :class="inputs.dni.validationInputClass">
-									<label class="input-container-label fw-semibold">NIF/NIE</label>
-									<input class="input-container-input" id="dni"
-										name="dni" th:field="*{dni}" type="dni" v-model="inputs.dni.text"
-										v-on:keyup="validar_dni()" />
+									<label class="input-container-label fw-bold">NIF/NIE</label>
+									<input class="input-container-input" id="dni" name="dni" th:field="*{dni}"
+										type="dni" v-model="inputs.dni.text" v-on:keyup="validar_dni()" />
 									<i v-if="inputs.dni.validationIconClass != ''"
 										:class="inputs.dni.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
-								<p v-if="inputs.dni.validationInputMessage!=''" :class="inputs.dni.validationInputMessageClass">
+								<p v-if="inputs.dni.validationInputMessage!=''"
+									:class="inputs.dni.validationInputMessageClass">
 									{{inputs.dni.validationInputMessage}}</p>
 								<p th:errors="*{dni}" class="text-danger" th:if="${#fields.hasErrors('dni')}"></p>
 							</div>
@@ -95,12 +95,11 @@
 							<div class="form-group mb-4">
 
 								<div class="input-container" :class="inputs.password.validationInputClass">
-									<label class="input-container-label fw-semibold">Contraseña</label>
+									<label class="input-container-label fw-bold">Contraseña</label>
 
-									<input class="input-container-input" 
-										id="password" name="password" th:field="*{password}" type="password"
-										v-model="inputs.password.text" v-on:keyup="validar_password()"
-										aria-describedby="button-password" />
+									<input class="input-container-input" id="password" name="password"
+										th:field="*{password}" type="password" v-model="inputs.password.text"
+										v-on:keyup="validar_password()" aria-describedby="button-password" />
 									<i v-if="inputs.password.validationIconClass != ''"
 										:class="inputs.password.validationIconClass" class="input-container-i fs-5"></i>
 
@@ -116,14 +115,14 @@
 							<div class="form-group mb-2">
 
 								<div class="input-container" :class="inputs.repeatPassword.validationInputClass">
-									<label class="input-container-label fw-semibold">Repetir
+									<label class="input-container-label fw-bold">Repetir
 										Contraseña</label>
-									<input class="col input-container-input" 
-										id="repeatPassword" name="repeatPassword" th:field="*{repeatPassword}"
-										type="password" v-model="inputs.repeatPassword.text"
-										v-on:keyup="validar_repeatPassword()" />
+									<input class="col input-container-input" id="repeatPassword" name="repeatPassword"
+										th:field="*{repeatPassword}" type="password"
+										v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
 									<i v-if="inputs.repeatPassword.validationIconClass != ''"
-										:class="inputs.repeatPassword.validationIconClass" class="input-container-i fs-5"></i>
+										:class="inputs.repeatPassword.validationIconClass"
+										class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="inputs.repeatPassword.validationInputMessage!=''"
 									:class="inputs.repeatPassword.validationInputMessageClass">
@@ -135,8 +134,8 @@
 							<div class="row justify-content-center mb-4">
 								<div class="col-auto">
 									<div class="form-check form-switch">
-										<input @click="mostrar_passwords" class="form-check-input" type="checkbox" role="switch"
-											id="flexSwitchCheckDefault">
+										<input @click="mostrar_passwords" class="form-check-input" type="checkbox"
+											role="switch" id="flexSwitchCheckDefault">
 										<label class="form-check-label" for="flexSwitchCheckDefault">Mostrar contraseñas
 										</label>
 									</div>

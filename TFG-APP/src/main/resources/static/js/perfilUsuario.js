@@ -6,6 +6,7 @@ new Vue({
 		return {
 			idUsuario: '',
 			backErrorMessage: '',
+			mostrarPasswords: false,
 			usuario: {
 				nombre: {
 					valorOriginal: '',
@@ -209,7 +210,7 @@ new Vue({
 				else {
 
 					this.actualizar_variables("nombre", 'custom-is-invalid',
-						"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", "text-danger fa-solid fa-circle-exclamation");
+						"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", "text-danger fa-solid fa-circle-xmark");
 				}
 			}
 		},
@@ -377,6 +378,21 @@ new Vue({
 					this.actualizar_variables("repeatPassword", 'custom-is-invalid',
 						"Las contraseñas no coinciden", "text-danger", "text-danger fa-solid fa-circle-xmark");
 				}
+			}
+		},
+		mostrar_passwords() {
+			let passwordInput = document.getElementById('nuevaPassword');
+			let repeatPasswordInput = document.getElementById('repetirNuevaPassword');
+
+			if (!this.mostrarPasswords) {
+				passwordInput.setAttribute("type", "text");
+				repeatPasswordInput.setAttribute("type", "text");
+				this.mostrarPasswords = true;
+			}
+			else {
+				passwordInput.setAttribute("type", "password");
+				repeatPasswordInput.setAttribute("type", "password");
+				this.mostrarPasswords = false;
 			}
 		}
 

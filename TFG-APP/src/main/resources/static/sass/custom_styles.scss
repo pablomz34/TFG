@@ -106,41 +106,79 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 
 .input-container {
 	position: relative;
+	width: 100%;
 }
 
 .input-container-label {
 	position: absolute;
 	left: 5%;
-	top: -30%;
+	top: -5%;
+	max-width: 70%;
 	color: rgb(123, 151, 234);
 	padding: 0 5px;
 	background-color: white;
+  	z-index: 1;
+	white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
 }
 
 .input-container-i {
 	position: absolute;
 	right: 0%;
 	padding-right: 15px;
-	top: 25%;
+	top: 40%;
 }
 
 .input-container-input {
-	border: 3px solid rgb(123, 151, 234);
-	display: block;
+	border: 4px solid rgb(123, 151, 234);
 	width: 100%;
 	padding: 8px;
 	padding-right: 40px;
 	margin-top: 10px;
-	margin: 0px !important;
-	/* Ajusta este valor según tu diseño */
+	box-sizing: border-box;
 }
 
+.input-container-input-file-label {
+	position: absolute;
+	right: 5%;
+	top: -30%;
+	max-width: 50%;
+	color: rgb(123, 151, 234);
+	padding: 0 5px;
+	background-color: white;
+	z-index: 1;
+	white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
+}
+
+.input-container-input-file{
+	border: 4px solid rgb(123, 151, 234);
+	width: 100%;
+	height: 3em;
+	box-sizing: border-box;
+}
+
+.input-container-input-file::-webkit-file-upload-button {
+  background-color: rgb(123, 151, 234);
+  justify-content: left;
+  color: white;
+  height: 100%;
+  border: none;
+  content: "Examinar" !important;
+  cursor: pointer;
+}
+
+.input-container-input-file::-webkit-file-upload-button:hover {
+  background-color: rgb(70, 109, 225);
+}
 .input-container input:focus{
 	outline: none;
 }
 
 .custom-is-invalid input{
-	border: 3px solid red;
+	border: 4px solid red;
 }
 
 .custom-is-invalid label{
@@ -148,7 +186,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 }
 
 .custom-is-valid input{
-	border: 3px solid green;
+	border: 4px solid green;
 }
 
 .custom-is-valid label{
@@ -159,3 +197,8 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	outline: none;
 	border: none;
 }
+
+
+
+
+

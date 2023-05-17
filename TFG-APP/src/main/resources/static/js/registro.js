@@ -255,16 +255,16 @@ new Vue({
 		
 		mostrar_passwords(){
 			let passwordInput = document.getElementById('password');
-			let repeatPasswrodInput =  document.getElementById('repeatPassword');
+			let repeatPasswordInput =  document.getElementById('repeatPassword');
 			
 			if(!this.mostrarPasswords){
 				passwordInput.setAttribute("type", "text");
-				repeatPasswrodInput.setAttribute("type", "text");
+				repeatPasswordInput.setAttribute("type", "text");
 				this.mostrarPasswords = true;
 			}
 			else{
 				passwordInput.setAttribute("type", "password");
-				repeatPasswrodInput.setAttribute("type", "password");
+				repeatPasswordInput.setAttribute("type", "password");
 				this.mostrarPasswords = false;
 			}
 		},

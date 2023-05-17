@@ -125,7 +125,7 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('nombre')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.nombre.validationInputClass">
-									<label for="nuevoNombre" class="input-container-label fw-semibold">Nuevo
+									<label for="nuevoNombre" class="input-container-label fw-bold">Nuevo
 										nombre</label>
 									<input class="input-container-input" type="text" id="nuevoNombre"
 										v-on:keyup="validarNombre" v-model="usuario.nombre.valorModificado">
@@ -170,7 +170,7 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('apellidos')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.apellidos.validationInputClass">
-									<label for="nuevosApellidos" class="input-container-label fw-semibold">Nuevos
+									<label for="nuevosApellidos" class="input-container-label fw-bold">Nuevos
 										apellidos</label>
 									<input class="input-container-input" type="text" id="nuevosApellidos"
 										v-on:keyup="validarApellidos" v-model="usuario.apellidos.valorModificado">
@@ -216,7 +216,7 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('correo')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.correo.validationInputClass">
-									<label for="nuevoCorreo" class="input-container-label fw-semibold">Nuevo
+									<label for="nuevoCorreo" class="input-container-label fw-bold">Nuevo
 										correo</label>
 									<input class="input-container-input" type="text" id="nuevoCorreo"
 										v-on:keyup="validarCorreo" v-model="usuario.correo.valorModificado">
@@ -260,7 +260,7 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('dni')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.dni.validationInputClass">
-									<label for="nuevoDni" class="input-container-label fw-semibold">Nuevo
+									<label for="nuevoDni" class="input-container-label fw-bold">Nuevo
 										NIF/NIE</label>
 									<input class="input-container-input" type="text" id="nuevoDni"
 										v-on:keyup="validarDni" v-model="usuario.dni.valorModificado">
@@ -304,7 +304,7 @@
 						<form @submit.prevent="cambiarDatoPerfilUsuario('password')">
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.password.validationInputClass">
-									<label for="nuevaPassword" class="input-container-label fw-semibold">Nueva
+									<label for="nuevaPassword" class="input-container-label fw-bold">Nueva
 										contraseña</label>
 									<input class="input-container-input" type="password" id="nuevaPassword"
 										v-on:keyup="validarPassword" v-model="usuario.password.valorModificado">
@@ -319,17 +319,33 @@
 							</div>
 							<div class="form-group mb-4">
 								<div class="input-container mt-2" :class="usuario.repeatPassword.validationInputClass">
-									<label for="repetirNuevaPassword" class="input-container-label fw-semibold">Repetir contraseña</label>
-									<input class="input-container-input" type="password" id="repetirNuevaPassword" v-on:keyup="validarRepeatPassword"
+									<label for="repetirNuevaPassword" class="input-container-label fw-bold">Repetir
+										contraseña</label>
+									<input class="input-container-input" type="password" id="repetirNuevaPassword"
+										v-on:keyup="validarRepeatPassword"
 										v-model="usuario.repeatPassword.valorRepeatedPassword">
 									<i v-if="usuario.repeatPassword.validationIconClass != ''"
-										:class="usuario.repeatPassword.validationIconClass" class="input-container-i fs-5"></i>
+										:class="usuario.repeatPassword.validationIconClass"
+										class="input-container-i fs-5"></i>
 								</div>
 								<p v-if="usuario.repeatPassword.validationInputMessage!=''"
 									:class="usuario.repeatPassword.validationInputMessageClass" class="m-0">
 									{{usuario.repeatPassword.validationInputMessage}}
 								</p>
 							</div>
+
+							<div class="row justify-content-center mb-3">
+								<div class="col-auto">
+									<div class="form-check form-switch">
+										<input @click="mostrar_passwords" class="form-check-input" type="checkbox"
+											role="switch" id="flexSwitchCheckDefault">
+										<label class="form-check-label" for="flexSwitchCheckDefault">Mostrar
+											contraseñas
+										</label>
+									</div>
+								</div>
+							</div>
+
 							<div class="form-group">
 								<div class="row justify-content-center">
 									<div class="col text-center">
