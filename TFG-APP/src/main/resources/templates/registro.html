@@ -32,7 +32,7 @@
 								<div class="input-container mt-3" :class="inputs.nombre.validationInputClass">
 									<label class="input-container-label fw-bold">Nombre</label>
 									<input class="input-container-input" id="nombre" name="nombre" th:field="*{nombre}"
-										type="text" v-model="inputs.nombre.text" v-on:keyup="validar_nombre()" />
+										type="text" v-model="inputs.nombre.text" v-on:keyup="comprobarValidacionNombre" />
 									<i v-if="inputs.nombre.validationIconClass != ''"
 										:class="inputs.nombre.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -50,7 +50,7 @@
 									<label class="input-container-label fw-bold">Apellidos</label>
 									<input class="input-container-input" id="apellidos" name="apellidos"
 										th:field="*{apellidos}" type="text" v-model="inputs.apellidos.text"
-										v-on:keyup="validar_apellidos()" />
+										v-on:keyup="comprobarValidacionApellidos" />
 									<i v-if="inputs.apellidos.validationIconClass != ''"
 										:class="inputs.apellidos.validationIconClass"
 										class="input-container-i fs-5"></i>
@@ -67,7 +67,7 @@
 								<div class="input-container" :class="inputs.correo.validationInputClass">
 									<label class="input-container-label fw-bold">Correo</label>
 									<input class="input-container-input" id="correo" name="correo" th:field="*{correo}"
-										type="email" v-model="inputs.correo.text" v-on:keyup="validar_correo()" />
+										type="email" v-model="inputs.correo.text" v-on:keyup="comprobarValidacionCorreo" />
 									<i v-if="inputs.correo.validationIconClass != ''"
 										:class="inputs.correo.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -82,7 +82,7 @@
 								<div class="input-container" :class="inputs.dni.validationInputClass">
 									<label class="input-container-label fw-bold">NIF/NIE</label>
 									<input class="input-container-input" id="dni" name="dni" th:field="*{dni}"
-										type="dni" v-model="inputs.dni.text" v-on:keyup="validar_dni()" />
+										type="dni" v-model="inputs.dni.text" v-on:keyup="comprobarValidacionDni" />
 									<i v-if="inputs.dni.validationIconClass != ''"
 										:class="inputs.dni.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -99,7 +99,7 @@
 
 									<input class="input-container-input" id="password" name="password"
 										th:field="*{password}" type="password" v-model="inputs.password.text"
-										v-on:keyup="validar_password()" aria-describedby="button-password" />
+										v-on:keyup="comprobarValidacionPassword" aria-describedby="button-password" />
 									<i v-if="inputs.password.validationIconClass != ''"
 										:class="inputs.password.validationIconClass" class="input-container-i fs-5"></i>
 
@@ -119,7 +119,7 @@
 										Contraseña</label>
 									<input class="col input-container-input" id="repeatPassword" name="repeatPassword"
 										th:field="*{repeatPassword}" type="password"
-										v-model="inputs.repeatPassword.text" v-on:keyup="validar_repeatPassword()" />
+										v-model="inputs.repeatPassword.text" v-on:keyup="comprobarValidacionRepeatPassword" />
 									<i v-if="inputs.repeatPassword.validationIconClass != ''"
 										:class="inputs.repeatPassword.validationIconClass"
 										class="input-container-i fs-5"></i>

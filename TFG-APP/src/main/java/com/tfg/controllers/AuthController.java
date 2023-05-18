@@ -129,6 +129,12 @@ public class AuthController {
 
 		Long id = Long.parseLong(idUsuario);
 
+		Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
+
+		if (id.longValue() != sessionIdUsuario.longValue()) {
+			return new ResponseEntity("No puedes obtener datos de otro usuario", HttpStatus.FORBIDDEN);
+		}
+
 		Usuarios usuario = usuariosService.findUsuarioById(id);
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
@@ -153,10 +159,16 @@ public class AuthController {
 
 		Long id = Long.parseLong(idUsuario);
 
+		Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
+
+		if (id.longValue() != sessionIdUsuario.longValue()) {
+			return new ResponseEntity("No puedes modificar datos de otro usuario", HttpStatus.FORBIDDEN);
+		}
+
 		String dato = (String) json.get("dato");
 
 		String columnName = (String) json.get("columnName");
-		
+
 		String repeatPassword = (String) json.get("repeatPassword");
 
 		String error = validarDatoaModificar(dato, columnName, repeatPassword);
@@ -249,9 +261,9 @@ public class AuthController {
 				return "El dígito de control del NIF/NIE no es válido";
 			}
 		}
-		
-		if(columnName.equals("password")) {
-			if(!dato.equals(repeatPassword)) {
+
+		if (columnName.equals("password")) {
+			if (!dato.equals(repeatPassword)) {
 				return "Las contraseñas deben coincidir";
 			}
 		}

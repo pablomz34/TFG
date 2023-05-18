@@ -1,10 +1,15 @@
-
+import { validarNombre } from './validacionFrontendUsuario.js';
+import { validarApellidos } from './validacionFrontendUsuario.js';
+import { validarCorreo } from './validacionFrontendUsuario.js';
+import { validarDni } from './validacionFrontendUsuario.js';
+import { validarPassword } from './validacionFrontendUsuario.js';
+import { validarRepeatPassword } from './validacionFrontendUsuario.js';
 
 new Vue({
 	el: "#registrationValidation",
 	data: function() {
 		return {
-			
+
 			mostrarPasswords: false,
 			inputs: {
 				nombre: {
@@ -61,231 +66,80 @@ new Vue({
 
 	methods: {
 
-		actualizar_variables(variable, validationInputClass, validationInputMessage, validationInputMessageClass, valido, validationIconClass) {
-			variable.validationInputClass = validationInputClass;
-			variable.validationInputMessage = validationInputMessage;
-			variable.validationInputMessageClass = validationInputMessageClass;
-			variable.valido = valido;
-			variable.validationIconClass = validationIconClass;
+		actualizarVariables(inputName, validationInputClass, validationInputMessage, validationInputMessageClass, validationIconClass, valido) {
+			this.inputs[inputName].validationInputClass = validationInputClass;
+			this.inputs[inputName].validationInputMessage = validationInputMessage;
+			this.inputs[inputName].validationInputMessageClass = validationInputMessageClass;
+			this.inputs[inputName].validationIconClass = validationIconClass;
+			this.inputs[inputName].valido = valido;
 		},
 
-		validar_nombre() {
-			let input_name = this.inputs.nombre;
+		comprobarValidacionNombre() {
 
-			if (input_name.text == '') {
+			let retArray = validarNombre(this.inputs.nombre.text);
 
-				this.actualizar_variables(input_name, 'custom-is-invalid',
-					"El nombre no puede estar vacío", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-			}
-			else {
-
-				const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*(?:\s+[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*)*$/;
-
-				if (regex.test(input_name.text)) {
-
-					this.actualizar_variables(input_name, 'custom-is-valid',
-						"El nombre es correcto", "text-success", true, "text-success fa-solid fa-check");
-				}
-				else {
-
-					this.actualizar_variables(input_name, 'custom-is-invalid',
-						"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-				}
-			}
-		},
-		validar_apellidos() {
-
-			let input_name = this.inputs.apellidos;
-
-			if (input_name.text == '') {
-
-				this.actualizar_variables(input_name, 'custom-is-invalid',
-					"Los apellidos no puede estar vacíos", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-			}
-			else {
-
-				const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*(?:\s+[a-zA-ZáéíóúÁÉÍÓÚñÑ]+\s*[a-zA-ZáéíóúÁÉÍÓÚñÑ]*)*$/;
-
-				if (regex.test(input_name.text)) {
-
-					this.actualizar_variables(input_name, 'custom-is-valid',
-						"Los apellidos son correctos", "text-success", true, "text-success fa-solid fa-check");
-				}
-				else {
-
-					this.actualizar_variables(input_name, 'custom-is-invalid',
-						"Los apellidos no puede contener números ni caracteres no alfanuméricos", "text-danger", false,"text-danger fa-solid fa-circle-xmark");
-				}
-			}
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
 
 		},
-		validar_correo() {
+		comprobarValidacionApellidos() {
 
-			let input_name = this.inputs.correo;
+			let retArray = validarApellidos(this.inputs.apellidos.text);
 
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
 
-			if (input_name.text == '') {
-
-				this.actualizar_variables(input_name, 'custom-is-invalid',
-					"El correo no puede estar vacío", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-
-			}
-			else {
-
-				const regex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-
-				if (regex.test(input_name.text)) {
-
-					fetch(window.location.origin + "/comprobarCorreoUnico?correo=" + encodeURIComponent(input_name.text), {
-						method: "GET"
-					})
-						.then(res => res.json())
-						.then(medico => {
-							if (medico) {
-								this.actualizar_variables(input_name, 'custom-is-invalid',
-									"El correo ya está registrado", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-							}
-							else {
-								this.actualizar_variables(input_name, 'custom-is-valid',
-									"El correo es válido", "text-success", true, "text-success fa-solid fa-check");
-							}
-						})
-						.catch(err => console.log(err));
-				}
-				else {
-
-					this.actualizar_variables(input_name, 'custom-is-invalid',
-						"El correo tiene que tener un formato válido, ejemplo: prueba@gmail.com", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-
-				}
-			}
 		},
-		validar_dni() {
+		comprobarValidacionCorreo() {
+			fetch(window.location.origin + "/comprobarCorreoUnico?correo=" + encodeURIComponent(this.inputs.correo.text), {
+				method: "GET"
+			})
+				.then(res => res.json())
+				.then(correoExiste => {
+					let retArray = validarCorreo(this.inputs.correo.text, correoExiste);
 
-			let input_name = this.inputs.dni;
-
-			if (input_name.text == '') {
-				this.actualizar_variables(input_name, 'custom-is-invalid',
-					"El NIF/NIE no puede estar vacío", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-			}
-			else {
-
-				const regex = /^[XYZ]\d{7}[TRWAGMYFPDXBNJZSQVHLCKE]$|^\d{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/;
-
-				if (regex.test(input_name.text)) {
-
-					if (this.validarDigitoDeControlDni(input_name.text)) {
-
-						fetch(window.location.origin + "/comprobarDNIUnico?dni=" + encodeURIComponent(input_name.text), {
-							method: "GET"
-						})
-							.then(res => res.json())
-							.then(medico => {
-								if (medico) {
-									this.actualizar_variables(input_name, 'custom-is-invalid',
-										"El NIF/NIE ya está en uso", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-								}
-								else {
-									this.actualizar_variables(input_name, 'custom-is-valid',
-										"El NIF/NIE es válido", "text-success", true, "text-success fa-solid fa-check");
-								}
-							})
-							.catch(err => console.log(err));
-
-					}
-					else {
-						this.actualizar_variables(input_name, 'custom-is-invalid',
-							"El dígito de control del NIF/NIE no es válido", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-					}
-
-
-				}
-				else {
-					this.actualizar_variables(input_name, 'custom-is-invalid',
-						"El NIF/NIE tiene que tener un formato válido, ejemplo: 12345678Z o X1234567L", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-				}
-			}
+					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+				})
+				.catch(err => console.log(err));
 		},
+		comprobarValidacionDni() {
 
-		validarDigitoDeControlDni(dni) {
+			fetch(window.location.origin + "/comprobarDNIUnico?dni=" + encodeURIComponent(this.inputs.dni.text), {
+				method: "GET"
+			})
+				.then(res => res.json())
+				.then(dniExiste => {
+					let retArray = validarDni(this.inputs.dni.text, dniExiste);
 
-			const letras = "TRWAGMYFPDXBNJZSQVHLCKE";
-
-			const letra = dni.charAt(8).toUpperCase();
-
-			if (/^[XYZ]/.test(dni)) {
-				// convertir primera letra a número
-				const firstChar = {
-					X: 0,
-					Y: 1,
-					Z: 2,
-				}[dni.charAt(0)];
-				const number = parseInt(firstChar + dni.substr(1, 7));
-				const index = number % 23;
-				return letra === letras.charAt(index);
-			}
-
-			// comprobar si es NIF
-			const number = parseInt(dni.substr(0, 8));
-			const index = number % 23;
-			return letra === letras.charAt(index);
+					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+				})
+				.catch(err => console.log(err));
 		},
-		validar_password() {
+		comprobarValidacionPassword() {
 
-			let input_name = this.inputs.password;
+			let retArray = validarPassword(this.inputs.password.text);
 
-			if (input_name.text == '') {
-				this.actualizar_variables(input_name, 'custom-is-invalid',
-					"La contraseña no puede estar vacía", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-			}
-			else {
-
-				const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/;
-
-				if (regex.test(input_name.text)) {
-					this.actualizar_variables(input_name, 'custom-is-valid',
-						"Las contraseña es correcta", "text-success", true, "text-sucess fa-solid fa-check");
-				}
-				else {
-					this.actualizar_variables(input_name, 'custom-is-invalid',
-						"La contraseña debe tener un mínimo de 8 caracteres de longitud y también una letra minúscula y otra mayúscula, un caracter no alfanumérico y un número", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-				}
-			}
-		},
-		
-		mostrar_passwords(){
-			let passwordInput = document.getElementById('password');
-			let repeatPasswordInput =  document.getElementById('repeatPassword');
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
 			
-			if(!this.mostrarPasswords){
+		},
+		comprobarValidacionRepeatPassword() {
+
+			let retArray = validarRepeatPassword(this.inputs.password.text, this.inputs.repeatPassword.text);
+
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+		},
+
+		mostrar_passwords() {
+			let passwordInput = document.getElementById('password');
+			let repeatPasswordInput = document.getElementById('repeatPassword');
+
+			if (!this.mostrarPasswords) {
 				passwordInput.setAttribute("type", "text");
 				repeatPasswordInput.setAttribute("type", "text");
 				this.mostrarPasswords = true;
 			}
-			else{
+			else {
 				passwordInput.setAttribute("type", "password");
 				repeatPasswordInput.setAttribute("type", "password");
 				this.mostrarPasswords = false;
-			}
-		},
-		validar_repeatPassword() {
-
-			let input_name = this.inputs.repeatPassword;
-
-			if (input_name.text == '') {
-				this.actualizar_variables(input_name, 'custom-is-invalid',
-					"Por favor, repita la contraseña", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-			}
-			else {
-
-				if (input_name.text == this.inputs.password.text) {
-					this.actualizar_variables(input_name, 'custom-is-valid',
-						"Las contraseñas coinciden", "text-success", true, "text-success fa-solid fa-check");
-				}
-				else {
-					this.actualizar_variables(input_name, 'custom-is-invalid',
-						"Las contraseñas no coinciden", "text-danger", false, "text-danger fa-solid fa-circle-xmark");
-				}
 			}
 		},
 		handleSubmit(event) {

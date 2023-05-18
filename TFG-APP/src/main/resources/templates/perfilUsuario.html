@@ -11,6 +11,10 @@
 	<div id="perfilUsuarioApp" th:data-idUsuario="${session.idUsuario}">
 		<div class="row justify-content-center mt-5">
 			<div class="col-10">
+				<div v-if="notSessionUserMessageError != ''" class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{notSessionUserMessageError}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
 				<form>
 
 					<div class="row g-3 mb-3">
@@ -128,7 +132,7 @@
 									<label for="nuevoNombre" class="input-container-label fw-bold">Nuevo
 										nombre</label>
 									<input class="input-container-input" type="text" id="nuevoNombre"
-										v-on:keyup="validarNombre" v-model="usuario.nombre.valorModificado">
+										v-on:keyup="comprobarValidacionNombre" v-model="usuario.nombre.valorModificado">
 									<i v-if="usuario.nombre.validationIconClass != ''"
 										:class="usuario.nombre.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -173,7 +177,7 @@
 									<label for="nuevosApellidos" class="input-container-label fw-bold">Nuevos
 										apellidos</label>
 									<input class="input-container-input" type="text" id="nuevosApellidos"
-										v-on:keyup="validarApellidos" v-model="usuario.apellidos.valorModificado">
+										v-on:keyup="comprobarValidacionApellidos" v-model="usuario.apellidos.valorModificado">
 									<i v-if="usuario.apellidos.validationIconClass != ''"
 										:class="usuario.apellidos.validationIconClass"
 										class="input-container-i fs-5"></i>
@@ -219,7 +223,7 @@
 									<label for="nuevoCorreo" class="input-container-label fw-bold">Nuevo
 										correo</label>
 									<input class="input-container-input" type="text" id="nuevoCorreo"
-										v-on:keyup="validarCorreo" v-model="usuario.correo.valorModificado">
+										v-on:keyup="comprobarValidacionCorreo" v-model="usuario.correo.valorModificado">
 									<i v-if="usuario.correo.validationIconClass != ''"
 										:class="usuario.correo.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -263,7 +267,7 @@
 									<label for="nuevoDni" class="input-container-label fw-bold">Nuevo
 										NIF/NIE</label>
 									<input class="input-container-input" type="text" id="nuevoDni"
-										v-on:keyup="validarDni" v-model="usuario.dni.valorModificado">
+										v-on:keyup="comprobarValidacionDni" v-model="usuario.dni.valorModificado">
 									<i v-if="usuario.dni.validationIconClass != ''"
 										:class="usuario.dni.validationIconClass" class="input-container-i fs-5"></i>
 								</div>
@@ -307,7 +311,7 @@
 									<label for="nuevaPassword" class="input-container-label fw-bold">Nueva
 										contraseña</label>
 									<input class="input-container-input" type="password" id="nuevaPassword"
-										v-on:keyup="validarPassword" v-model="usuario.password.valorModificado">
+										v-on:keyup="comprobarValidacionPassword" v-model="usuario.password.valorModificado">
 									<i v-if="usuario.password.validationIconClass != ''"
 										:class="usuario.password.validationIconClass"
 										class="input-container-i fs-5"></i>
@@ -322,7 +326,7 @@
 									<label for="repetirNuevaPassword" class="input-container-label fw-bold">Repetir
 										contraseña</label>
 									<input class="input-container-input" type="password" id="repetirNuevaPassword"
-										v-on:keyup="validarRepeatPassword"
+										v-on:keyup="comprobarValidacionRepeatPassword"
 										v-model="usuario.repeatPassword.valorRepeatedPassword">
 									<i v-if="usuario.repeatPassword.validationIconClass != ''"
 										:class="usuario.repeatPassword.validationIconClass"
