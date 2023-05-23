@@ -196,14 +196,31 @@ new Vue({
 		//		},
 
 		descargarPdf: function() {
-			html2canvas(document.querySelector('#container')).then((canvas) => {
-				let base64image = canvas.toDataURL('imagen/png');
-				console.log(base64image)
-				let pdf = new jsPDF('p', 'px', 'a4');
-
-				pdf.addImage(base64image, 'PNG', 15, 15, base64image.width, base64image.height);
-				pdf.save('miDocumento.pdf');
-			});
+			//			html2canvas(document.querySelector('#container')).then((canvas) => {
+			//				let base64image = canvas.toDataURL('imagen/png');
+			//				console.log(base64image)
+			//				let pdf = new jsPDF('p', 'px', 'a4');
+			//
+			//				pdf.addImage(base64image, 'PNG', 15, 15, base64image.width, base64image.height);
+			//				pdf.save('miDocumento.pdf');
+			//			});
+			fetch(window.location.origin + "/report/download", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(this.datasetStatistics)
+			})
+				.then(response => response.blob())
+				.then(blob => {
+					const url = URL.createObjectURL(blob);
+					const element = document.createElement('a');
+					element.href = url;
+					element.download = 'reporte.pdf';
+					element.click();
+					URL.revokeObjectURL(url);
+				})
+				.catch(error => console.error(error));
 		}
 	},
 
