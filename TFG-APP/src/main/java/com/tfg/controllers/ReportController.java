@@ -1,6 +1,8 @@
 package com.tfg.controllers;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -19,9 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.util.StringUtils;
 
 import com.tfg.dto.ReportDto;
-import com.tfg.reports.FeaturesDto;
+import com.tfg.reports.StatisticsDto;
 import com.tfg.services.IReportService;
-import com.tfg.services.IUsuariosService;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -32,9 +34,6 @@ public class ReportController {
 
 	@Autowired
 	private IReportService repSer;
-	
-	@Autowired
-	private IUsuariosService ser;
 
 	@PostMapping("/download")
 	public ResponseEntity<Resource> download(@RequestBody Map<String, Object> json)
@@ -45,20 +44,23 @@ public class ReportController {
 //		List<Map<String, Object>> lista = new ArrayList<>();
 //		lista.add(json); 
 		
-		List<FeaturesDto> features = new ArrayList<>();
+		List<StatisticsDto> statistics = new ArrayList<>();
 		for(Map.Entry<String, Object> i : json.entrySet()) {
-			FeaturesDto f = new FeaturesDto();
+			StatisticsDto f = new StatisticsDto();
 			f.setKey(StringUtils.capitalize(i.getKey().replace("_", " ").toLowerCase()));
 			f.setValue(i.getValue().toString().replace("_", " "));
-			features.add(f);
+			statistics.add(f);
 		}
 		
 		
-		//List<UsuariosDto> usuarios = ser.findAllMedicos();
+		ClassPathResource resource = new ClassPathResource("static/clustersImages/prueba.png");
+		InputStream inputStream = resource.getInputStream();
+		byte[] clusterImage = inputStream.readAllBytes();
 		
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(features);
-		params.put("CollectionBeanParam", dataSource);
-		params.put("titulo", "Datos obtenidos");
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(statistics);
+		params.put("titulo", "Datos Obtenidos");
+		params.put("statistics", dataSource);
+		params.put("clusterImage", new ByteArrayInputStream(clusterImage));
 		
 		ReportDto dto = repSer.getReport(params);
 
