@@ -91,11 +91,9 @@ public class PrediccionesService implements IPrediccionesService {
 				listaProfiles.remove(i);
 			}
 		}
-
-		
+	
 		repos.delete(prediccion);
-		
-		
+	
 		return true;
 	}
 

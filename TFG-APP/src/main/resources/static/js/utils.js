@@ -2,12 +2,33 @@ new Vue({
 	el: "#utils",
 	data: function() {
 		return {
+			predicciones: [],
+			prediccionErrorMessage: '',
+			prediccionSuccessMessage: '',
 			columnaNombreOrdenada: false,
 			columnaApellidosOrdenada: false,
 			columnaCorreoOrdenada: false,
 			columnaDniOrdenada: false,
 			columnaPrediccionesOrdenada: false
 		}
+	},
+
+	mounted() {
+
+		const THIZ = this;
+		
+		let isPrediccionesTemplate = this.$el.getAttribute("data-isPrediccionesTemplte");
+
+		if (isPrediccionesTemplate) {
+			for (let i = 0; i < predicciones.length; i++) {
+				let dict = {};
+
+				dict["descripcion"] = predicciones[i].descripcion;
+				dict["id"] = predicciones[i].id;
+				THIZ.predicciones.push(dict);
+			}
+		}
+
 	},
 
 	methods: {
@@ -194,13 +215,30 @@ new Vue({
 
 		eliminar(id) {
 
+			const THIZ = this;
+
+			THIZ.prediccionErrorMessage = '';
+			THIZ.prediccionSuccessMessage = '';
+
 			if (confirm("¿Estás seguro de que quieres borrar este elemento?")) {
 
 				fetch(window.location.origin + "/admin/borrarPrediccion?idPrediccion=" + id, {
 					method: "POST"
-				}).then( data => {
-					alert(data)
+				}).then(async res => {
+
+					if (!res.ok) {
+						const errorMessage = await res.text();
+						THIZ.prediccionErrorMessage = errorMessage;
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+
+					return res.text();
+
 				})
+					.then(successMessage => {
+						THIZ.prediccionSuccessMessage = successMessage;
+					})
+					.catch(err => console.log(err));
 
 
 			}

@@ -295,9 +295,6 @@ public class FasesController {
 			return new ResponseEntity<>(errorDescripcionVacía,
 					HttpStatus.BAD_REQUEST);
 		}
-		
-		
-		descripcion = StringEscapeUtils.escapeJava(descripcion);
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 			
