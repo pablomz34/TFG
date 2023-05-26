@@ -49,6 +49,15 @@ public class AdminController {
 		return "predicciones";
 	}
 	
+	
+	@GetMapping("/buscarPrediccionesCoincidentes")
+	public ResponseEntity<?> buscarPrediccionesCoincidentes(@RequestParam("searchedDescripcion") String searchedDescripcion){
+		
+		List<Predicciones> prediccionesCoincidentes = prediccionesService.buscarPrediccionesCoincidentes(searchedDescripcion);
+		
+		return new ResponseEntity(prediccionesCoincidentes, HttpStatus.OK);
+	}
+	
 	@PostMapping("/borrarPrediccion")
 	public ResponseEntity<?> borrarPredicciones(@RequestParam("idPrediccion") String idPrediccion) {
 		

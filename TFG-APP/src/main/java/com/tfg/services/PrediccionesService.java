@@ -97,4 +97,9 @@ public class PrediccionesService implements IPrediccionesService {
 		return true;
 	}
 
+	@Override
+	public List<Predicciones> buscarPrediccionesCoincidentes(String substring) {
+		return repos.findByDescripcionContaining(substring);
+	}
+
 }
