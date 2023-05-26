@@ -34,27 +34,97 @@
 		}
 	</style>
 
-	<script th:inline="javascript">
-		let predicciones = /*[[${predicciones}]]*/ null;
-	</script>
-
 	<div class="container">
 
-		<div id="utils" th:attr="data-isPrediccionesTemplte=true">
+		<div id="predicciones">
 
+			<div class="row mt-5 justify-content-around">
+				<div class="col-4">
 
-			<div th:if="${#lists.size(predicciones) > 0}" class="row justify-content-center my-3">
+					<div class="row justify-content-center">
+						<button class="btn btn-custom-color fs-5 w-50" data-bs-toggle="modal"
+							data-bs-target="#crearPrediccionModal"><i class="fa-solid fa-plus fs-5"></i> Crear
+							prediccion</button>
 
-				<div class="col-12 mb-3">
-					<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">Predi<span
-							class="text-custom-light-color">cciones Regis</span>tradas
-					</h2>
+						<div class="modal fade" id="crearPrediccionModal" tabindex="-1"
+							aria-labelledby="crearPrediccionModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+									<div class="modal-header bg-custom-light-color">
+										<h1 class="modal-title fs-5 text-white" id="crearPrediccionModalLabel">Nueva
+											predicción</h1>
+										<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
+											aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form>
+											<div class="form-group mb-4">
+												<div class="input-container mt-2">
+													<label for="crearPrediccion"
+														class="input-container-label fw-bold">Descripción de la
+														predicción</label>
+													<input class="input-container-input" type="text"
+														id="crearPrediccion">
+												</div>
+											</div>
+
+											<div class="form-group">
+												<div class="row justify-content-center">
+													<div class="col text-center">
+														<button type="submit"
+															class="btn btn-outline-custom-color fs-5">Guardar</button>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
 				</div>
+
+				<div class="col-4">
+					<div class="row justify-content-center">
+						<button class="btn btn-custom-color fs-5 w-50" data-bs-toggle="modal"
+							data-bs-target="#eliminarPrediccionModal" @click="resetearModalBody"><i class="fa-solid fa-trash-can fs-5"></i>
+							Eliminar
+							prediccion</button>
+
+						<div class="modal fade" id="eliminarPrediccionModal" tabindex="-1" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+								<div class="modal-content">
+									<div class="modal-header bg-custom-light-color">
+										<form class="w-100">
+											<div class="search-input-container">
+												<input class="search-input" type="text" placeholder="Buscar predicción" v-model="searchedDescripcion" v-on:keyup="buscarPredicciones"
+													id="eliminarPrediccion">
+												<i class="search-input-container-i fa-solid fa-magnifying-glass"></i>
+											</div>
+
+										</form>
+									</div>
+									<div class="modal-body">
+										<div id="modalBodyRow" class="row justify-content-center overflow-y-auto" style="max-height: 500px !important;">
+											
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--<div th:if="${#lists.size(predicciones) > 0}" class="row justify-content-center my-3">
+
 
 				<div v-if="prediccionErrorMessage != ''" class="alert alert-danger">
 					{{prediccionErrorMessage}}
 				</div>
-				<div v-if="prediccionSuccessMessage != ''" class="alert alert-success">
+				<div v-if="prediccionSuccessMessage != ''" class="alert alert-info">
 					{{prediccionSuccessMessage}}
 				</div>
 				<div class="table-responsive shadow-lg p-0"
@@ -74,10 +144,10 @@
 						<tbody>
 							<tr v-for="prediccion in predicciones">
 								<td>
-									<div class="fs-5 text-black col-md-6">
+									<div class="fs-5 text-white fw-semibold col-md-6">
 										{{prediccion.descripcion}}</div>
 								</td>
-								<td><button class="btn btn-primary" th:text="'Eliminar '"
+								<td><button class="btn btn-custom-color" th:text="'Eliminar '"
 										@click="eliminar(prediccion.id)" /></td>
 							</tr>
 						</tbody>
@@ -91,11 +161,11 @@
 				</p>
 			</div>
 
-		</div>
+		</div>-->
 	</div>
 
 
-	<script src="/js/utils.js"></script>
+	<script src="/js/predicciones.js"></script>
 
 
 
