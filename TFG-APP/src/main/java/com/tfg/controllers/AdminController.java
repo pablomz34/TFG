@@ -1,5 +1,6 @@
 package com.tfg.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,11 @@ public class AdminController {
 	@GetMapping("/buscarPrediccionesCoincidentes")
 	public ResponseEntity<?> buscarPrediccionesCoincidentes(@RequestParam("searchedDescripcion") String searchedDescripcion){
 		
-		List<Predicciones> prediccionesCoincidentes = prediccionesService.buscarPrediccionesCoincidentes(searchedDescripcion);
+		List<Predicciones> prediccionesCoincidentes = new ArrayList<Predicciones>();
+		
+		if(searchedDescripcion != null && !searchedDescripcion.isEmpty()) {
+			prediccionesCoincidentes = prediccionesService.buscarPrediccionesCoincidentes(searchedDescripcion);
+		}
 		
 		return new ResponseEntity(prediccionesCoincidentes, HttpStatus.OK);
 	}

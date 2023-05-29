@@ -37,10 +37,17 @@
 	<div class="container">
 
 		<div id="predicciones">
+		
+			<div v-if="prediccionEliminadaErrorMessage != ''" class="mt-2">
+				<div class="alert alert-info">{{prediccionEliminadaErrorMessage}}</div>
+			</div>
+
+			<div v-if="prediccionEliminadaCorrectamenteMessage != ''" class="mt-2">
+				<div class="alert alert-info">{{prediccionEliminadaCorrectamenteMessage}}</div>
+			</div>
 
 			<div class="row mt-5 justify-content-around">
 				<div class="col-4">
-
 					<div class="row justify-content-center">
 						<button class="btn btn-custom-color fs-5 w-50" data-bs-toggle="modal"
 							data-bs-target="#crearPrediccionModal"><i class="fa-solid fa-plus fs-5"></i> Crear
@@ -87,8 +94,9 @@
 
 				<div class="col-4">
 					<div class="row justify-content-center">
-						<button class="btn btn-custom-color fs-5 w-50" data-bs-toggle="modal"
-							data-bs-target="#eliminarPrediccionModal" @click="resetearModalBody"><i class="fa-solid fa-trash-can fs-5"></i>
+						<button class="btn btn-custom-color fs-5 w-50"
+							@click="resetearModalBody(true)"><i
+								class="fa-solid fa-trash fs-5"></i>
 							Eliminar
 							prediccion</button>
 
@@ -98,21 +106,51 @@
 									<div class="modal-header bg-custom-light-color">
 										<form class="w-100">
 											<div class="search-input-container">
-												<input class="search-input" type="text" placeholder="Buscar predicción" v-model="searchedDescripcion" v-on:keyup="buscarPredicciones"
+												<input class="search-input" type="text" placeholder="Buscar predicción"
+													v-model="searchedDescripcion" v-on:keyup="buscarPredicciones"
 													id="eliminarPrediccion">
 												<i class="search-input-container-i fa-solid fa-magnifying-glass"></i>
 											</div>
 
 										</form>
 									</div>
-									<div class="modal-body">
-										<div id="modalBodyRow" class="row justify-content-center overflow-y-auto" style="max-height: 500px !important;">
-											
-											
+									<div class="modal-body bg-light">
+										<div id="modalBodyRow" class="row justify-content-center overflow-y-auto"
+											style="max-height: 500px !important;">
+											<div class="noResults-component">
+												¡No hay ninguna coincidencia!
+											</div>
+
 										</div>
 									</div>
 								</div>
 							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="eliminarPrediccionToast" style="z-index: 9999;"
+				class="toast position-absolute top-50 start-50 translate-middle" data-bs-autohide="false" role="alert"
+				aria-live="assertive" aria-atomic="true">
+				<div class="toast-header bg-custom-light-color bg-gradient">
+					<strong class="text-white me-auto fs-5"><i
+							class="fa-sharp fa-solid fa-circle-exclamation fa-flip"></i>
+						Aviso</strong>
+				</div>
+				<div class="toast-body">
+					<div class="row justify-content-center mb-2">
+						<strong class="text-center text-custom-light-color fw-bold fs-6">¿Seguro que desea eliminar esta
+							predicción?</strong>
+					</div>
+					<div class="row justify-content-around">
+						<div class="col-5">
+							<button type="button" @click="eliminarPrediccion" class="btn btn-success">Confirmar <i
+									class="fa-solid fa-check"></i></button>
+						</div>
+						<div class="col-5">
+							<button type="button" class="btn btn-danger" data-bs-dismiss="toast"
+								aria-label="Close">Cancelar <i class="fa-solid fa-xmark"></i></button>
 						</div>
 					</div>
 				</div>
@@ -162,10 +200,10 @@
 			</div>
 
 		</div>-->
-	</div>
+		</div>
 
 
-	<script src="/js/predicciones.js"></script>
+		<script src="/js/predicciones.js"></script>
 
 
 
