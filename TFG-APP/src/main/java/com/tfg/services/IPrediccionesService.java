@@ -21,5 +21,7 @@ public interface IPrediccionesService {
 	
 	public List<Predicciones> getAll();
 	
+	public List<Predicciones> buscarPrediccionesCoincidentes(String substring);
+	
 	public boolean borrarPrediccion(Long id);
 }

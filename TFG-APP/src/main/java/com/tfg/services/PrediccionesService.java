@@ -91,12 +91,15 @@ public class PrediccionesService implements IPrediccionesService {
 				listaProfiles.remove(i);
 			}
 		}
-
-		
+	
 		repos.delete(prediccion);
-		
-		
+	
 		return true;
+	}
+
+	@Override
+	public List<Predicciones> buscarPrediccionesCoincidentes(String substring) {
+		return repos.findByDescripcionContaining(substring);
 	}
 
 }

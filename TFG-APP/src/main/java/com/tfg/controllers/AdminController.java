@@ -3,6 +3,8 @@ package com.tfg.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,16 +49,27 @@ public class AdminController {
 		return "predicciones";
 	}
 	
+	
+	@GetMapping("/buscarPrediccionesCoincidentes")
+	public ResponseEntity<?> buscarPrediccionesCoincidentes(@RequestParam("searchedDescripcion") String searchedDescripcion){
+		
+		List<Predicciones> prediccionesCoincidentes = prediccionesService.buscarPrediccionesCoincidentes(searchedDescripcion);
+		
+		return new ResponseEntity(prediccionesCoincidentes, HttpStatus.OK);
+	}
+	
 	@PostMapping("/borrarPrediccion")
-	public String borrarPredicciones(@RequestParam("idPrediccion") String idPrediccion) {
+	public ResponseEntity<?> borrarPredicciones(@RequestParam("idPrediccion") String idPrediccion) {
 		
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
 		
 		if(prediccion != null) {
 			prediccionesService.borrarPrediccion(prediccion.getId());
+			return new ResponseEntity("La prediccion se ha borrado correctamente", HttpStatus.OK);
 		}
-		
-		return "La prediccion se ha borrado correctamente";
+		else {
+			return new ResponseEntity("La predicción seleccionada no existe, por tanto no puede ser eliminada", HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@GetMapping("/exportarBBDD")

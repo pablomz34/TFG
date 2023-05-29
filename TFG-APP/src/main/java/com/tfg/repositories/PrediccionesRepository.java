@@ -18,4 +18,6 @@ public interface PrediccionesRepository extends JpaRepository<Predicciones, Long
 	
 	public List<Predicciones> findAll();
 	
+	public List<Predicciones> findByDescripcionContaining(String substring);
+	
 }
