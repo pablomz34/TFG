@@ -6,11 +6,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import org.springframework.http.HttpHeaders;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.HttpEntity;
@@ -25,6 +32,7 @@ import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +54,7 @@ import com.tfg.services.IImagenesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
+import java.sql.*;
 
 @RestController
 @RequestMapping("/admin/fases")
@@ -568,6 +577,56 @@ public class FasesController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
+	
+	@GetMapping("/exportarTabla")
+    public ResponseEntity<byte[]> exportarTabla(@RequestParam String tabla) throws IOException {
+        // Conexión a la base de datos
+        String url = "jdbc:mysql://localhost:3306/tfg";
+        String usuario = "root";
+        String contraseña = "root";
+
+        try (Connection con = DriverManager.getConnection(url, usuario, contraseña);
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM " + tabla)) {
+
+            // Crear el contenido CSV a partir de los datos de la tabla
+            StringBuilder contenidoCSV = new StringBuilder();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            for (int i = 1; i <= columnCount; i++) {
+                contenidoCSV.append(metaData.getColumnName(i));
+                if (i < columnCount) {
+                    contenidoCSV.append(",");
+                }
+            }
+            contenidoCSV.append("\n");
+
+            while (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    contenidoCSV.append(rs.getString(i));
+                    if (i < columnCount) {
+                        contenidoCSV.append(",");
+                    }
+                }
+                contenidoCSV.append("\n");
+            }
+
+            // Convertir el contenido CSV a bytes
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            baos.write(contenidoCSV.toString().getBytes());
+
+            // Configurar las cabeceras de la respuesta HTTP
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", tabla + ".csv");
+
+            return ResponseEntity.ok().headers(headers).body(baos.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
 	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, Integer numCluster,
 			Long idPrediccion) throws IOException {
@@ -703,4 +762,9 @@ public class FasesController {
 		}
 		return "";
 	}
+	
+	
+	
+	
+
 }

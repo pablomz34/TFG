@@ -59,4 +59,9 @@ public class AdminController {
 		return "La prediccion se ha borrado correctamente";
 	}
 	
+	@GetMapping("/exportarBBDD")
+    public String exportar(){
+		return "exportarBBDD";
+    }
+	
 }

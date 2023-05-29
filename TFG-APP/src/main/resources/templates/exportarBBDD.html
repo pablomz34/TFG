@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="~{fragmentos/head.html}"></head>
+<title>ExportarBBDD</title>
+
+<body class="bg-light-subtle">
+
+	<header th:insert="~{fragmentos/nav.html}"></header>
+
+	<style>
+		.popup {
+			display: none;
+			position: fixed;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		.popup-content {
+			background-color: #fefefe;
+			margin: 10% auto;
+			padding: 20px;
+			width: 80%;
+		}
+
+		.close {
+			float: right;
+			font-size: 20px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		.table-checkbox {
+			margin-bottom: 10px;
+		}
+
+		.export-button {
+			margin-top: 10px;
+		}
+	</style>
+
+
+
+	<button onclick="openPopup()">Seleccionar Tablas</button>
+
+	<div id="popup" class="popup">
+		<div class="popup-content">
+			<span class="close" onclick="closePopup()">&times;</span>
+			<label for="tabla">Selecciona una tabla:</label>
+			<select id="tabla">
+				<option value="imagenes">Imagenes</option>
+				<option value="predicciones">Predicciones</option>
+				<option value="profiles">Profiles</option>
+			</select>
+			<button class="export-button" onclick="exportarTabla()">Exportar</button>
+		</div>
+	</div>
+
+	<script>
+		function openPopup() {
+			var popup = document.getElementById("popup");
+			popup.style.display = "block";
+		}
+
+		function closePopup() {
+			var popup = document.getElementById("popup");
+			popup.style.display = "none";
+		}
+
+		function exportarTabla() {
+			var tablaSeleccionada = document.getElementById("tabla").value;
+
+			// Realizar una solicitud al backend para exportar la tabla seleccionada
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/admin/fases/exportarTabla?tabla=" + tablaSeleccionada);
+			xhr.responseType = "blob";
+			xhr.onload = function () {
+				if (xhr.status === 200) {
+					var blob = new Blob([xhr.response], {type: "text/csv"});
+					var url = URL.createObjectURL(blob);
+					var a = document.createElement("a");
+					a.href = url;
+					a.download = tablaSeleccionada + ".csv";
+					document.body.appendChild(a);
+					a.click();
+					document.body.removeChild(a);
+					URL.revokeObjectURL(url);
+				}
+			};
+			xhr.send();
+		}
+	</script>
+
+</body>
+
+</html>
