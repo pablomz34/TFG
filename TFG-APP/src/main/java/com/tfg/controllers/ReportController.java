@@ -24,6 +24,7 @@ import org.thymeleaf.util.StringUtils;
 import com.tfg.dto.ReportDto;
 import com.tfg.reports.StatisticsDto;
 import com.tfg.services.IReportService;
+import com.tfg.reports.VariablesDto;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -45,11 +46,22 @@ public class ReportController {
 //		lista.add(json); 
 		
 		List<StatisticsDto> statistics = new ArrayList<>();
-		for(Map.Entry<String, Object> i : json.entrySet()) {
+		List<VariablesDto> variables = new ArrayList<>();
+		Map<String,Object> statisticsMap = (Map<String, Object>) json.get("statistics");
+		Map<String,Object> variablesMap = (Map<String, Object>) json.get("variables");
+		
+		for(Map.Entry<String, Object> i : statisticsMap.entrySet()) {
 			StatisticsDto f = new StatisticsDto();
 			f.setKey(StringUtils.capitalize(i.getKey().replace("_", " ").toLowerCase()));
-			f.setValue(i.getValue().toString().replace("_", " "));
+			f.setValue(i.getValue().toString());
 			statistics.add(f);
+		}
+		
+		for(Map.Entry<String, Object> i : variablesMap.entrySet()) {
+			VariablesDto f = new VariablesDto();
+			f.setKey(StringUtils.capitalize(i.getKey().replace("_", " ").toLowerCase()));
+			f.setValue(i.getValue());
+			variables.add(f);
 		}
 		
 		
@@ -57,9 +69,11 @@ public class ReportController {
 		InputStream inputStream = resource.getInputStream();
 		byte[] clusterImage = inputStream.readAllBytes();
 		
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(statistics);
+		JRBeanCollectionDataSource statParam = new JRBeanCollectionDataSource(statistics);
+		JRBeanCollectionDataSource varParam = new JRBeanCollectionDataSource(variables);
 		params.put("titulo", "Datos Obtenidos");
-		params.put("statistics", dataSource);
+		params.put("statistics", statParam);
+		params.put("variables", varParam);
 		params.put("clusterImage", new ByteArrayInputStream(clusterImage));
 		
 		ReportDto dto = repSer.getReport(params);

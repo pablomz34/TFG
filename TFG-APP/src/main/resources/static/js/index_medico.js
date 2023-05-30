@@ -204,12 +204,31 @@ new Vue({
 			//				pdf.addImage(base64image, 'PNG', 15, 15, base64image.width, base64image.height);
 			//				pdf.save('miDocumento.pdf');
 			//			});
+
+//			let jsonData = {
+//				"id_prediction": "1",
+//				"number_of_variables": "8",
+//				"number of observations": "199",
+//				"target_median": "6.850243331",
+//				"target_third_quantile": "9.035093123"
+//			};
+			let jsonData = {};
+			let statistics = {};
+			let variables = {};
+			for (let i = 0; i < this.datasetStatistics.length; i++) {
+				statistics[this.datasetStatistics[i].nombre] = this.datasetStatistics[i].valor;
+			}
+			for (let i = 0; i < this.variables.length; i++) {
+				variables[this.variables[i].feature] = Object.values(this.variables[i])[1];
+			}
+			jsonData['statistics'] = statistics;
+			jsonData['variables'] = variables;
 			fetch(window.location.origin + "/report/download", {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify(this.datasetStatistics)
+				body: JSON.stringify(jsonData)
 			})
 				.then(response => response.blob())
 				.then(blob => {
@@ -228,7 +247,7 @@ new Vue({
 	template: `
 	<div class="container mb-5 mt-5">
 	
-		<button @click="descargarPdf">Descargar Pdf</button>
+		
 		
 		<span>
 			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
@@ -307,7 +326,10 @@ new Vue({
 		</div>
 	
 		<div v-if="datosCargados" class="row justify-content-around">
-			<h4 class="text-center text-black">Cluster {{nCluster}}</h4>
+			<div class="mb-2" style="text-align: center">
+				<h4 class="text-center text-black">Cluster {{nCluster}}</h4>
+				<button disabled class="text-center btn btn-outline-custom-color fs-5 fw-semibold" @click="descargarPdf">Descargar Pdf</button>
+	        </div>
 	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">
 	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>

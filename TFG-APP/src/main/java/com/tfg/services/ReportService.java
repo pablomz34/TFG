@@ -24,7 +24,7 @@ public class ReportService implements IReportService {
 
 	@Override
 	public ReportDto getReport(Map<String, Object> params) throws JRException, IOException, SQLException {
-		String nombreArchivo = "report";
+		String nombreArchivo = "reporte";
 		ReportDto dto = new ReportDto();
 		dto.setNombreArchivo(nombreArchivo + ".pdf");
 
