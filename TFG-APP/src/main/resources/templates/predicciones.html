@@ -37,20 +37,40 @@
 	<div class="container">
 
 		<div id="predicciones">
-		
+
+			<div v-if="prediccionCreadaErrorMessage != ''" class="mt-2">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{prediccionCreadaErrorMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+
+			<div v-if="prediccionCreadaCorrectamenteMessage != ''" class="mt-2">
+				<div class="alert alert-info alert-dismissible fade show" role="alert">
+					{{prediccionCreadaCorrectamenteMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+
 			<div v-if="prediccionEliminadaErrorMessage != ''" class="mt-2">
-				<div class="alert alert-info">{{prediccionEliminadaErrorMessage}}</div>
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{prediccionEliminadaErrorMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
 			</div>
 
 			<div v-if="prediccionEliminadaCorrectamenteMessage != ''" class="mt-2">
-				<div class="alert alert-info">{{prediccionEliminadaCorrectamenteMessage}}</div>
+				<div class="alert alert-info alert-dismissible fade show" role="alert">
+					{{prediccionEliminadaCorrectamenteMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
 			</div>
 
 			<div class="row mt-5 justify-content-around">
-				<div class="col-4">
+				<div class="col">
 					<div class="row justify-content-center">
-						<button class="btn btn-custom-color fs-5 w-50" data-bs-toggle="modal"
-							data-bs-target="#crearPrediccionModal"><i class="fa-solid fa-plus fs-5"></i> Crear
+						<button class="btn btn-custom-color fs-5 w-50" @click="showToastCrearPrediccion"><i
+								class="fa-solid fa-plus fs-5"></i> Crear
 							prediccion</button>
 
 						<div class="modal fade" id="crearPrediccionModal" tabindex="-1"
@@ -60,8 +80,7 @@
 									<div class="modal-header bg-custom-light-color">
 										<h1 class="modal-title fs-5 text-white" id="crearPrediccionModalLabel">Nueva
 											predicción</h1>
-										<button type="button" class="btn-close bg-white" data-bs-dismiss="modal"
-											aria-label="Close"></button>
+										<button type="button" class="btn-close bg-white" @click="hideCrearPrediccionModal"></button>
 									</div>
 									<div class="modal-body">
 										<form>
@@ -70,7 +89,8 @@
 													<label for="crearPrediccion"
 														class="input-container-label fw-bold">Descripción de la
 														predicción</label>
-													<input class="input-container-input" type="text"
+													<input class="input-container-input"
+														v-model="crearPrediccionDescripcion" type="text"
 														id="crearPrediccion">
 												</div>
 											</div>
@@ -78,7 +98,7 @@
 											<div class="form-group">
 												<div class="row justify-content-center">
 													<div class="col text-center">
-														<button type="submit"
+														<button type="button" @click="crearPrediccion"
 															class="btn btn-outline-custom-color fs-5">Guardar</button>
 													</div>
 												</div>
@@ -92,10 +112,9 @@
 
 				</div>
 
-				<div class="col-4">
+				<div class="col">
 					<div class="row justify-content-center">
-						<button class="btn btn-custom-color fs-5 w-50"
-							@click="resetearModalBody(true)"><i
+						<button class="btn btn-custom-color fs-5 w-50" @click="showToastEliminarPrediccion"><i
 								class="fa-solid fa-trash fs-5"></i>
 							Eliminar
 							prediccion</button>

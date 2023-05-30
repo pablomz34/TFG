@@ -1,9 +1,11 @@
 package com.tfg.services;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,9 @@ public class PrediccionesService implements IPrediccionesService {
 
 	@Autowired
 	private PrediccionesRepository repos;
+
+	@Value("${myapp.imagenesClusters.ruta}")
+	private String rutaImagenesClusters;
 
 	@Override
 	public Predicciones findPrediccionByDescripcion(String descripcion) {
@@ -91,10 +96,38 @@ public class PrediccionesService implements IPrediccionesService {
 				listaProfiles.remove(i);
 			}
 		}
-	
+
+		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
+
+		File directorioPrediccion = new File(rutaPrediccion);
+
+		if (directorioPrediccion.exists()) {
+			borrarDirectorio(directorioPrediccion);
+			System.out.println("Directorio borrado exitosamente.");
+		} else {
+			System.out.println("El directorio no existe.");
+		}
+		
 		repos.delete(prediccion);
-	
+
 		return true;
+	}
+
+	private void borrarDirectorio(File directorioPrediccion) {
+		File[] archivos = directorioPrediccion.listFiles();
+
+		if (archivos != null) {
+			for (File archivo : archivos) {
+				if (archivo.isDirectory()) {
+					borrarDirectorio(archivo);
+				} else {
+					archivo.delete();
+				}
+			}
+		}
+
+		directorioPrediccion.delete();
+
 	}
 
 	@Override

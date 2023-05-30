@@ -4,18 +4,90 @@ new Vue({
 		return {
 			errorSearchDescripcion: '',
 			searchedDescripcion: '',
+			crearPrediccionDescripcion: '',
 			prediccionesCoincidentes: [],
 			idEliminarPrediccion: '',
+			prediccionCreadaCorrectamenteMessage: '',
+			prediccionCreadaErrorMessage: '',
 			prediccionEliminadaErrorMessage: '',
 			prediccionEliminadaCorrectamenteMessage: '',
+			crearPrediccionModal: '',
 			eliminarPrediccionModal: ''
 		}
 	},
 
 	methods: {
 
-		buscarPredicciones() {
 
+		showToastCrearPrediccion() {
+
+			const THIZ = this;
+
+			if (THIZ.crearPrediccionModal.length === 0) {
+				let modal = new bootstrap.Modal(document.getElementById('crearPrediccionModal'));
+
+				THIZ.crearPrediccionModal = modal;
+
+				THIZ.crearPrediccionModal.show();
+			}
+			else {
+
+				this.resetearModalCrearPrediccion();
+
+				THIZ.crearPrediccionModal.show();
+			}
+		},
+		hideCrearPrediccionModal() {
+
+			const THIZ = this;
+
+			THIZ.crearPrediccionModal.hide();
+
+		},
+		showToastEliminarPrediccion() {
+
+			const THIZ = this;
+
+			if (THIZ.eliminarPrediccionModal.length === 0) {
+
+				let modal = new bootstrap.Modal(document.getElementById('eliminarPrediccionModal'));
+
+				THIZ.eliminarPrediccionModal = modal;
+
+				THIZ.eliminarPrediccionModal.show();
+			}
+			else {
+
+				this.resetearModalEliminarPrediccion();
+
+				THIZ.eliminarPrediccionModal.show();
+			}
+		},
+
+		crearPrediccion() {
+			const THIZ = this;
+
+			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?crearPrediccion=" + true +
+				"&descripcion=" + this.crearPrediccionDescripcion, {
+				method: "POST",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.prediccionCreadaErrorMessage = "Error: " + errorMessage;
+						THIZ.crearPrediccionModal.hide();
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(data => {
+					THIZ.prediccionCreadaCorrectamenteMessage = 'La predicción se ha creado correctamente';
+					THIZ.crearPrediccionModal.hide();
+				})
+				.catch(error => console.error(error));
+		},
+
+		buscarPredicciones() {
 
 			fetch(window.location.origin + "/admin/buscarPrediccionesCoincidentes?searchedDescripcion=" + encodeURIComponent(this.searchedDescripcion), {
 				method: "GET"
@@ -35,7 +107,9 @@ new Vue({
 
 					let modalBodyRow = document.getElementById("modalBodyRow");
 
-					this.resetearModalBody(false);
+					THIZ.prediccionesCoincidentes = [];
+
+					this.resetearModalBody();
 
 					if (res.length > 0) {
 
@@ -43,13 +117,12 @@ new Vue({
 
 						this.crearEliminarPrediccionLabel(modalBodyRow);
 
-						this.creareliminarPrediccionComponents(modalBodyRow);
+						this.crearEliminarPrediccionComponents(modalBodyRow);
 
 					}
 					else {
 						this.createNoResultComponent(modalBodyRow);
 					}
-
 
 				})
 				.catch(error => console.log(error))
@@ -66,7 +139,7 @@ new Vue({
 
 			modalBodyRow.append(eliminarPrediccionLabel);
 		},
-		creareliminarPrediccionComponents(modalBodyRow) {
+		crearEliminarPrediccionComponents(modalBodyRow) {
 
 			const THIZ = this;
 
@@ -123,40 +196,47 @@ new Vue({
 
 			modalBodyRow.append(noResultsComponent);
 		},
-		resetearModalBody(showNoResultComponent) {
+
+		resetearModalCrearPrediccion() {
+			const THIZ = this;
+
+			THIZ.crearPrediccionDescripcion = '';
+
+			THIZ.prediccionCreadaCorrectamenteMessage = '';
+
+			THIZ.prediccionCreadaErrorMessage = '';
+
+		},
+		resetearModalBody() {
+			let modalBodyRow = document.getElementById("modalBodyRow");
+
+			while (modalBodyRow.firstChild) {
+				modalBodyRow.removeChild(modalBodyRow.firstChild);
+			}
+		},
+		resetearModalEliminarPrediccion() {
 
 			const THIZ = this;
 
 			THIZ.prediccionesCoincidentes = [];
 
 			THIZ.idEliminarPrediccion = '';
-			
+
 			THIZ.prediccionEliminadaErrorMessage = '',
-			
-			THIZ.prediccionEliminadaCorrectamenteMessage = '';
 
-			let modalBodyRow = document.getElementById("modalBodyRow");
+				THIZ.prediccionEliminadaCorrectamenteMessage = '';
 
-			while (modalBodyRow.firstChild) {
-				modalBodyRow.removeChild(modalBodyRow.firstChild);
-			}
+			THIZ.errorSearchDescripcion = '';
 
-			if (showNoResultComponent) {
-				
-				let modal = new bootstrap.Modal(document.getElementById('eliminarPrediccionModal'));
-				
-				THIZ.eliminarPrediccionModal = modal;
-				
-				THIZ.eliminarPrediccionModal.show();
-				
-				THIZ.errorSearchDescripcion = '';
-				THIZ.searchedDescripcion = '';
-				this.createNoResultComponent(modalBodyRow);
-			}
+			THIZ.searchedDescripcion = '';
+
+			this.resetearModalBody();
+
+			this.createNoResultComponent(modalBodyRow);
 
 		},
 		eliminarPrediccion() {
-			
+
 			const THIZ = this;
 
 			fetch(window.location.origin + "/admin/borrarPrediccion?idPrediccion=" + encodeURIComponent(this.idEliminarPrediccion), {
@@ -165,20 +245,28 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) {
 						const errorMessage = await res.text();
+						
 						THIZ.prediccionEliminadaErrorMessage = "Error: " + errorMessage;
+						
+						let toast = new bootstrap.Toast(document.getElementById('eliminarPrediccionToast'));
+						
+						toast.hide();
+						
+						THIZ.eliminarPrediccionModal.hide();
+						
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
 					return res.text();
 				})
 				.then(res => {
-					
+
 					THIZ.prediccionEliminadaCorrectamenteMessage = res;
-					
+
 					let toast = new bootstrap.Toast(document.getElementById('eliminarPrediccionToast'));
 
 					toast.hide();
-					
+
 					THIZ.eliminarPrediccionModal.hide();
 				})
 				.catch(error => console.log(error))
