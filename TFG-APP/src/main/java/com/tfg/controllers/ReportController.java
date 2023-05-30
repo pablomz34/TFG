@@ -59,13 +59,13 @@ public class ReportController {
 		
 		for(Map.Entry<String, Object> i : variablesMap.entrySet()) {
 			VariablesDto f = new VariablesDto();
-			f.setKey(StringUtils.capitalize(i.getKey().replace("_", " ").toLowerCase()));
-			f.setValue(i.getValue());
+			f.setKey(i.getKey().replace("_", " "));
+			f.setValue(i.getValue().toString().replace("{", "").replace("}", "").replace("[", "").replace("]", ""));
 			variables.add(f);
 		}
 		
 		
-		ClassPathResource resource = new ClassPathResource("static/clustersImages/prueba.png");
+		ClassPathResource resource = new ClassPathResource("static/clustersImages/prediccion1/cluster2.png");
 		InputStream inputStream = resource.getInputStream();
 		byte[] clusterImage = inputStream.readAllBytes();
 		

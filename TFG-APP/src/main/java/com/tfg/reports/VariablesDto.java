@@ -15,5 +15,5 @@ public class VariablesDto {
 
 	private String key;
 
-	private Object value;
+	private String value;
 }
