@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.util.StringUtils;
 
@@ -37,7 +38,7 @@ public class ReportController {
 	private IReportService repSer;
 
 	@PostMapping("/download")
-	public ResponseEntity<Resource> download(@RequestBody Map<String, Object> json)
+	public ResponseEntity<Resource> download(@RequestBody Map<String, Object> json, @RequestParam("nCluster") String nCluster)
 			throws JRException, IOException, SQLException {
 		Map<String,Object> params = new HashMap<>();
 //		Gson gson = new Gson();
@@ -71,7 +72,9 @@ public class ReportController {
 		
 		JRBeanCollectionDataSource statParam = new JRBeanCollectionDataSource(statistics);
 		JRBeanCollectionDataSource varParam = new JRBeanCollectionDataSource(variables);
-		params.put("titulo", "Datos Obtenidos");
+
+		String titulo = (Integer.parseInt(nCluster) != -1) ? ("Reporte - Cluster " + nCluster) : ("Reporte - All Clusters");
+		params.put("titulo", titulo);
 		params.put("statistics", statParam);
 		params.put("variables", varParam);
 		params.put("clusterImage", new ByteArrayInputStream(clusterImage));

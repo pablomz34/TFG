@@ -173,45 +173,7 @@ new Vue({
 				.catch(error => console.error(error));
 		},
 
-		//		descargarPdf: function() {
-		//			var element = document.getElementById("container");
-		//			var options = {
-		//				scale: 0.5 // Ajustar la escala para que la imagen se ajuste al ancho de la página del PDF
-		//			};
-		//
-		//			// Generar una imagen de "miElemento" usando html2canvas
-		//			html2canvas(element, options).then(function(canvas) {
-		//				// Crear un objeto PDF usando jsPDF
-		//				var pdf = new jsPDF();
-		//
-		//				// Calcular la posición x para centrar la imagen horizontalmente
-		//				var positionX = pdf.internal.pageSize.width - canvas.width / 2;
-		//
-		//				// Agregar la imagen al PDF en la posición calculada
-		//				pdf.addImage(canvas.toDataURL("image/jpeg"), 'JPEG', positionX, 10);
-		//
-		//				// Descargar el PDF
-		//				pdf.save("miDocumento.pdf");
-		//			});
-		//		},
-
 		descargarPdf: function() {
-			//			html2canvas(document.querySelector('#container')).then((canvas) => {
-			//				let base64image = canvas.toDataURL('imagen/png');
-			//				console.log(base64image)
-			//				let pdf = new jsPDF('p', 'px', 'a4');
-			//
-			//				pdf.addImage(base64image, 'PNG', 15, 15, base64image.width, base64image.height);
-			//				pdf.save('miDocumento.pdf');
-			//			});
-
-//			let jsonData = {
-//				"id_prediction": "1",
-//				"number_of_variables": "8",
-//				"number of observations": "199",
-//				"target_median": "6.850243331",
-//				"target_third_quantile": "9.035093123"
-//			};
 			let jsonData = {};
 			let statistics = {};
 			let variables = {};
@@ -223,7 +185,7 @@ new Vue({
 			}
 			jsonData['statistics'] = statistics;
 			jsonData['variables'] = variables;
-			fetch(window.location.origin + "/report/download", {
+			fetch(window.location.origin + "/report/download?nCluster=" + this.nCluster, {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json'
@@ -327,8 +289,11 @@ new Vue({
 	
 		<div v-if="datosCargados" class="row justify-content-around">
 			<div class="mb-2" style="text-align: center">
-				<h4 class="text-center text-black">Cluster {{nCluster}}</h4>
-				<button disabled class="text-center btn btn-outline-custom-color fs-5 fw-semibold" @click="descargarPdf">Descargar Pdf</button>
+				<h4 class="text-black">Cluster {{nCluster}} &nbsp  
+					<button class="btn btn-outline-custom-color fs-5 fw-semibold" @click="descargarPdf">
+						<i class="fa-regular fa-file-pdf"></i>
+					</button>
+				</h4>
 	        </div>
 	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">
