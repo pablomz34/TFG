@@ -65,15 +65,16 @@ public class ReportController {
 			variables.add(f);
 		}
 		
+		String titulo = (Integer.parseInt(nCluster) != -1) ? ("Reporte - Cluster " + nCluster) : ("Reporte - All Clusters");
 		
-		ClassPathResource resource = new ClassPathResource("static/clustersImages/prediccion1/cluster2.png");
+		ClassPathResource resource = (Integer.parseInt(nCluster) != -1) ? new ClassPathResource("static/clustersImages/prediccion1/cluster" + nCluster + ".png") : new ClassPathResource("static/clustersImages/prediccion1/allClusters.png");
 		InputStream inputStream = resource.getInputStream();
 		byte[] clusterImage = inputStream.readAllBytes();
 		
 		JRBeanCollectionDataSource statParam = new JRBeanCollectionDataSource(statistics);
 		JRBeanCollectionDataSource varParam = new JRBeanCollectionDataSource(variables);
 
-		String titulo = (Integer.parseInt(nCluster) != -1) ? ("Reporte - Cluster " + nCluster) : ("Reporte - All Clusters");
+		
 		params.put("titulo", titulo);
 		params.put("statistics", statParam);
 		params.put("variables", varParam);
