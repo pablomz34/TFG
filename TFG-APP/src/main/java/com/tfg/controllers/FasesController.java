@@ -76,6 +76,15 @@ public class FasesController {
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
+	
+	@Value("${spring.datasource.url}")
+	private String bbddConnectionUrl;
+	
+	@Value("${spring.datasource.username}")
+	private String bbddUser;
+	
+	@Value("${spring.datasource.password}")
+	private String bbddPassword;
 
 	@GetMapping("/getMedicos")
 	public List<UsuariosDto> getMedicos() {
@@ -578,11 +587,11 @@ public class FasesController {
 	@GetMapping("/exportarTabla")
     public ResponseEntity<byte[]> exportarTabla(@RequestParam String tabla) throws IOException {
         // Conexión a la base de datos
-        String url = "jdbc:mysql://localhost:3306/tfg";
-        String usuario = "root";
-        String contraseña = "root";
+        //String url = "jdbc:mysql://localhost:3306/tfg";
+        //String usuario = "root";
+        //String contraseña = "root";
 
-        try (Connection con = DriverManager.getConnection(url, usuario, contraseña);
+        try (Connection con = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword);
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM " + tabla)) {
 
