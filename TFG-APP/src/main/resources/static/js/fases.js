@@ -361,9 +361,9 @@ Vue.component('fase4', {
 	created() {
 		this.getDescripciones();
 	},
-	
+
 	watch: {
-		descripcionSeleccionada(){
+		descripcionSeleccionada() {
 			const THIZ = this;
 			THIZ.continuar = false;
 		}
@@ -376,8 +376,8 @@ Vue.component('fase4', {
 	},
 
 	methods: {
-		
-		getDescripciones: function(){
+
+		getDescripciones: function() {
 			const THIZ = this;
 			fetch(window.location.origin + "/admin/fases/getDescripcionesPredicciones", {
 				method: "GET",
@@ -402,7 +402,7 @@ Vue.component('fase4', {
 				})
 				.catch(error => console.error(error));
 		},
-		
+
 		seleccionarPrediccion: function() {
 			const THIZ = this;
 			$('#cargando').show();
@@ -422,7 +422,7 @@ Vue.component('fase4', {
 				})
 				.then(data => {
 					THIZ.idPrediccion = data;
-					if(this.crear) THIZ.descripciones.push(this.descripcionSeleccionada);
+					if (this.crear) THIZ.descripciones.push(this.descripcionSeleccionada);
 					THIZ.continuar = true;
 					$('#cargando').hide();
 				})
@@ -1026,11 +1026,70 @@ new Vue({
 	data: function() {
 		return {
 			seleccion: '',
+			previousCard: ''
 		}
 	},
+
+
+	methods: {
+		selectMetodoUsoInformacionPoblacion(event) {
+
+			const THIZ = this;
+
+			let fasesCard = event.target.closest("div");
+
+			if (fasesCard !== THIZ.previousCard) {
+				this.resetearPreviousCard();
+
+				let fasesCardSelectedIcon = document.createElement("i");
+
+				fasesCard.setAttribute("style", "border: 5px solid rgb(123, 154, 234); box-shadow: 8px 8px 16px 4px rgb(123, 154, 234);");
+
+				THIZ.previousCard = fasesCard;
+
+				fasesCardSelectedIcon.setAttribute("class", "fases-card-selected-icon fa-solid fa-circle-check");
+
+				fasesCard.append(fasesCardSelectedIcon);
+			}
+
+
+		},
+		resetearPreviousCard() {
+			
+			const THIZ = this;
+			
+			if (THIZ.previousCard.length !== 0) {
+				THIZ.previousCard.removeChild(THIZ.previousCard.lastChild);
+
+				THIZ.previousCard.setAttribute("style", "");
+			}
+		}
+
+	},
 	template: `
-	<div class="container pt-2">		
-	    <div class="col-12 mb-3">
+	<div class="container pt-2">	
+		<div class="row justify-content-around mt-5">
+
+			<div class="col-md-4 mb-5">
+				<div class="row justify-content-center">
+					<div class="fases-card" @click="selectMetodoUsoInformacionPoblacion">
+						<i class="fases-card-i fa-solid fa-database"></i>
+						<p class="fases-card-p text-center mb-0">Usar información de la población de la base de datos</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4 mb-5">
+				<div class="row justify-content-center">
+					<div class="fases-card" @click="selectMetodoUsoInformacionPoblacion">
+						<i class="fases-card-i fa-solid fa-wrench"></i>
+						<p class="fases-card-p text-center mb-0">Usar tu propia información de la población</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	    <!--<div class="col-12 mb-3">
 				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
 		</div>
 		
@@ -1067,7 +1126,7 @@ new Vue({
 		  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
 		  	<fase5 />
 		  </div>
-		</div>
+		</div>-->
 				
 	</div>
 	`

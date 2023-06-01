@@ -12427,4 +12427,73 @@ textarea.form-control-lg {
   margin-bottom: 10px;
 }
 
+.fases-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 25vw;
+  height: 25vw;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  background-color: rgb(252, 252, 254);
+  border: 2px solid rgb(123, 154, 234);
+  border-radius: 10%;
+  cursor: pointer;
+}
+
+.fases-card:hover {
+  box-shadow: 4px 4px 8px 2px rgb(123, 154, 234);
+}
+
+.fases-card-i {
+  color: rgb(123, 154, 234);
+  font-size: 10vw;
+}
+
+.fases-card-p {
+  color: rgb(123, 154, 234);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.5vw;
+  font-weight: bold;
+  margin-top: 5%;
+}
+
+.fases-card-selected-icon {
+  color: rgb(123, 154, 234);
+  font-size: 2vw;
+  margin-top: 5%;
+}
+
+@media (max-width: 768px) {
+  .fases-card {
+    width: 37.5vw;
+    height: 37.5vw;
+  }
+  .fases-card-i {
+    font-size: 15vw;
+  }
+  .fases-card-p {
+    font-size: 2.5vw;
+  }
+  .fases-card-selected-icon {
+    font-size: 3.5vw;
+  }
+}
+@media (max-width: 480px) {
+  .fases-card {
+    width: 50vw;
+    height: 50vw;
+  }
+  .fases-card-i {
+    font-size: 20vw;
+  }
+  .fases-card-p {
+    font-size: 3.5vw;
+  }
+  .fases-card-selected-icon {
+    font-size: 5vw;
+  }
+}
+
 /*# sourceMappingURL=styles.css.map */
