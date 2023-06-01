@@ -1026,7 +1026,8 @@ new Vue({
 	data: function() {
 		return {
 			seleccion: '',
-			previousCard: ''
+			previousCard: '',
+			csvPacientesData: ''
 		}
 	},
 
@@ -1055,14 +1056,41 @@ new Vue({
 
 		},
 		resetearPreviousCard() {
-			
+
 			const THIZ = this;
-			
+
 			if (THIZ.previousCard.length !== 0) {
 				THIZ.previousCard.removeChild(THIZ.previousCard.lastChild);
 
 				THIZ.previousCard.setAttribute("style", "");
 			}
+		},
+		enviarArchivoPacientes:function() {
+
+			const THIZ = this;
+
+			const formData = new FormData();
+			
+			formData.append('file', this.$refs.csvPacientesData.files[0]);
+
+			fetch(window.location.origin + "/admin/fases/guardarInformacionPacientes", {
+				method: "POST",
+				body: formData
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						//THIZ.error = "Error: " + errorMessage;
+						
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(data => {
+					
+					console.log(data);
+				})
+				.catch(error => console.error(error));
 		}
 
 	},
@@ -1088,6 +1116,12 @@ new Vue({
 				</div>
 			</div>
 		</div>
+		
+		<form @submit.prevent="enviarArchivoPacientes">
+		
+			<input accept=".csv" type="file" id="csvPacientes" ref="csvPacientesData" required />
+			<button type="submit">Enviar </button>
+		</form>
 		
 	    <!--<div class="col-12 mb-3">
 				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>

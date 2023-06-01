@@ -1,5 +1,6 @@
 package com.tfg.entities;
 
+
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -7,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,26 +20,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "predicciones")
-public class Predicciones {
+@Table(name = "pacientes")
+public class Pacientes {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 	
-	@Column(name = "descripcion", nullable = false, unique = true)
-	private String descripcion;
+	@Column(name = "data_paciente", nullable = false)
+	private String dataPaciente;
 	
-	@Column(name="max_clusters")
-	private Integer maxClusters;
-	
-	@OneToMany(mappedBy = "prediccion")
-    private List<Imagenes> imagenes;
-	
-	@OneToMany(mappedBy = "prediccion") 
-    private List<Profiles> profiles;
-	
-	@OneToMany(mappedBy = "prediccion")
-    private List<Pacientes> pacientes;
-	
+	@ManyToOne
+    @JoinColumn(name = "prediccion_id") 
+    private Predicciones prediccion;
+
 }

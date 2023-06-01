@@ -48,9 +48,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.Imagenes;
+import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
 import com.tfg.services.IImagenesService;
+import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
@@ -73,6 +75,9 @@ public class FasesController {
 
 	@Autowired
 	private IPrediccionesService prediccionesService;
+	
+	@Autowired
+	private IPacientesService pacientesService;
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
@@ -91,6 +96,7 @@ public class FasesController {
 		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
 		return medicos;
 	}
+	
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handleException(Exception ex) {
@@ -104,6 +110,21 @@ public class FasesController {
 		}
 
 		return ResponseEntity.status(status).body(mensaje);
+	}
+	
+	
+	
+	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
+	public ResponseEntity<?> guardarInformacionPacientes(/*@RequestParam("max_clusters") String max_clusters,*/
+			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException{	
+		
+		//pacientesService.guardarPoblacion(multipartFile, Long.parseLong("1"));
+		
+		List<Pacientes> pacientes = pacientesService.findPacientesByPrediccionId(Long.parseLong("1"));
+		
+		System.out.println(pacientes.get(0).getDataPaciente());
+		
+		return new ResponseEntity<>("bien", HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
