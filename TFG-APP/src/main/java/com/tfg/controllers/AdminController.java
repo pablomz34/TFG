@@ -1,9 +1,15 @@
 package com.tfg.controllers;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,12 +35,20 @@ public class AdminController {
 	@Autowired
 	private IPrediccionesService prediccionesService;
 	
+	@Value("${spring.datasource.url}")
+	private String bbddConnectionUrl;
+	
+	@Value("${spring.datasource.username}")
+	private String bbddUser;
+	
+	@Value("${spring.datasource.password}")
+	private String bbddPassword;
+	
 	
 	@GetMapping()
 	public String adminIndex() {
 		return "index";
 	}
-	
 	
 	@GetMapping("/medicosRegistrados")
     public String users(Model model){
@@ -49,6 +63,46 @@ public class AdminController {
         model.addAttribute("predicciones", predicciones);
 		return "predicciones";
 	}
+	
+	@GetMapping("/exportarBBDD")
+    public String exportar(Model model){
+		Connection connection = null;
+		List<String> tablas = new ArrayList<>();
+        try {
+            // Establecer conexión con la base de datos
+            connection = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword);
+
+            // Obtener metadatos de la base de datos
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            // Obtener el resultado de las tablas de la base de datos
+            String[] tipos = {"TABLE"};
+            ResultSet resultSet = metaData.getTables(connection.getCatalog(), null, null, tipos);
+            
+          
+            // Recorrer los resultados e imprimir los nombres de las tablas
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                if(!tableName.equals("usuarios") && !tableName.equals("users_roles") && 
+                		!tableName.equals("roles")) tablas.add(tableName);
+            }
+
+            resultSet.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar la conexión
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        model.addAttribute("tablas", tablas);
+		return "exportarBBDD";
+    }
 	
 	
 	@GetMapping("/buscarPrediccionesCoincidentes")
@@ -76,10 +130,5 @@ public class AdminController {
 			return new ResponseEntity("La predicción seleccionada no existe, por tanto no puede ser eliminada", HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	@GetMapping("/exportarBBDD")
-    public String exportar(){
-		return "exportarBBDD";
-    }
 	
 }

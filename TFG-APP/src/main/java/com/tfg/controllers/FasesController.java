@@ -81,15 +81,6 @@ public class FasesController {
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
-	
-	@Value("${spring.datasource.url}")
-	private String bbddConnectionUrl;
-	
-	@Value("${spring.datasource.username}")
-	private String bbddUser;
-	
-	@Value("${spring.datasource.password}")
-	private String bbddPassword;
 
 	@GetMapping("/getMedicos")
 	public List<UsuariosDto> getMedicos() {
@@ -605,55 +596,7 @@ public class FasesController {
 
 	}
 	
-	@GetMapping("/exportarTabla")
-    public ResponseEntity<byte[]> exportarTabla(@RequestParam String tabla) throws IOException {
-        // Conexión a la base de datos
-        //String url = "jdbc:mysql://localhost:3306/tfg";
-        //String usuario = "root";
-        //String contraseña = "root";
-
-        try (Connection con = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword);
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM " + tabla)) {
-
-            // Crear el contenido CSV a partir de los datos de la tabla
-            StringBuilder contenidoCSV = new StringBuilder();
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            for (int i = 1; i <= columnCount; i++) {
-                contenidoCSV.append(metaData.getColumnName(i));
-                if (i < columnCount) {
-                    contenidoCSV.append(",");
-                }
-            }
-            contenidoCSV.append("\n");
-
-            while (rs.next()) {
-                for (int i = 1; i <= columnCount; i++) {
-                    contenidoCSV.append(rs.getString(i));
-                    if (i < columnCount) {
-                        contenidoCSV.append(",");
-                    }
-                }
-                contenidoCSV.append("\n");
-            }
-
-            // Convertir el contenido CSV a bytes
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(contenidoCSV.toString().getBytes());
-
-            // Configurar las cabeceras de la respuesta HTTP
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", tabla + ".csv");
-
-            return ResponseEntity.ok().headers(headers).body(baos.toByteArray());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
-    }
+	
 
 	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, Integer numCluster,
 			Long idPrediccion) throws IOException {
