@@ -4,80 +4,15 @@
 <head th:insert="~{fragmentos/head.html}"></head>
 <title>ExportarBBDD</title>
 
-<body class="bg-light-subtle">
+<body>
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
-
-	<style>
-		.export-button {
-			margin-top: 10px;
-		}
-	</style>
-
-
-	<div class="container">
-		<div th:if="${#lists.size(tablas) > 0}" class="row justify-content-center my-3">
-
-			<div class="col-12 mb-3">
-				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">Expo<span
-						class="text-custom-light-color">rtar ta</span>blas
-				</h2>
-			</div>
-
-			<div id="utils">
-				<div class="table-responsive shadow-lg p-0"
-					style="max-height: 500px !important; overflow-y: auto !important;">
-					<table id="tablasTable" class="table table-custom-color table-striped-columns table-hover m-0">
-						<thead class="table-custom-color-table-head">
-							<tr>
-								<th class="fs-5 text-white text-center">Nombre <button @click="howToOrderColumn('tabla')"
-										class="btn btn-unstyled p-0"><i id="iconotabla"
-											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="tabla: ${tablas}">
-								<td class="fw-semibold text-light" th:text="${tabla}"></td>
-								<td><input type="checkbox"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<button class="export-button" onclick="exportarTabla()">Exportar</button>
-			</div>
-
-		</div>
-
-		<div th:unless="${#lists.size(tablas) > 0}" class="row">
-			<p class="mt-3 text-center  text-custom-color fs-3 fw-bold">No hay tablas a exportar en la base de datos</p>
-		</div>
+	
+	<div id="exportarBBDD">
+		<div id="utils"></div>
 	</div>
-
-	<script>
-
-		function exportarTabla() {
-			var tablaSeleccionada = document.getElementById("tabla").value;
-
-			// Realizar una solicitud al backend para exportar la tabla seleccionada
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/tablas/exportarTabla?tabla=" + tablaSeleccionada);
-			xhr.responseType = "blob";
-			xhr.onload = function () {
-				if (xhr.status === 200) {
-					var blob = new Blob([xhr.response], {type: "text/csv"});
-					var url = URL.createObjectURL(blob);
-					var a = document.createElement("a");
-					a.href = url;
-					a.download = tablaSeleccionada + ".csv";
-					document.body.appendChild(a);
-					a.click();
-					document.body.removeChild(a);
-					URL.revokeObjectURL(url);
-				}
-			};
-			xhr.send();
-		}
-	</script>
+	
+	<script src="/js/exportarBBDD.js"></script>
 
 </body>
 

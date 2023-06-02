@@ -3,9 +3,11 @@ package com.tfg.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,46 @@ public class TablasController {
 	
 	@Value("${spring.datasource.password}")
 	private String bbddPassword;
+	
+	
+	@GetMapping("/getTablas")
+    public ResponseEntity<?> getTablas(){
+    	Connection connection = null;
+		List<String> tablas = new ArrayList<>();
+        try {
+            // Establecer conexión con la base de datos
+            connection = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword);
+
+            // Obtener metadatos de la base de datos
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            // Obtener el resultado de las tablas de la base de datos
+            String[] tipos = {"TABLE"};
+            ResultSet resultSet = metaData.getTables(connection.getCatalog(), null, null, tipos);
+            
+          
+            // Recorrer los resultados e imprimir los nombres de las tablas
+            while (resultSet.next()) {
+                String tableName = resultSet.getString("TABLE_NAME");
+                if(!tableName.equals("usuarios") && !tableName.equals("users_roles") && 
+                		!tableName.equals("roles")) tablas.add(tableName);
+            }
+
+            resultSet.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar la conexión
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return new ResponseEntity<>(tablas, HttpStatus.OK);
+    }
 		
 	@GetMapping("/exportarTabla")
     public ResponseEntity<byte[]> exportarTabla(@RequestParam String tabla) throws IOException {
@@ -90,6 +132,8 @@ public class TablasController {
             return ResponseEntity.badRequest().build();
         }
     }
+    
+    
 
 	
 }

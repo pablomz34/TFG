@@ -65,42 +65,7 @@ public class AdminController {
 	}
 	
 	@GetMapping("/exportarBBDD")
-    public String exportar(Model model){
-		Connection connection = null;
-		List<String> tablas = new ArrayList<>();
-        try {
-            // Establecer conexión con la base de datos
-            connection = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword);
-
-            // Obtener metadatos de la base de datos
-            DatabaseMetaData metaData = connection.getMetaData();
-
-            // Obtener el resultado de las tablas de la base de datos
-            String[] tipos = {"TABLE"};
-            ResultSet resultSet = metaData.getTables(connection.getCatalog(), null, null, tipos);
-            
-          
-            // Recorrer los resultados e imprimir los nombres de las tablas
-            while (resultSet.next()) {
-                String tableName = resultSet.getString("TABLE_NAME");
-                if(!tableName.equals("usuarios") && !tableName.equals("users_roles") && 
-                		!tableName.equals("roles")) tablas.add(tableName);
-            }
-
-            resultSet.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // Cerrar la conexión
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        model.addAttribute("tablas", tablas);
+    public String exportar(){
 		return "exportarBBDD";
     }
 	
