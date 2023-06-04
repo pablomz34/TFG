@@ -3,6 +3,8 @@ new Vue({
 	data: function() {
 		return {
 			tablas: [],
+			tablasSeleccionadas: [],
+			selectAll: false,
 		}
 	},
 
@@ -24,34 +26,49 @@ new Vue({
 			.catch(error => console.error(error));
 	},
 
-	methods: {
-		exportarTabla() {
-			//var tablaSeleccionada = document.getElementById("tabla").value;
+	watch: {
 
-			var tabla = document.getElementById("tablasTable");
-			var inputsMarcados = tabla.querySelectorAll("input[type='checkbox']:checked");
-			inputsMarcados.forEach(function(input) {
-				// Realizar alguna acción con el input marcado
-				console.log("Input marcado:", input.value);
-			});
+
+	},
+
+	methods: {
+		selectAllChanged() {
+			const THIZ = this;
+			if (this.selectAll) {
+				THIZ.tablasSeleccionadas = this.tablas.map(item => item);
+			}
+			else {
+				THIZ.tablasSeleccionadas = [];
+			}
+		},
+
+		exportar() {
+			for (let i = 0; i < this.tablasSeleccionadas.length; i++) {
+				this.exportarTabla(this.tablasSeleccionadas[i]);
+			}
+		},
+
+		exportarTabla(tabla) {
 			// Realizar una solicitud al backend para exportar la tabla seleccionada
-			/* var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/tablas/exportarTabla?tabla=" + tablaSeleccionada);
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/tablas/exportarTabla?tabla=" + tabla);
 			xhr.responseType = "blob";
-			xhr.onload = function () {
+			xhr.onload = function() {
 				if (xhr.status === 200) {
-					var blob = new Blob([xhr.response], {type: "text/csv"});
+					var blob = new Blob([xhr.response], { type: "text/csv" });
 					var url = URL.createObjectURL(blob);
 					var a = document.createElement("a");
 					a.href = url;
-					a.download = tablaSeleccionada + ".csv";
+					a.download = tabla + ".csv";
 					document.body.appendChild(a);
 					a.click();
 					document.body.removeChild(a);
 					URL.revokeObjectURL(url);
 				}
 			};
-			xhr.send(); */
+			xhr.send();
+
+
 		}
 	},
 
@@ -71,23 +88,24 @@ new Vue({
 					<table id="tablasTable" class="table table-custom-color table-striped-columns table-hover m-0">
 						<thead class="table-custom-color-table-head">
 							<tr>
-								<th class="fs-5 text-white text-center">Tabla 
-									<!-- <button @click="howToOrderColumn('tabla')" class="btn btn-unstyled p-0">
-										<i id="iconotabla" class="fa-solid fa-arrow-up-z-a fs-5"></i>
-									</button> -->
+								<th class="fs-5 text-white text-center">
+									Tabla 	
 								</th>
-								<th class="fs-5 text-white text-center"></th>
-							</tr>
+								<th class="fs-5 text-white text-left">
+									<label>Marcar todos </label>
+	                    			<input class="form-check-input" type="checkbox" v-model="selectAll" @change="selectAllChanged()">
+								</th>
+							</tr> 
 						</thead>
 						<tbody>
 							<tr v-for="tabla in tablas">
-								<td class="fw-semibold text-light" id=tabla>{{tabla}}</td>
-								<td><input class="form-check-input" type="checkbox" :value="tabla"></td>
+								<td class="fw-bold text-light" id=tabla>{{tabla}}</td>
+								<td><input class="form-check-input" type="checkbox" :value="tabla" v-model="tablasSeleccionadas"></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<button class="export-button" onclick="exportarTabla()">Exportar</button>
+				<button class="btn btn-outline-custom-color fs-6 fw-semibold mt-2" @click="exportar()">Exportar</button>
 			</div>
 
 		</div>
