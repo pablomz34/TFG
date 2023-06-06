@@ -1025,52 +1025,111 @@ new Vue({
 	el: "#fases",
 	data: function() {
 		return {
-			seleccion: '',
-			previousCard: '',
-			csvPacientesData: ''
+
+			pantalla1: {
+				showPantalla1: true,
+				selectedIdCard: '',
+			},
+			pantalla2: {
+				descripciones: [],
+				descripcionSeleccionada: '',
+				showPantalla2: false,
+				showCheckboxs: false
+			},
+			pantalla3: {
+				showPantalla3: false,
+			}
 		}
 	},
 
 
 	methods: {
-		selectMetodoUsoInformacionPoblacion(event) {
+		selectCardPantalla1(idCard) {
 
 			const THIZ = this;
 
-			let fasesCard = event.target.closest("div");
+			let cardToSelect = document.getElementById(idCard);
 
-			if (fasesCard !== THIZ.previousCard) {
-				this.resetearPreviousCard();
+			if (THIZ.pantalla1.selectedIdCard.length === 0) {
 
-				let fasesCardSelectedIcon = document.createElement("i");
+				this.appendCardStylesPantalla1(idCard);
 
-				fasesCard.setAttribute("style", "border: 5px solid rgb(123, 154, 234); box-shadow: 8px 8px 16px 4px rgb(123, 154, 234);");
+				THIZ.pantalla1.selectedIdCard = idCard;
+			}
+			else {
 
-				THIZ.previousCard = fasesCard;
+				let cardSelected = document.getElementById(THIZ.pantalla1.selectedIdCard);
 
-				fasesCardSelectedIcon.setAttribute("class", "fases-card-selected-icon fa-solid fa-circle-check");
+				if (cardToSelect.getAttribute('id') !== cardSelected.getAttribute('id')) {
 
-				fasesCard.append(fasesCardSelectedIcon);
+					this.resetearSelectedCardStylesPantalla1(THIZ.pantalla1.selectedIdCard);
+
+					this.appendCardStylesPantalla1(idCard);
+
+					THIZ.pantalla1.selectedIdCard = idCard;
+
+				}
 			}
 
-
 		},
-		resetearPreviousCard() {
+
+		appendCardStylesPantalla1(toSelectIdCard) {
+
+			let cardToSelect = document.getElementById(toSelectIdCard);
+
+			let cardToSelectIcon = document.createElement("i");
+
+			cardToSelect.setAttribute("style", "border: 5px solid rgb(123, 154, 234); box-shadow: 8px 8px 16px 4px rgb(123, 154, 234);");
+
+			cardToSelectIcon.setAttribute("class", "fases-card-selected-icon fa-solid fa-circle-check");
+
+			cardToSelect.append(cardToSelectIcon);
+		},
+
+		resetearSelectedCardStylesPantalla1(selectedIdCard) {
+
+			let cardSelected = document.getElementById(selectedIdCard);
+
+			cardSelected.removeChild(cardSelected.lastChild);
+
+			cardSelected.setAttribute("style", "");
+		},
+		seleccionarModoAlmacenamientoInformacionPoblacion() {
 
 			const THIZ = this;
 
-			if (THIZ.previousCard.length !== 0) {
-				THIZ.previousCard.removeChild(THIZ.previousCard.lastChild);
+			if (THIZ.pantalla1.selectedIdCard === 'card1') {
 
-				THIZ.previousCard.setAttribute("style", "");
+				fetch(window.location.origin + "/admin/fases/getPredicciones", {
+					method: "GET"
+				})
+					.then(res => res.json())
+					.then(descripciones => {
+
+						const THIZ = this;
+
+						THIZ.pantalla2.descripciones = descripciones;
+					})
+					.catch(error => console.error(error));
+
+				this.resetearSelectedCardStylesPantalla1(THIZ.pantalla1.selectedIdCard);
+
+				THIZ.pantalla1.showPantalla1 = false;
+
+				THIZ.pantalla2.showPantalla2 = true;
 			}
+			else if (THIZ.pantalla1.selectedIdCard === 'card2') {
+				THIZ.pantalla1.showPantalla1 = false;
+				THIZ.pantalla3.showPantalla3 = true;
+			}
+
 		},
-		enviarArchivoPacientes:function() {
+		enviarArchivoPacientes: function() {
 
 			const THIZ = this;
 
 			const formData = new FormData();
-			
+
 			formData.append('file', this.$refs.csvPacientesData.files[0]);
 
 			fetch(window.location.origin + "/admin/fases/guardarInformacionPacientes", {
@@ -1081,86 +1140,162 @@ new Vue({
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						//THIZ.error = "Error: " + errorMessage;
-						
+
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.text();
 				})
 				.then(data => {
-					
+
 					console.log(data);
 				})
 				.catch(error => console.error(error));
+		},
+		seleccionarRadioButton(event){
+			
+			
+			let radios = document.querySelectorAll('input[type="radio"]');
+			
+			for(let i=0; i<radios.length; i++){
+				
+				if(radios[i].id !== event.target.id){
+					radios[i].checked = false;
+				}
+				
+			}
 		}
 
 	},
+	watch: {
+		'pantalla2.descripcionSeleccionada': function(newValue, oldValue) {
+			
+			const THIZ = this;
+
+			if (!THIZ.pantalla2.showCheckboxs) {
+
+				THIZ.pantalla2.showCheckboxs = true;
+			}
+
+		}
+	},
 	template: `
 	<div class="container pt-2">	
-		<div class="row justify-content-around mt-5">
-
-			<div class="col-md-4 mb-5">
-				<div class="row justify-content-center">
-					<div class="fases-card" @click="selectMetodoUsoInformacionPoblacion">
-						<i class="fases-card-i fa-solid fa-database"></i>
-						<p class="fases-card-p text-center mb-0">Usar información de la población de la base de datos</p>
+	
+	
+		<div v-if="pantalla1.showPantalla1" class="container pt-2">
+			<div class="row justify-content-around mt-5">
+	
+				<div class="col-md-4 mb-5">
+					<div class="row justify-content-center">
+						<div id="card1" class="fases-card" @click="selectCardPantalla1('card1')">
+							<i class="fases-card-i fa-solid fa-database"></i>
+							<p class="fases-card-p text-center mb-0">Usar información de la población de la base de datos</p>
+						</div>
+					</div>
+				</div>
+	
+				<div class="col-md-4 mb-5">
+					<div class="row justify-content-center">
+						<div id="card2" class="fases-card" @click="selectCardPantalla1('card2')">
+							<i class="fases-card-i fa-solid fa-wrench"></i>
+							<p class="fases-card-p text-center mb-0">Usar tu propia información de la población</p>
+						</div>
 					</div>
 				</div>
 			</div>
-
-			<div class="col-md-4 mb-5">
-				<div class="row justify-content-center">
-					<div class="fases-card" @click="selectMetodoUsoInformacionPoblacion">
-						<i class="fases-card-i fa-solid fa-wrench"></i>
-						<p class="fases-card-p text-center mb-0">Usar tu propia información de la población</p>
-					</div>
-				</div>
+			
+			<div v-if="pantalla1.selectedIdCard != ''" class="row justify-content-center">	
+					<button type="button" @click="seleccionarModoAlmacenamientoInformacionPoblacion" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 			</div>
 		</div>
 		
-		<form @submit.prevent="enviarArchivoPacientes">
+		
+		<div v-if="pantalla2.showPantalla2" class="container pt-2">
+			<div class="row justify-content-around mt-5">
+				<div class="col-md-6">
+					<div class="card rounded-4 p-0 shadow">
+			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+			                <h2 class="text-center text-white">Seleccionar predicción</h2>
+			            </div>
+			            <div class="card-body">
+			                <form id="selectPrediccionForm">
+			                	<div class="form-group mb-3">
+					                <label for="selectDescripcion" class="form-label">Elige una descripción existente para editar la predicción</label>
+									<select class="form-select" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
+			                       		<option value="" disabled selected></option>
+			                       		<option v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
+			                    	</select>
+		                    	</div>
+		                    	
+		                    	<div v-if="pantalla2.showCheckboxs" class="form-check">
+								  <input class="form-check-input" type="radio" @change="seleccionarRadioButton" name="radioButton1" id="radioButton1">
+								  <label class="form-check-label" for="radioButton1">
+								    Utilizar datos de población de la base de datos
+								  </label>
+								</div>
+										
+								<div v-if="pantalla2.showCheckboxs" class="form-check">
+								  <input class="form-check-input" type="radio" @change="seleccionarRadioButton" name="radioButton2" id="radioButton2">
+								  <label class="form-check-label" for="radioButton2">
+								    Subir mis datos de población a la base de datos
+								  </label>
+								</div>
+			                </form>
+			            </div>
+		        	</div>
+	        	</div>				
+			</div>
+		</div>
+		
+		
+		<!--<form @submit.prevent="enviarArchivoPacientes">
 		
 			<input accept=".csv" type="file" id="csvPacientes" ref="csvPacientesData" required />
 			<button type="submit">Enviar </button>
-		</form>
+		</form>-->
 		
-	    <!--<div class="col-12 mb-3">
-				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
+	    
+	    <div v-if="pantalla3.showPantalla3" class="container pt-2">
+	    
+		    <div class="col-12 mb-3">
+					<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
+			</div>
+			
+			<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist">
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="nClusters-tab" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="subPopulations-tab" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false">Subpoblaciones</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="varianceMetrics-tab" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="populationProfilesGraphics-tab" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="modelPerformance-tab" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
+			  </li>
+			</ul>
+			<div class="tab-content" id="pills-tabContent">
+			  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
+			  	<fase1 />
+			  </div>
+			  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
+			  	<fase2 />
+			  </div>
+			  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
+			  	<fase3 />
+			  </div>
+			  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
+			  	<fase4 />
+			  </div>
+			  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
+			  	<fase5 />
+			  </div>
+			</div>
 		</div>
-		
-		<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist">
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="nClusters-tab" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="subPopulations-tab" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false">Subpoblaciones</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="varianceMetrics-tab" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="populationProfilesGraphics-tab" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="modelPerformance-tab" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
-		  </li>
-		</ul>
-		<div class="tab-content" id="pills-tabContent">
-		  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
-		  	<fase1 />
-		  </div>
-		  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
-		  	<fase2 />
-		  </div>
-		  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
-		  	<fase3 />
-		  </div>
-		  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
-		  	<fase4 />
-		  </div>
-		  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
-		  	<fase5 />
-		  </div>
-		</div>-->
 				
 	</div>
 	`

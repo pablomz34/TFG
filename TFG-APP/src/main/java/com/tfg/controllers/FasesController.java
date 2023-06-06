@@ -88,6 +88,12 @@ public class FasesController {
 		return medicos;
 	}
 	
+	@GetMapping("/getPredicciones")
+	public List<String> getPredicciones(){
+		List<String> descripciones = prediccionesService.getDescripciones();
+		
+		return descripciones;
+	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handleException(Exception ex) {
