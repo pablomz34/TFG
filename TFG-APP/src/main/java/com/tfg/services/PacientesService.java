@@ -29,6 +29,9 @@ public class PacientesService implements IPacientesService {
 	@Override
 	public void guardarPoblacion(MultipartFile multipartFile, Long idPrediccion) throws IOException {
 
+		
+		List<Pacientes> pacientes = repos.findAllByPrediccionId(idPrediccion);
+		
 		try {
             InputStream inputStream = multipartFile.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -55,5 +58,17 @@ public class PacientesService implements IPacientesService {
 	public List<Pacientes> findPacientesByPrediccionId(Long idPrediccion) {
 		// TODO Auto-generated method stub
 		return repos.findAllByPrediccionId(idPrediccion);
+	}
+
+	@Override
+	public void borrarPoblacion(Long idPrediccion) {
+		
+		List<Pacientes> pacientes = repos.findAllByPrediccionId(idPrediccion);
+		
+		for(int i=0; i < pacientes.size(); i++) {
+			
+			repos.delete(pacientes.get(i));
+		}
+		
 	}
 }

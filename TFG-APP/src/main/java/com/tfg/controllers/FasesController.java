@@ -56,6 +56,9 @@ import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
+
+import jakarta.annotation.Nullable;
+
 import java.sql.*;
 
 @RestController
@@ -75,7 +78,7 @@ public class FasesController {
 
 	@Autowired
 	private IPrediccionesService prediccionesService;
-	
+
 	@Autowired
 	private IPacientesService pacientesService;
 
@@ -87,12 +90,20 @@ public class FasesController {
 		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
 		return medicos;
 	}
-	
+
 	@GetMapping("/getPredicciones")
-	public List<String> getPredicciones(){
+	public List<String> getPredicciones() {
 		List<String> descripciones = prediccionesService.getDescripciones();
-		
+
 		return descripciones;
+	}
+
+	@GetMapping("/getPacientesPrediccion")
+	public int getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
+
+		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
+
+		return p.getPacientes().size();
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -108,20 +119,25 @@ public class FasesController {
 
 		return ResponseEntity.status(status).body(mensaje);
 	}
-	
-	
-	
+
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
-	public ResponseEntity<?> guardarInformacionPacientes(/*@RequestParam("max_clusters") String max_clusters,*/
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException{	
+	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
+			throws IllegalStateException, IOException {
+
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
+
 		
-		//pacientesService.guardarPoblacion(multipartFile, Long.parseLong("1"));
-		
-		List<Pacientes> pacientes = pacientesService.findPacientesByPrediccionId(Long.parseLong("1"));
-		
-		System.out.println(pacientes.get(0).getDataPaciente());
-		
-		return new ResponseEntity<>("bien", HttpStatus.OK);
+		if (multipartFile != null) {
+
+			if (prediccion.getPacientes().size() > 0) {
+				pacientesService.borrarPoblacion(prediccion.getId());
+			}
+
+			pacientesService.guardarPoblacion(multipartFile, prediccion.getId());
+		}
+
+		return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
@@ -314,29 +330,25 @@ public class FasesController {
 	}
 
 	@PostMapping("/createOrUpdatePrediction")
-	public ResponseEntity<?> createOrFindPrediction(@RequestParam("crearPrediccion") boolean crearPrediccion, 
-			@RequestParam("descripcion") String descripcion)
-			throws UnsupportedEncodingException {
-		
-		
-		if(descripcion==null || descripcion.isEmpty()) {
+	public ResponseEntity<?> createOrFindPrediction(@RequestParam("crearPrediccion") boolean crearPrediccion,
+			@RequestParam("descripcion") String descripcion) throws UnsupportedEncodingException {
+
+		if (descripcion == null || descripcion.isEmpty()) {
 			String errorDescripcionVacía = "";
-			
-			if(crearPrediccion) {
+
+			if (crearPrediccion) {
 				errorDescripcionVacía = "Por favor, escriba un nombre para la predicción";
-			}
-			else {
+			} else {
 				errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
 			}
-			return new ResponseEntity<>(errorDescripcionVacía,
-					HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
-			
-		if(crearPrediccion) {
-			
-			if(prediccion==null) {
+
+		if (crearPrediccion) {
+
+			if (prediccion == null) {
 
 				prediccion = prediccionesService.guardarPrediccion(descripcion);
 
@@ -346,21 +358,18 @@ public class FasesController {
 				}
 
 				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-			}
-			else {
+			} else {
 				return new ResponseEntity<>("El nombre de esa prediccion ya está cogido", HttpStatus.BAD_REQUEST);
 			}
-		}
-		else {
-			if(prediccion!=null) {
+		} else {
+			if (prediccion != null) {
 				if (!this.crearCarpetaPrediccion(prediccion)) {
 					return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
 							HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 
 				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-			}
-			else {
+			} else {
 				return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
 			}
 		}
@@ -452,11 +461,11 @@ public class FasesController {
 	public ResponseEntity<?> createPopulationProfile(@RequestParam("idPrediccion") String idPrediccion,
 			@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
-	
+
 		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-		
+
 		String error = this.validarInputFile(multipartFile);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -465,22 +474,24 @@ public class FasesController {
 		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
 		multipartFile.transferTo(file);
-		
+
 		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, prediccion.getId());
-		
+
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
 			this.guardarFeatures(file,
-					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i, prediccion.getId());
+					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i,
+					prediccion.getId());
 		}
-		
+
 		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
 
-		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", rutaPrediccion + File.separator + "allClusters.png",
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
+				rutaPrediccion + File.separator + "allClusters.png",
 				"/clustersImages/prediccion" + prediccion.getId() + "/allClusters.png", -1, prediccion.getId());
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
 			this.guardarImagenes(file,
 					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
-					rutaPrediccion + File.separator +"cluster" + Integer.toString(i) + ".png",
+					rutaPrediccion + File.separator + "cluster" + Integer.toString(i) + ".png",
 					"/clustersImages/prediccion" + prediccion.getId() + "/cluster" + Integer.toString(i) + ".png", i,
 					prediccion.getId());
 		}
@@ -496,20 +507,18 @@ public class FasesController {
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-		
 
 		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
+		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber),
+				Long.parseLong(idPrediccion));
 
-		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
-
-		if(imagen!=null) {
+		if (imagen != null) {
 			return new ResponseEntity<>(imagen.getRuta(), HttpStatus.OK);
-		}
-		else{
+		} else {
 			return new ResponseEntity<>("No hay imagen asignada para ese cluster", HttpStatus.BAD_REQUEST);
 		}
 
@@ -520,22 +529,21 @@ public class FasesController {
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-		
 
 		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-		
-		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
-			
-		if(profile!=null) {
+
+		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber),
+				Long.parseLong(idPrediccion));
+
+		if (profile != null) {
 			HashMap<String, Object> map = null;
 			map = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
-		
+
 			return new ResponseEntity<>(map, HttpStatus.OK);
-		}
-		else {
+		} else {
 			return new ResponseEntity<>("No hay perfil de población asignado a ese cluster", HttpStatus.BAD_REQUEST);
 		}
 
@@ -601,11 +609,9 @@ public class FasesController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-	
-	
 
-	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, Integer numCluster,
-			Long idPrediccion) throws IOException {
+	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD,
+			Integer numCluster, Long idPrediccion) throws IOException {
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -647,7 +653,8 @@ public class FasesController {
 
 	}
 
-	private void guardarFeatures(File file, String url, Integer numCluster, Long idPrediccion) throws ClientProtocolException, IOException {
+	private void guardarFeatures(File file, String url, Integer numCluster, Long idPrediccion)
+			throws ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		HttpPost httpPost = new HttpPost(UrlServidor + url);
@@ -686,15 +693,15 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
-		if(numCluster==-1){
+
+		if (numCluster == -1) {
 			this.calculateMaxClusters(map, idPrediccion);
 		}
 
 		Gson gson = new Gson();
 		String featuresString = gson.toJson(map);
 
-		profilesService.guardarProfile(numCluster, featuresString,idPrediccion);
+		profilesService.guardarProfile(numCluster, featuresString, idPrediccion);
 
 	}
 
@@ -706,9 +713,9 @@ public class FasesController {
 
 		List<HashMap<String, Object>> algorithmArray = (List<HashMap<String, Object>>) algorithmMap
 				.get("agglomerative");
-		
+
 		Integer maxClusters = algorithmArray.size();
-		
+
 		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
 
 	}
@@ -738,9 +745,5 @@ public class FasesController {
 		}
 		return "";
 	}
-	
-	
-	
-	
 
 }
