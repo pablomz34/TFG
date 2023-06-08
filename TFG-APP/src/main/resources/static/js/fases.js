@@ -1,4 +1,5 @@
 Vue.component('fase1', {
+	props: ['csvInput'],
 	data: function() {
 		return {
 			nClusters: '',
@@ -13,6 +14,7 @@ Vue.component('fase1', {
 
 		getOptimalNClusters() {
 			const THIZ = this;
+			console.log(this.csvInput)
 			const formData = new FormData();
 			$('#cargando').show();
 			formData.append('max_clusters', this.nClusters);
@@ -72,7 +74,7 @@ Vue.component('fase1', {
 		                        <input type="number" min="2" max="20" class="input-container-input pe-1" v-model="nClusters" id="nClusters" required />
 	                    	</div>
 	                    </div>
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo Csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
@@ -104,6 +106,7 @@ Vue.component('fase1', {
 });
 
 Vue.component('fase2', {
+	props: ['csvInput'],
 	data: function() {
 		return {
 			nClustersAglomerativo: '',
@@ -196,7 +199,7 @@ Vue.component('fase2', {
 	                    	</div>
 	                    </div>
 	
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
@@ -219,6 +222,7 @@ Vue.component('fase2', {
 });
 
 Vue.component('fase3', {
+	props: ['csvInput'],
 	data: function() {
 		return {
 			lista: [],
@@ -278,7 +282,7 @@ Vue.component('fase3', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getVarianceMetrics">
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
                     		<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
@@ -325,6 +329,7 @@ Vue.component('fase3', {
 
 
 Vue.component('fase4', {
+	props: ['csvInput'],
 	data: function() {
 		return {
 			crear: true,
@@ -626,7 +631,7 @@ Vue.component('fase4', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="createPopulationAndCurves">
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                        <label for="csv1" class="form-label">Archivo csv</label>
 	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required />
 	                    </div>
@@ -754,6 +759,7 @@ Vue.component('fase4', {
 
 
 Vue.component('fase5', {
+	props: ['csvInput'],
 	data: function() {
 		return {
 			csvGetPerformanceModel: '',
@@ -817,7 +823,7 @@ Vue.component('fase5', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getModelPerformance">
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel" required />
@@ -1025,7 +1031,7 @@ new Vue({
 	el: "#fases",
 	data: function() {
 		return {
-
+			csvInput: false,
 			pantalla1: {
 				showPantalla: true,
 				selectedIdCard: '',
@@ -1120,10 +1126,12 @@ new Vue({
 				THIZ.pantalla1.showPantalla = false;
 
 				THIZ.pantalla2.showPantalla = true;
+				THIZ.csvInput = false;
 			}
 			else if (THIZ.pantalla1.selectedIdCard === 'card2') {
 				THIZ.pantalla1.showPantalla = false;
 				THIZ.pantalla3.showPantalla = true;
+				THIZ.csvInput = true;
 			}
 
 		},
@@ -1377,19 +1385,19 @@ new Vue({
 			</ul>
 			<div class="tab-content" id="pills-tabContent">
 			  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
-			  	<fase1 />
+			  	<fase1 :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
-			  	<fase2 />
+			  	<fase2 :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
-			  	<fase3 />
+			  	<fase3 :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
-			  	<fase4 />
+			  	<fase4 :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
-			  	<fase5 />
+			  	<fase5 :csvInput="this.csvInput"/>
 			  </div>
 			</div>
 		</div>
