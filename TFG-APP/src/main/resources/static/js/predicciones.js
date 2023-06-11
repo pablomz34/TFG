@@ -224,7 +224,7 @@ new Vue({
 
 			THIZ.prediccionEliminadaErrorMessage = '',
 
-				THIZ.prediccionEliminadaCorrectamenteMessage = '';
+			THIZ.prediccionEliminadaCorrectamenteMessage = '';
 
 			THIZ.errorSearchDescripcion = '';
 

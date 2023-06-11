@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,11 +76,25 @@ public class AdminController {
 		
 		List<Predicciones> prediccionesCoincidentes = new ArrayList<Predicciones>();
 		
+		List<HashMap<String,Object>> columnasPrediccionesCoincidentes = new ArrayList<HashMap<String,Object>>();
+		
 		if(searchedDescripcion != null && !searchedDescripcion.isEmpty()) {
 			prediccionesCoincidentes = prediccionesService.buscarPrediccionesCoincidentes(searchedDescripcion);
+		
+			for(int i=0; i<prediccionesCoincidentes.size();i++) {
+				
+				HashMap<String, Object> columnas = new HashMap<String,Object>();
+				
+				columnas.put("id", prediccionesCoincidentes.get(i).getId());
+				
+				columnas.put("descripcion", prediccionesCoincidentes.get(i).getDescripcion());
+				
+				columnasPrediccionesCoincidentes.add(columnas);
+			}
+			
 		}
 		
-		return new ResponseEntity(prediccionesCoincidentes, HttpStatus.OK);
+		return new ResponseEntity(columnasPrediccionesCoincidentes, HttpStatus.OK);
 	}
 	
 	@PostMapping("/borrarPrediccion")
