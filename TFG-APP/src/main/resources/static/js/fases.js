@@ -131,10 +131,20 @@ Vue.component('fase2', {
 			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
+			
+			
+			
 			formData.append('nClustersAglomerativo', this.nClustersAglomerativo);
 			formData.append('nClustersKModes', this.nClustersKModes);
-			formData.append('file', this.$refs.csvFile.files[0]);
-
+			
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
+			
 			fetch(window.location.origin + "/admin/fases/getSubPopulations", {
 				method: "POST",
 				headers: {
@@ -246,7 +256,13 @@ Vue.component('fase3', {
 			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('file', this.$refs.csvFile.files[0]);
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
 
 			fetch(window.location.origin + "/admin/fases/getVarianceMetrics", {
 				method: "POST",
@@ -343,11 +359,10 @@ Vue.component('fase4', {
 			crear: true,
 			descripcionSeleccionada: '',
 			descripciones: [],
-			idPrediccion: '',
 			continuar: false,
 			csvFile: '',
-			csvFile2: '',
 			curvasAndPerfilesCreados: false,
+			idPrediccion: '',
 			nClusters: '',
 			clusterSeleccionadoCurves: '',
 			clusterSeleccionadoProfile: '',
@@ -450,9 +465,18 @@ Vue.component('fase4', {
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('file', this.$refs.csvFile.files[0]);
+			
+			if(THIZ.csvInput){
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccion);
+				formData.append('file', this.$refs.csvFile.files[0]);
+				
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
+			
 
-			fetch(window.location.origin + "/admin/fases/createPopulationAndCurves?idPrediccion=" + this.idPrediccion, {
+			fetch(window.location.origin + "/admin/fases/createPopulationAndCurves", {
 				method: "POST",
 				body: formData
 			})
@@ -484,7 +508,17 @@ Vue.component('fase4', {
 			THIZ.curvasCargadas = false;
 
 			THIZ.error2 = '';
-			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
+			
+			let prediccionIdUrl = "";
+			if(THIZ.idPrediccionPoblacion.length!==0){
+				prediccionIdUrl+= THIZ.idPrediccionPoblacion;
+			}
+			else if(THIZ.idPrediccion.length!==0){
+				prediccionIdUrl+= THIZ.idPrediccion;
+			}
+			
+			
+			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + prediccionIdUrl, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -511,7 +545,17 @@ Vue.component('fase4', {
 
 			THIZ.error3 = '';
 			THIZ.perfilCargado = false;
-			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
+			
+			let prediccionIdUrl = "";
+			if(THIZ.csvInput){
+				prediccionIdUrl+= THIZ.idPrediccion;
+			}
+			else {
+				prediccionIdUrl+= THIZ.idPrediccionPoblacion;
+			}
+			
+			
+			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + prediccionIdUrl, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -770,7 +814,7 @@ Vue.component('fase5', {
 	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
-			csvGetPerformanceModel: '',
+			csvFile: '',
 			datosCargados: false,
 			idModel: '',
 			auc: '',
@@ -787,7 +831,15 @@ Vue.component('fase5', {
 			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('file', this.$refs.csvGetPerformanceModel.files[0]);
+			
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}	
+		
 
 			fetch(window.location.origin + "/admin/fases/getModelPerformance", {
 				method: "POST",
@@ -834,7 +886,7 @@ Vue.component('fase5', {
 	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
-		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel" required />
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
                    			</div>
 	                    </div>
 	
