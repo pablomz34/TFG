@@ -1266,9 +1266,7 @@ new Vue({
 					
 				})
 				.catch(error => console.error(error));
-			
-			
-			
+					
 		}
 
 	},
@@ -1345,18 +1343,20 @@ new Vue({
 			            <div class="card-body">
 			                <form id="selectPrediccionForm" @submit.prevent="seleccionarPrediccionAndPoblacionInfo">
 			                	<div class="form-group mb-3">
-					                <label for="selectDescripcion" class="form-label">Elige una descripción existente para editar la predicción</label>
-									<select class="form-select" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
-			                       		<option value="" disabled selected></option>
+					                <label for="selectDescripcion" class="form-label text-custom-light-color fw-bold" style="font-size: 22px;">Seleccione una predicción</label>
+									
+									<select class="input-select-prediccion" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
 			                       		<option v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
 			                    	</select>
+				                    	
 		                    	</div>
 		                    	
-		                    	<div v-if="pantalla2.pacientesPrediccion > 0" class="form-check">
-								  <input class="form-check-input" type="radio" @change="seleccionarRadioButton" name="radioButton1" id="radioButton1">
-								  <label class="form-check-label" for="radioButton1">
-								    Utilizar datos de población de la base de datos
-								  </label>
+		                    	<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container" tabindex=0>
+								  						  
+									  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton1" id="radioButton1">
+									  <label class="radio-button-label" for="radioButton1">
+									    Utilizar datos de población de la base de datos
+									  </label>
 								</div>
 										
 								<div v-if="pantalla2.pacientesPrediccion > 0" class="form-check">
