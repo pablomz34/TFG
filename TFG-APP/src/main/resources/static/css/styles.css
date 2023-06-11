@@ -12437,7 +12437,7 @@ textarea.form-control-lg {
   padding-left: 2.5%;
   padding-right: 2.5%;
   background-color: rgb(252, 252, 254);
-  border: 2px solid rgb(123, 154, 234);
+  border: 3px solid rgb(123, 154, 234);
   border-radius: 10%;
   cursor: pointer;
 }

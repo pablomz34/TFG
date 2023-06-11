@@ -1,5 +1,5 @@
 Vue.component('fase1', {
-	props: ['csvInput'],
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			nClusters: '',
@@ -9,16 +9,24 @@ Vue.component('fase1', {
 			error: ''
 		}
 	},
-
 	methods: {
 
 		getOptimalNClusters() {
 			const THIZ = this;
-			console.log(this.csvInput)
+			
 			const formData = new FormData();
 			$('#cargando').show();
+			
 			formData.append('max_clusters', this.nClusters);
-			formData.append('file', this.$refs.csvFile.files[0]);
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
+			
+			
 			THIZ.error = '';
 			fetch(window.location.origin + "/admin/fases/getOptimalNClusters", {
 				method: "POST",
@@ -106,7 +114,7 @@ Vue.component('fase1', {
 });
 
 Vue.component('fase2', {
-	props: ['csvInput'],
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			nClustersAglomerativo: '',
@@ -222,7 +230,7 @@ Vue.component('fase2', {
 });
 
 Vue.component('fase3', {
-	props: ['csvInput'],
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			lista: [],
@@ -329,7 +337,7 @@ Vue.component('fase3', {
 
 
 Vue.component('fase4', {
-	props: ['csvInput'],
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			crear: true,
@@ -556,7 +564,7 @@ Vue.component('fase4', {
 	    </div>
 	    
 	    <div class="row justify-content-around">
-			<div class="card col-7 rounded-4 p-0 mb-3 shadow">
+			<div v-if="csvInput" class="card col-7 rounded-4 p-0 mb-3 shadow">
 				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 v-if="crear" class="text-center text-white">Crear nueva predicción</h2>
 	                <h2 v-if="!crear" class="text-center text-white">Modificar predicción existente</h2>
@@ -624,7 +632,7 @@ Vue.component('fase4', {
 	        </div>	 
 	    </div>
 	
-	    <div v-if="continuar" class="row justify-content-around">
+	    <div v-if="continuar || !csvInput" class="row justify-content-around">
 	        <div class="card col-7 rounded-4 p-0 mb-3 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población</h2>
@@ -759,7 +767,7 @@ Vue.component('fase4', {
 
 
 Vue.component('fase5', {
-	props: ['csvInput'],
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			csvGetPerformanceModel: '',
@@ -1032,6 +1040,7 @@ new Vue({
 	data: function() {
 		return {
 			csvInput: false,
+			idPrediccionPoblacion: '',
 			pantalla1: {
 				showPantalla: true,
 				selectedIdCard: '',
@@ -1135,33 +1144,6 @@ new Vue({
 			}
 
 		},
-		enviarArchivoPacientes: function() {
-
-			const THIZ = this;
-
-			const formData = new FormData();
-
-			formData.append('file', this.$refs.csvPacientesData.files[0]);
-
-			fetch(window.location.origin + "/admin/fases/guardarInformacionPacientes", {
-				method: "POST",
-				body: formData
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						//THIZ.error = "Error: " + errorMessage;
-
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.text();
-				})
-				.then(data => {
-
-					console.log(data);
-				})
-				.catch(error => console.error(error));
-		},
 		seleccionarRadioButton(event) {
 
 			const THIZ = this;
@@ -1219,15 +1201,17 @@ new Vue({
 					}
 					return res.text();
 				})
-				.then(data => {
+				.then(idPrediccionPoblacion => {
 					
 					const THIZ = this;
+					
+					THIZ.idPrediccionPoblacion = idPrediccionPoblacion;
 					
 					THIZ.pantalla2.showPantalla = false;
 					
 					THIZ.pantalla3.showPantalla = true;
 
-					console.log(data);
+					
 				})
 				.catch(error => console.error(error));
 			
@@ -1352,13 +1336,6 @@ new Vue({
 			</div>
 		</div>
 		
-		
-		<!--<form @submit.prevent="enviarArchivoPacientes">
-		
-			<input accept=".csv" type="file" id="csvPacientes" ref="csvPacientesData" required />
-			<button type="submit">Enviar </button>
-		</form>-->
-		
 	    
 	    <div v-if="pantalla3.showPantalla" class="container pt-2">
 	    
@@ -1385,19 +1362,19 @@ new Vue({
 			</ul>
 			<div class="tab-content" id="pills-tabContent">
 			  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
-			  	<fase1 :csvInput="this.csvInput"/>
+			  	<fase1 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
-			  	<fase2 :csvInput="this.csvInput"/>
+			  	<fase2 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
-			  	<fase3 :csvInput="this.csvInput"/>
+			  	<fase3 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
-			  	<fase4 :csvInput="this.csvInput"/>
+			  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
 			  </div>
 			  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
-			  	<fase5 :csvInput="this.csvInput"/>
+			  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
 			  </div>
 			</div>
 		</div>
