@@ -18,4 +18,6 @@ public interface ProfilesRepository extends JpaRepository<Profiles, Long> {
 	public Profiles findByFeatures(String features);
 	
 	public List<Profiles> findAll();
+	
+	public List<Profiles> findAllByPrediccionId(Long idPrediccion);
 }

@@ -1,14 +1,18 @@
 package com.tfg.controllers;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
@@ -34,6 +38,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +49,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -56,6 +66,9 @@ import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 import com.tfg.services.IUsuariosService;
+
+import jakarta.annotation.Nullable;
+
 import java.sql.*;
 
 @RestController
@@ -75,7 +88,7 @@ public class FasesController {
 
 	@Autowired
 	private IPrediccionesService prediccionesService;
-	
+
 	@Autowired
 	private IPacientesService pacientesService;
 
@@ -87,7 +100,21 @@ public class FasesController {
 		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
 		return medicos;
 	}
-	
+
+	@GetMapping("/getPredicciones")
+	public List<String> getPredicciones() {
+		List<String> descripciones = prediccionesService.getDescripciones();
+
+		return descripciones;
+	}
+
+	@GetMapping("/getPacientesPrediccion")
+	public int getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
+
+		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
+
+		return p.getPacientes().size();
+	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<String> handleException(Exception ex) {
@@ -102,52 +129,18 @@ public class FasesController {
 
 		return ResponseEntity.status(status).body(mensaje);
 	}
-	
-	
-	
-	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
-	public ResponseEntity<?> guardarInformacionPacientes(/*@RequestParam("max_clusters") String max_clusters,*/
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException{	
-		
-		//pacientesService.guardarPoblacion(multipartFile, Long.parseLong("1"));
-		
-		List<Pacientes> pacientes = pacientesService.findPacientesByPrediccionId(Long.parseLong("1"));
-		
-		System.out.println(pacientes.get(0).getDataPaciente());
-		
-		return new ResponseEntity<>("bien", HttpStatus.OK);
-	}
 
-	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
-	public ResponseEntity<?> getOptimalNClusters(@RequestParam("max_clusters") String max_clusters,
-			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
-
-		String error = this.validarInputNumber(max_clusters, 2, 20);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-		}
-		// Verificar el tipo de contenido del archivo
-		error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-		}
-
+	private HttpEntity llamadaServidorNgrok(String url, File file) throws IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(
-				UrlServidor + "clustering/getOptimalNClusters?max_clusters=" + Integer.parseInt(max_clusters));
+		HttpPost httpPost = new HttpPost(url);
 
 		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
 		// petición
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 
 		// Agregar el archivo al cuerpo de la petición
-
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
 
 		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
 				file, // Archivo a enviar
@@ -164,24 +157,104 @@ public class FasesController {
 		// Ejecutar la petición y obtener la respuesta
 		CloseableHttpResponse response = httpClient.execute(httpPost);
 
-		HttpEntity responseEntity = response.getEntity();
+		HttpEntity entityResponse = response.getEntity();
+
+		httpClient.close();
+
+		file.delete();
+
+		return entityResponse;
+	}
+
+	private File llamadaBBDDPoblacion(String idPrediccionPoblacion) throws IOException {
+
+		List<Pacientes> poblacion = pacientesService.findPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
+
+		String poblacionData = "";
+		for (int i = 0; i < poblacion.size(); i++) {
+			poblacionData += poblacion.get(i).getDataPaciente() + "\n";
+		}
+
+		File tempFile = File.createTempFile("temp", "prediccion" + idPrediccionPoblacion + ".csv");
+
+		Files.writeString(tempFile.toPath(), poblacionData);
+
+		return tempFile;
+
+	}
+
+	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
+	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
+			throws IllegalStateException, IOException {
+
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
+
+		if (multipartFile != null) {
+
+			if (prediccion.getPacientes().size() > 0) {
+				pacientesService.borrarPoblacion(prediccion.getId());
+			}
+
+			pacientesService.guardarPoblacion(multipartFile, prediccion.getId());
+		}
+
+		return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
+	public ResponseEntity<?> getOptimalNClusters(@RequestParam("max_clusters") String max_clusters,
+			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
+			throws IllegalStateException, IOException {
+
+		String error = this.validarInputNumber(max_clusters, 2, 20);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+		// Verificar el tipo de contenido del archivo
+		if (multipartFile != null) {
+			error = this.validarInputFile(multipartFile);
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}
+		}
+
+		String urlOptimalNClusters = UrlServidor + "clustering/getOptimalNClusters?max_clusters="
+				+ Integer.parseInt(max_clusters);
+
+		HttpEntity responseEntity = null;
+
+		if (multipartFile == null && idPrediccionPoblacion != null) {
+
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+
+			responseEntity = llamadaServidorNgrok(urlOptimalNClusters, ownFile);
+
+		} else if (multipartFile != null && idPrediccionPoblacion == null) {
+
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+			multipartFile.transferTo(file);
+
+			responseEntity = llamadaServidorNgrok(urlOptimalNClusters, file);
+
+		} else {
+			return new ResponseEntity<>("La llamada a getOptimalNClusters salió mal", HttpStatus.BAD_REQUEST);
+		}
 
 		InputStream responseInputStream = responseEntity.getContent();
 
 		byte[] imageBytes = responseInputStream.readAllBytes();
-
-		// Cerrar el objeto CloseableHttpClient y liberar los recursos
-		httpClient.close();
-
-		file.delete();
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
 	public ResponseEntity<?> getSubPopulations(@RequestParam("nClustersAglomerativo") String nClustersAglomerativo,
-			@RequestParam("nClustersKModes") String nClustersKModes, @RequestPart("file") MultipartFile multipartFile)
-			throws IOException {
+			@RequestParam("nClustersKModes") String nClustersKModes,
+			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
 
 		String error = this.validarInputNumber(nClustersAglomerativo, 2, 20);
 		if (!error.isEmpty()) {
@@ -194,94 +267,77 @@ public class FasesController {
 		}
 
 		// Verificar el tipo de contenido del archivo
-		error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		if (multipartFile != null) {
+			error = this.validarInputFile(multipartFile);
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String urlSubPopulations = UrlServidor + "clustering/getSubpopulations?n_agglomerative="
+				+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes);
 
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "clustering/getSubpopulations?n_agglomerative="
-				+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes));
+		HttpEntity responseEntity = null;
 
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-		// Agregar el archivo al cuerpo de la petición
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
 
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+			responseEntity = llamadaServidorNgrok(urlSubPopulations, ownFile);
 
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
+		} else if (multipartFile != null && idPrediccionPoblacion == null) {
 
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
+			multipartFile.transferTo(file);
 
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
+			responseEntity = llamadaServidorNgrok(urlSubPopulations, file);
 
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
+		} else {
+			return new ResponseEntity<>("La llamada a getSubPopulations salió mal", HttpStatus.BAD_REQUEST);
+		}
 
 		byte[] csvBytes = responseEntity.getContent().readAllBytes();
-
-		file.delete();
 
 		// Devuelve la respuesta con el archivo adjunto.
 		return new ResponseEntity<>(csvBytes, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
-	public ResponseEntity<?> getVarianceMetrics(@RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<?> getVarianceMetrics(
+			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException, JSONException {
 
-		String error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		if (multipartFile != null) {
+			String error = this.validarInputFile(multipartFile);
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String urlVarianceMetrics = UrlServidor + "clustering/getVarianceMetrics";
 
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "clustering/getVarianceMetrics");
+		HttpEntity responseEntity = null;
 
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-		// Agregar el archivo al cuerpo de la petición
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
 
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+			responseEntity = llamadaServidorNgrok(urlVarianceMetrics, ownFile);
 
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
+		} else if (multipartFile != null && idPrediccionPoblacion == null) {
 
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
+			multipartFile.transferTo(file);
 
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
+			responseEntity = llamadaServidorNgrok(urlVarianceMetrics, file);
 
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
+		} else {
+			return new ResponseEntity<>("La llamada a getVarianceMetrics salió mal", HttpStatus.BAD_REQUEST);
+		}
 
-		HttpEntity responseEntity = response.getEntity();
 		InputStream responseInputStream = responseEntity.getContent();
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseInputStream));
@@ -296,8 +352,6 @@ public class FasesController {
 		List<Map<String, Object>> map = null;
 		map = new ObjectMapper().readValue(aux, List.class);
 
-		file.delete();
-
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
@@ -308,29 +362,25 @@ public class FasesController {
 	}
 
 	@PostMapping("/createOrUpdatePrediction")
-	public ResponseEntity<?> createOrFindPrediction(@RequestParam("crearPrediccion") boolean crearPrediccion, 
-			@RequestParam("descripcion") String descripcion)
-			throws UnsupportedEncodingException {
-		
-		
-		if(descripcion==null || descripcion.isEmpty()) {
+	public ResponseEntity<?> createOrFindPrediction(@RequestParam("crearPrediccion") boolean crearPrediccion,
+			@RequestParam("descripcion") String descripcion) throws UnsupportedEncodingException {
+
+		if (descripcion == null || descripcion.isEmpty()) {
 			String errorDescripcionVacía = "";
-			
-			if(crearPrediccion) {
+
+			if (crearPrediccion) {
 				errorDescripcionVacía = "Por favor, escriba un nombre para la predicción";
-			}
-			else {
+			} else {
 				errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
 			}
-			return new ResponseEntity<>(errorDescripcionVacía,
-					HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
-			
-		if(crearPrediccion) {
-			
-			if(prediccion==null) {
+
+		if (crearPrediccion) {
+
+			if (prediccion == null) {
 
 				prediccion = prediccionesService.guardarPrediccion(descripcion);
 
@@ -340,21 +390,18 @@ public class FasesController {
 				}
 
 				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-			}
-			else {
+			} else {
 				return new ResponseEntity<>("El nombre de esa prediccion ya está cogido", HttpStatus.BAD_REQUEST);
 			}
-		}
-		else {
-			if(prediccion!=null) {
+		} else {
+			if (prediccion != null) {
 				if (!this.crearCarpetaPrediccion(prediccion)) {
 					return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
 							HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 
 				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-			}
-			else {
+			} else {
 				return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
 			}
 		}
@@ -382,104 +429,44 @@ public class FasesController {
 		return true;
 	}
 
-//	@PostMapping(value = "/createAllSurvivalCurves", consumes = "multipart/form-data")
-//	public ResponseEntity<?> createAllSurvivalCurves(@RequestParam("idPrediccion") String idPrediccion,
-//			@RequestPart("file") MultipartFile multipartFile) throws IllegalStateException, IOException {
-//
-//		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
-//
-//		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-//
-//		String error = this.validarInputFile(multipartFile);
-//		if (!error.isEmpty()) {
-//			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-//		}
-//
-//		CloseableHttpClient httpClient = HttpClients.createDefault();
-//
-//		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-//		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/createAllSurvivalCurves");
-//
-//		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-//		// petición
-//		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-//
-//		// Agregar el archivo al cuerpo de la petición
-//
-//		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-//
-//		// Copiar el contenido del objeto MultipartFile al objeto File
-//		multipartFile.transferTo(file);
-//
-//		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-//				file, // Archivo a enviar
-//				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-//				file.getName() // Nombre del archivo en el cuerpo de la petición
-//		);
-//
-//		// Construir el cuerpo de la petición
-//		HttpEntity multipart = builder.build();
-//
-//		// Establecer el cuerpo de la petición en el objeto HttpPost
-//		httpPost.setEntity(multipart);
-//
-//		// Ejecutar la petición y obtener la respuesta
-//		CloseableHttpResponse response = httpClient.execute(httpPost);
-//
-//		HttpEntity responseEntity = response.getEntity();
-//
-//		InputStream responseInputStream = responseEntity.getContent();
-//
-//		byte[] imageBytes = responseInputStream.readAllBytes();
-//
-//		// Cerrar el objeto CloseableHttpClient y liberar los recursos
-//		httpClient.close();
-//
-//
-//		file.delete();
-//
-//		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
-//
-//	}
-
 	@PostMapping(value = "/createPopulationAndCurves", consumes = "multipart/form-data")
-	public ResponseEntity<?> createPopulationProfile(@RequestParam("idPrediccion") String idPrediccion,
-			@RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<?> createPopulationProfile(
+			@RequestParam(name = "idPrediccionPoblacion") String idPrediccionPoblacion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
-	
-		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
-
-		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
 		
-		String error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
+		idPrediccionPoblacion = StringEscapeUtils.escapeJava(idPrediccionPoblacion);
+
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccionPoblacion));
+
+		if (multipartFile != null) {
+			String error = this.validarInputFile(multipartFile);
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+		this.guardarFeatures(multipartFile, "survivalAndProfiling/createPopulationProfile", -1, idPrediccionPoblacion);
 
-		multipartFile.transferTo(file);
-		
-		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, prediccion.getId());
-		
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
-			this.guardarFeatures(file,
-					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i, prediccion.getId());
+			this.guardarFeatures(multipartFile,
+					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i,
+					idPrediccionPoblacion);
 		}
-		
-		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
 
-		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves", rutaPrediccion + File.separator + "allClusters.png",
-				"/clustersImages/prediccion" + prediccion.getId() + "/allClusters.png", -1, prediccion.getId());
+		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + idPrediccionPoblacion;
+
+		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves",
+				rutaPrediccion + File.separator + "allClusters.png",
+				"/clustersImages/prediccion" + idPrediccionPoblacion + "/allClusters.png", -1, idPrediccionPoblacion);
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
-			this.guardarImagenes(file,
+			this.guardarImagenes(multipartFile,
 					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
-					rutaPrediccion + File.separator +"cluster" + Integer.toString(i) + ".png",
-					"/clustersImages/prediccion" + prediccion.getId() + "/cluster" + Integer.toString(i) + ".png", i,
-					prediccion.getId());
+					rutaPrediccion + File.separator + "cluster" + Integer.toString(i) + ".png",
+					"/clustersImages/prediccion" + idPrediccionPoblacion + "/cluster" + Integer.toString(i) + ".png", i,
+					idPrediccionPoblacion);
 		}
-
-		file.delete();
 
 		return new ResponseEntity<>(prediccion.getMaxClusters(), HttpStatus.OK);
 
@@ -490,20 +477,18 @@ public class FasesController {
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-		
 
 		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
+		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber),
+				Long.parseLong(idPrediccion));
 
-		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
-
-		if(imagen!=null) {
+		if (imagen != null) {
 			return new ResponseEntity<>(imagen.getRuta(), HttpStatus.OK);
-		}
-		else{
+		} else {
 			return new ResponseEntity<>("No hay imagen asignada para ese cluster", HttpStatus.BAD_REQUEST);
 		}
 
@@ -514,68 +499,60 @@ public class FasesController {
 			@RequestParam("idPrediccion") String idPrediccion) throws IllegalStateException, IOException {
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
-		
 
 		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-		
-		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber), Long.parseLong(idPrediccion));
-			
-		if(profile!=null) {
+
+		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber),
+				Long.parseLong(idPrediccion));
+
+		if (profile != null) {
 			HashMap<String, Object> map = null;
 			map = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
-		
+
 			return new ResponseEntity<>(map, HttpStatus.OK);
-		}
-		else {
+		} else {
 			return new ResponseEntity<>("No hay perfil de población asignado a ese cluster", HttpStatus.BAD_REQUEST);
 		}
 
 	}
 
 	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
-	public ResponseEntity<?> getModelPerformance(@RequestPart("file") MultipartFile multipartFile)
+	public ResponseEntity<?> getModelPerformance(
+			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
-		String error = this.validarInputFile(multipartFile);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		if (multipartFile != null) {
+			String error = this.validarInputFile(multipartFile);
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}
 		}
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String urlModelPerformance = UrlServidor + "survivalAndProfiling/getModelPerformance";
 
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/getModelPerformance");
+		HttpEntity responseEntity = null;
 
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-		// Agregar el archivo al cuerpo de la petición
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
 
-		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+			responseEntity = llamadaServidorNgrok(urlModelPerformance, ownFile);
 
-		// Copiar el contenido del objeto MultipartFile al objeto File
-		multipartFile.transferTo(file);
+		} else if (multipartFile != null && idPrediccionPoblacion == null) {
 
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
+			multipartFile.transferTo(file);
 
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
+			responseEntity = llamadaServidorNgrok(urlModelPerformance, file);
 
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		HttpEntity responseEntity = response.getEntity();
+		} else {
+			return new ResponseEntity<>("La llamada a getModelPerformance salió mal", HttpStatus.BAD_REQUEST);
+		}
 
 		InputStream responseInputStream = responseEntity.getContent();
 
@@ -590,42 +567,31 @@ public class FasesController {
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
 
-		file.delete();
-
 		return new ResponseEntity<>(map, HttpStatus.OK);
 
 	}
-	
-	
 
-	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD, Integer numCluster,
-			Long idPrediccion) throws IOException {
+	private void guardarImagenes(MultipartFile multipartFile, String url, String rutaImagenServidor,
+			String rutaImagenBDD, Integer numCluster, String idPrediccionPoblacion) throws IOException {
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		String urlImagenCluster = UrlServidor + url;
 
-		HttpPost httpPost = new HttpPost(UrlServidor + url);
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		HttpEntity responseEntity = null;
 
-		// Agregar el archivo al cuerpo de la petición
+		if (multipartFile == null) {
 
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
 
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
+			responseEntity = llamadaServidorNgrok(urlImagenCluster, ownFile);
+		} else if (multipartFile != null) {
 
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
+			multipartFile.transferTo(file);
 
-		HttpEntity responseEntity = response.getEntity();
+			responseEntity = llamadaServidorNgrok(urlImagenCluster, file);
+
+		}
 
 		InputStream responseInputStream = responseEntity.getContent();
 
@@ -635,38 +601,32 @@ public class FasesController {
 		imgOutFile.write(imageBytes);
 		imgOutFile.close();
 
-		httpClient.close();
-
-		imagenesService.guardarImagen(numCluster, rutaImagenBDD, idPrediccion);
+		imagenesService.guardarImagen(numCluster, rutaImagenBDD, Long.parseLong(idPrediccionPoblacion));
 
 	}
 
-	private void guardarFeatures(File file, String url, Integer numCluster, Long idPrediccion) throws ClientProtocolException, IOException {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+	private void guardarFeatures(MultipartFile multipartFile, String url, Integer numCluster,
+			String idPrediccionPoblacion) throws ClientProtocolException, IOException {
 
-		HttpPost httpPost = new HttpPost(UrlServidor + url);
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		String urlPerfilCluster = UrlServidor + url;
 
-		// Agregar el archivo al cuerpo de la petición
+		HttpEntity responseEntity = null;
 
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
+		if (multipartFile == null) {
 
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
 
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
+			responseEntity = llamadaServidorNgrok(urlPerfilCluster, ownFile);
+			
+		} else if (multipartFile != null) {
 
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		HttpEntity responseEntity = response.getEntity();
+			multipartFile.transferTo(file);
+
+			responseEntity = llamadaServidorNgrok(urlPerfilCluster, file);
+
+		}
 
 		InputStream responseInputStream = responseEntity.getContent();
 
@@ -680,15 +640,15 @@ public class FasesController {
 
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-		
-		if(numCluster==-1){
-			this.calculateMaxClusters(map, idPrediccion);
+
+		if (numCluster == -1) {
+			this.calculateMaxClusters(map, Long.parseLong(idPrediccionPoblacion));
 		}
 
 		Gson gson = new Gson();
 		String featuresString = gson.toJson(map);
 
-		profilesService.guardarProfile(numCluster, featuresString,idPrediccion);
+		profilesService.guardarProfile(numCluster, featuresString, Long.parseLong(idPrediccionPoblacion));
 
 	}
 
@@ -700,9 +660,9 @@ public class FasesController {
 
 		List<HashMap<String, Object>> algorithmArray = (List<HashMap<String, Object>>) algorithmMap
 				.get("agglomerative");
-		
+
 		Integer maxClusters = algorithmArray.size();
-		
+
 		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
 
 	}
@@ -732,9 +692,5 @@ public class FasesController {
 		}
 		return "";
 	}
-	
-	
-	
-	
 
 }

@@ -1,6 +1,8 @@
 package com.tfg.repositories;
 
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,6 @@ public interface ImagenesRepository extends JpaRepository<Imagenes, Long> {
 	public Imagenes findByNumCluster(Integer numCluster);
 	
 	public Imagenes findByNumClusterAndPrediccion(Integer numCluster, Predicciones prediccion);
+	
+	public List<Imagenes> findAllByPrediccionId(Long idPrediccion);
 }

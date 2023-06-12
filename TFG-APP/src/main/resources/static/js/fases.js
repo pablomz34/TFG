@@ -1,4 +1,5 @@
 Vue.component('fase1', {
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			nClusters: '',
@@ -8,15 +9,24 @@ Vue.component('fase1', {
 			error: ''
 		}
 	},
-
 	methods: {
 
 		getOptimalNClusters() {
 			const THIZ = this;
+			
 			const formData = new FormData();
 			$('#cargando').show();
+			
 			formData.append('max_clusters', this.nClusters);
-			formData.append('file', this.$refs.csvFile.files[0]);
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
+			
+			
 			THIZ.error = '';
 			fetch(window.location.origin + "/admin/fases/getOptimalNClusters", {
 				method: "POST",
@@ -72,7 +82,7 @@ Vue.component('fase1', {
 		                        <input type="number" min="2" max="20" class="input-container-input pe-1" v-model="nClusters" id="nClusters" required />
 	                    	</div>
 	                    </div>
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo Csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
@@ -104,6 +114,7 @@ Vue.component('fase1', {
 });
 
 Vue.component('fase2', {
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			nClustersAglomerativo: '',
@@ -120,10 +131,20 @@ Vue.component('fase2', {
 			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
+			
+			
+			
 			formData.append('nClustersAglomerativo', this.nClustersAglomerativo);
 			formData.append('nClustersKModes', this.nClustersKModes);
-			formData.append('file', this.$refs.csvFile.files[0]);
-
+			
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
+			
 			fetch(window.location.origin + "/admin/fases/getSubPopulations", {
 				method: "POST",
 				headers: {
@@ -196,7 +217,7 @@ Vue.component('fase2', {
 	                    	</div>
 	                    </div>
 	
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
@@ -219,6 +240,7 @@ Vue.component('fase2', {
 });
 
 Vue.component('fase3', {
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			lista: [],
@@ -234,7 +256,13 @@ Vue.component('fase3', {
 			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('file', this.$refs.csvFile.files[0]);
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
 
 			fetch(window.location.origin + "/admin/fases/getVarianceMetrics", {
 				method: "POST",
@@ -278,7 +306,7 @@ Vue.component('fase3', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getVarianceMetrics">
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
                     		<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
 		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
@@ -325,16 +353,16 @@ Vue.component('fase3', {
 
 
 Vue.component('fase4', {
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
 			crear: true,
 			descripcionSeleccionada: '',
 			descripciones: [],
-			idPrediccion: '',
 			continuar: false,
 			csvFile: '',
-			csvFile2: '',
 			curvasAndPerfilesCreados: false,
+			idPrediccion: '',
 			nClusters: '',
 			clusterSeleccionadoCurves: '',
 			clusterSeleccionadoProfile: '',
@@ -437,9 +465,18 @@ Vue.component('fase4', {
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('file', this.$refs.csvFile.files[0]);
+			
+			if(THIZ.csvInput){
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccion);
+				formData.append('file', this.$refs.csvFile.files[0]);
+				
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}
+			
 
-			fetch(window.location.origin + "/admin/fases/createPopulationAndCurves?idPrediccion=" + this.idPrediccion, {
+			fetch(window.location.origin + "/admin/fases/createPopulationAndCurves", {
 				method: "POST",
 				body: formData
 			})
@@ -471,7 +508,17 @@ Vue.component('fase4', {
 			THIZ.curvasCargadas = false;
 
 			THIZ.error2 = '';
-			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
+			
+			let prediccionIdUrl = "";
+			if(THIZ.idPrediccionPoblacion.length!==0){
+				prediccionIdUrl+= THIZ.idPrediccionPoblacion;
+			}
+			else if(THIZ.idPrediccion.length!==0){
+				prediccionIdUrl+= THIZ.idPrediccion;
+			}
+			
+			
+			fetch(window.location.origin + "/admin/fases/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + prediccionIdUrl, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -498,7 +545,17 @@ Vue.component('fase4', {
 
 			THIZ.error3 = '';
 			THIZ.perfilCargado = false;
-			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
+			
+			let prediccionIdUrl = "";
+			if(THIZ.csvInput){
+				prediccionIdUrl+= THIZ.idPrediccion;
+			}
+			else {
+				prediccionIdUrl+= THIZ.idPrediccionPoblacion;
+			}
+			
+			
+			fetch(window.location.origin + "/admin/fases/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + prediccionIdUrl, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -551,7 +608,7 @@ Vue.component('fase4', {
 	    </div>
 	    
 	    <div class="row justify-content-around">
-			<div class="card col-7 rounded-4 p-0 mb-3 shadow">
+			<div v-if="csvInput" class="card col-7 rounded-4 p-0 mb-3 shadow">
 				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 v-if="crear" class="text-center text-white">Crear nueva predicción</h2>
 	                <h2 v-if="!crear" class="text-center text-white">Modificar predicción existente</h2>
@@ -619,14 +676,14 @@ Vue.component('fase4', {
 	        </div>	 
 	    </div>
 	
-	    <div v-if="continuar" class="row justify-content-around">
+	    <div v-if="continuar || !csvInput" class="row justify-content-around">
 	        <div class="card col-7 rounded-4 p-0 mb-3 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población</h2>
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="createPopulationAndCurves">
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                        <label for="csv1" class="form-label">Archivo csv</label>
 	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required />
 	                    </div>
@@ -754,9 +811,10 @@ Vue.component('fase4', {
 
 
 Vue.component('fase5', {
+	props: ['idPrediccionPoblacion','csvInput'],
 	data: function() {
 		return {
-			csvGetPerformanceModel: '',
+			csvFile: '',
 			datosCargados: false,
 			idModel: '',
 			auc: '',
@@ -773,7 +831,15 @@ Vue.component('fase5', {
 			THIZ.error = '';
 			const formData = new FormData();
 			$('#cargando').show();
-			formData.append('file', this.$refs.csvGetPerformanceModel.files[0]);
+			
+			
+			if(THIZ.csvInput){
+				formData.append('file', this.$refs.csvFile.files[0]);
+			}
+			else{
+				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+			}	
+		
 
 			fetch(window.location.origin + "/admin/fases/getModelPerformance", {
 				method: "POST",
@@ -817,10 +883,10 @@ Vue.component('fase5', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getModelPerformance">
-	                    <div class="form-group mb-3">
+	                    <div v-if="csvInput" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
-		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvGetPerformanceModel" required />
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv" ref="csvFile" required />
                    			</div>
 	                    </div>
 	
@@ -1025,55 +1091,163 @@ new Vue({
 	el: "#fases",
 	data: function() {
 		return {
-			seleccion: '',
-			previousCard: '',
-			csvPacientesData: ''
+			csvInput: false,
+			idPrediccionPoblacion: '',
+			pantalla1: {
+				showPantalla: true,
+				selectedIdCard: '',
+			},
+			pantalla2: {
+				descripciones: [],
+				descripcionSeleccionada: '',
+				pacientesPrediccion: '',
+				csvUploadPoblacion: '',
+				showContinueButton: false,
+				uploadPoblacionInfo: false,
+				showPantalla: false,
+			},
+			pantalla3: {
+				showPantalla: false,
+			}
 		}
 	},
 
 
 	methods: {
-		selectMetodoUsoInformacionPoblacion(event) {
+		selectCardPantalla1(idCard) {
 
 			const THIZ = this;
 
-			let fasesCard = event.target.closest("div");
+			let cardToSelect = document.getElementById(idCard);
 
-			if (fasesCard !== THIZ.previousCard) {
-				this.resetearPreviousCard();
+			if (THIZ.pantalla1.selectedIdCard.length === 0) {
 
-				let fasesCardSelectedIcon = document.createElement("i");
+				this.appendCardStylesPantalla1(idCard);
 
-				fasesCard.setAttribute("style", "border: 5px solid rgb(123, 154, 234); box-shadow: 8px 8px 16px 4px rgb(123, 154, 234);");
+				THIZ.pantalla1.selectedIdCard = idCard;
+			}
+			else {
 
-				THIZ.previousCard = fasesCard;
+				let cardSelected = document.getElementById(THIZ.pantalla1.selectedIdCard);
 
-				fasesCardSelectedIcon.setAttribute("class", "fases-card-selected-icon fa-solid fa-circle-check");
+				if (cardToSelect.getAttribute('id') !== cardSelected.getAttribute('id')) {
 
-				fasesCard.append(fasesCardSelectedIcon);
+					this.resetearSelectedCardStylesPantalla1(THIZ.pantalla1.selectedIdCard);
+
+					this.appendCardStylesPantalla1(idCard);
+
+					THIZ.pantalla1.selectedIdCard = idCard;
+
+				}
 			}
 
-
 		},
-		resetearPreviousCard() {
+
+		appendCardStylesPantalla1(toSelectIdCard) {
+
+			let cardToSelect = document.getElementById(toSelectIdCard);
+
+			let cardToSelectIcon = document.createElement("i");
+
+			cardToSelect.setAttribute("style", "border: 5px solid rgb(123, 154, 234); box-shadow: 8px 8px 16px 4px rgb(123, 154, 234);");
+
+			cardToSelectIcon.setAttribute("class", "fases-card-selected-icon fa-solid fa-circle-check");
+
+			cardToSelect.append(cardToSelectIcon);
+		},
+
+		resetearSelectedCardStylesPantalla1(selectedIdCard) {
+
+			let cardSelected = document.getElementById(selectedIdCard);
+
+			cardSelected.removeChild(cardSelected.lastChild);
+
+			cardSelected.setAttribute("style", "");
+		},
+		seleccionarModoAlmacenamientoInformacionPoblacion() {
 
 			const THIZ = this;
 
-			if (THIZ.previousCard.length !== 0) {
-				THIZ.previousCard.removeChild(THIZ.previousCard.lastChild);
+			if (THIZ.pantalla1.selectedIdCard === 'card1') {
 
-				THIZ.previousCard.setAttribute("style", "");
+				fetch(window.location.origin + "/admin/fases/getPredicciones", {
+					method: "GET"
+				})
+					.then(res => res.json())
+					.then(descripciones => {
+
+						const THIZ = this;
+
+						THIZ.pantalla2.descripciones = descripciones;
+					})
+					.catch(error => console.error(error));
+
+				this.resetearSelectedCardStylesPantalla1(THIZ.pantalla1.selectedIdCard);
+
+				THIZ.pantalla1.showPantalla = false;
+
+				THIZ.pantalla2.showPantalla = true;
+				THIZ.csvInput = false;
 			}
+			else if (THIZ.pantalla1.selectedIdCard === 'card2') {
+				THIZ.pantalla1.showPantalla = false;
+				THIZ.pantalla3.showPantalla = true;
+				THIZ.csvInput = true;
+			}
+
 		},
-		enviarArchivoPacientes:function() {
+		seleccionarRadioButton(event) {
 
 			const THIZ = this;
+			
+			THIZ.pantalla2.showContinueButton = false;
+			THIZ.pantalla2.csvUploadPoblacion = '';
 
+			let radios = document.querySelectorAll('input[type="radio"]');
+
+			for (let i = 0; i < radios.length; i++) {
+				let radioButtonContainer = radios[i].closest('.radio-button-container');
+				let radioButtonLabel = radios[i].nextElementSibling;
+				if (radios[i].id === event.target.id) {
+					radioButtonContainer.setAttribute("style", "background-color: rgb(223, 231, 251); border: 3px solid rgb(123, 154, 234);");		
+					radioButtonLabel.setAttribute("style", "color: rgb(91, 130, 232)");
+				}
+				else{
+					radios[i].checked = false;
+					radioButtonContainer.setAttribute("style", "");
+					radioButtonLabel.setAttribute("style", "");
+				}
+
+			}
+
+			if (event.target.id === 'radioButton1') {
+				THIZ.pantalla2.uploadPoblacionInfo = false;
+				THIZ.pantalla2.showContinueButton = true;
+			}
+			else if (event.target.id === 'radioButton2') {
+				THIZ.pantalla2.uploadPoblacionInfo = true;
+			}
+
+		},
+		archivoSeleccionado(){
+			
+			const THIZ = this;
+			
+			THIZ.pantalla2.csvUploadPoblacion = this.$refs.csvUploadPoblacion.files[0];
+			THIZ.pantalla2.showContinueButton = true;
+			
+		},
+		seleccionarPrediccionAndPoblacionInfo(){
+			
+			const THIZ = this;
+			
 			const formData = new FormData();
 			
-			formData.append('file', this.$refs.csvPacientesData.files[0]);
-
-			fetch(window.location.origin + "/admin/fases/guardarInformacionPacientes", {
+			if(THIZ.pantalla2.csvUploadPoblacion !== ''){
+				formData.append("file", THIZ.pantalla2.csvUploadPoblacion);
+			}
+			
+			fetch(window.location.origin + "/admin/fases/guardarInformacionPacientes?descripcion="+ this.pantalla2.descripcionSeleccionada, {
 				method: "POST",
 				body: formData
 			})
@@ -1081,86 +1255,188 @@ new Vue({
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						//THIZ.error = "Error: " + errorMessage;
-						
+
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.text();
 				})
-				.then(data => {
+				.then(idPrediccionPoblacion => {
 					
-					console.log(data);
+					const THIZ = this;
+					
+					THIZ.idPrediccionPoblacion = idPrediccionPoblacion;
+					
+					THIZ.pantalla2.showPantalla = false;
+					
+					THIZ.pantalla3.showPantalla = true;
+
+					
 				})
 				.catch(error => console.error(error));
+					
 		}
 
 	},
+	watch: {
+		'pantalla2.descripcionSeleccionada': function(newValue, oldValue) {
+
+			const THIZ = this;
+			
+			THIZ.pantalla2.uploadPoblacionInfo = false;
+			THIZ.pantalla2.pacientesPrediccion = '';
+			THIZ.pantalla2.showContinueButton = false;
+			THIZ.pantalla2.csvUploadPoblacion = '';
+
+			fetch(window.location.origin + "/admin/fases/getPacientesPrediccion?descripcion=" + newValue, {
+				method: "GET"
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						//THIZ.error = "Error: " + errorMessage;
+
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(pacientes => {
+
+					THIZ.pantalla2.pacientesPrediccion = Number(pacientes);
+
+				})
+				.catch(error => console.error(error));
+
+		}
+	},
 	template: `
 	<div class="container pt-2">	
-		<div class="row justify-content-around mt-5">
-
-			<div class="col-md-4 mb-5">
-				<div class="row justify-content-center">
-					<div class="fases-card" @click="selectMetodoUsoInformacionPoblacion">
-						<i class="fases-card-i fa-solid fa-database"></i>
-						<p class="fases-card-p text-center mb-0">Usar información de la población de la base de datos</p>
+	
+	
+		<div v-if="pantalla1.showPantalla" class="container pt-2">
+			<div class="row justify-content-around mt-5">
+	
+				<div class="col-md-4 mb-5">
+					<div class="row justify-content-center">
+						<div id="card1" class="fases-card" @click="selectCardPantalla1('card1')">
+							<i class="fases-card-i fa-solid fa-database"></i>
+							<p class="fases-card-p text-center mb-0">Usar información de la población de la base de datos</p>
+						</div>
+					</div>
+				</div>
+	
+				<div class="col-md-4 mb-5">
+					<div class="row justify-content-center">
+						<div id="card2" class="fases-card" @click="selectCardPantalla1('card2')">
+							<i class="fases-card-i fa-solid fa-wrench"></i>
+							<p class="fases-card-p text-center mb-0">Usar tu propia información de la población</p>
+						</div>
 					</div>
 				</div>
 			</div>
-
-			<div class="col-md-4 mb-5">
-				<div class="row justify-content-center">
-					<div class="fases-card" @click="selectMetodoUsoInformacionPoblacion">
-						<i class="fases-card-i fa-solid fa-wrench"></i>
-						<p class="fases-card-p text-center mb-0">Usar tu propia información de la población</p>
-					</div>
-				</div>
+			
+			<div v-if="pantalla1.selectedIdCard != ''" class="row justify-content-center">	
+					<button type="button" @click="seleccionarModoAlmacenamientoInformacionPoblacion" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 			</div>
 		</div>
 		
-		<form @submit.prevent="enviarArchivoPacientes">
 		
-			<input accept=".csv" type="file" id="csvPacientes" ref="csvPacientesData" required />
-			<button type="submit">Enviar </button>
-		</form>
-		
-	    <!--<div class="col-12 mb-3">
-				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
+		<div v-if="pantalla2.showPantalla" class="container pt-2">
+			<div class="row justify-content-around mt-5">
+				<div class="col-md-6">
+					<div class="card rounded-4 p-0 shadow">
+			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+			                <h2 class="text-center text-white">Seleccionar predicción</h2>
+			            </div>
+			            <div class="card-body">
+			                <form id="selectPrediccionForm" @submit.prevent="seleccionarPrediccionAndPoblacionInfo">
+			                	<div class="form-group mb-3">
+					                <label for="selectDescripcion" class="form-label text-custom-light-color fw-bold" style="font-size: 22px;">Seleccione una predicción</label>
+									
+									<select class="input-select-prediccion" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
+			                       		<option class="input-select-prediccion-option" v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
+			                    	</select>
+				                    	
+		                    	</div>
+		                    	
+		                    	<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container">
+								  						  
+									  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton1" id="radioButton1">
+									  <label class="radio-button-label" for="radioButton1">
+									    Utilizar datos de población de la base de datos
+									  </label>
+								</div>
+										
+								<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container">
+								 	  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton2" id="radioButton2">
+									  <label class="radio-button-label" for="radioButton2">
+									    Subir mis de población a la base de datos
+									  </label>
+								</div>
+								
+								<div v-if="pantalla2.pacientesPrediccion === 0 || pantalla2.uploadPoblacionInfo" class="form-group mt-4 mb-3">
+			                    	<div class="input-container">
+				                        <label for="csv" class="input-container-input-file-label fw-bold">Archivo csv</label>
+				                        <input class="input-container-input-file" accept=".csv" @change="archivoSeleccionado" type="file" id="csv" ref="csvUploadPoblacion" required />
+		                   			</div>
+			                    </div>
+			                    
+			                     <div v-if="pantalla2.showContinueButton" class="form-group mt-4 mb-2">
+			                        <div class="row justify-content-center">
+			                            <div class="col text-center">
+			                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
+			                            </div>
+			                        </div>
+		                   		</div>
+		                   		
+			                </form>
+			            </div>
+		        	</div>
+	        	</div>				
+			</div>
 		</div>
 		
-		<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist">
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="nClusters-tab" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="subPopulations-tab" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false">Subpoblaciones</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="varianceMetrics-tab" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="populationProfilesGraphics-tab" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
-		  </li>
-		  <li class="nav-item pt-2" role="presentation">
-		    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="modelPerformance-tab" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
-		  </li>
-		</ul>
-		<div class="tab-content" id="pills-tabContent">
-		  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
-		  	<fase1 />
-		  </div>
-		  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
-		  	<fase2 />
-		  </div>
-		  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
-		  	<fase3 />
-		  </div>
-		  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
-		  	<fase4 />
-		  </div>
-		  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
-		  	<fase5 />
-		  </div>
-		</div>-->
+	    
+	    <div v-if="pantalla3.showPantalla" class="container pt-2">
+	    
+		    <div class="col-12 mb-3">
+					<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
+			</div>
+			
+			<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist">
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="nClusters-tab" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="subPopulations-tab" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false">Subpoblaciones</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="varianceMetrics-tab" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="populationProfilesGraphics-tab" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
+			  </li>
+			  <li class="nav-item pt-2" role="presentation">
+			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="modelPerformance-tab" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
+			  </li>
+			</ul>
+			<div class="tab-content" id="pills-tabContent">
+			  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="nClusters-tab" tabindex="0">
+			  	<fase1 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
+			  </div>
+			  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="subPopulations-tab" tabindex="0">
+			  	<fase2 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
+			  </div>
+			  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="varianceMetrics-tab" tabindex="0">
+			  	<fase3 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
+			  </div>
+			  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="populationProfilesGraphics-tab" tabindex="0">
+			  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
+			  </div>
+			  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="modelPerformance-tab" tabindex="0">
+			  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput"/>
+			  </div>
+			</div>
+		</div>
 				
 	</div>
 	`

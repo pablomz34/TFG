@@ -13,4 +13,6 @@ public interface IPacientesService {
 	public void guardarPoblacion(MultipartFile file, Long idPrediccion) throws IOException;
 	
 	public List<Pacientes> findPacientesByPrediccionId(Long idPrediccion);
+	
+	public void borrarPoblacion(Long idPrediccion);
 }
