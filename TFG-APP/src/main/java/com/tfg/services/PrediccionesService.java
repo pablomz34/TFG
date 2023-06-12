@@ -10,9 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tfg.entities.Imagenes;
+import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
+import com.tfg.repositories.ImagenesRepository;
+import com.tfg.repositories.PacientesRepository;
 import com.tfg.repositories.PrediccionesRepository;
+import com.tfg.repositories.ProfilesRepository;
 
 @Service
 @Transactional
@@ -20,6 +24,16 @@ public class PrediccionesService implements IPrediccionesService {
 
 	@Autowired
 	private PrediccionesRepository repos;
+	
+	@Autowired 
+	private ImagenesRepository repoImagenes;
+	
+	@Autowired 
+	private ProfilesRepository repoProfiles;
+	
+	@Autowired 
+	private PacientesRepository repoPacientes;
+	
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
@@ -81,22 +95,24 @@ public class PrediccionesService implements IPrediccionesService {
 
 		Predicciones prediccion = repos.findPrediccionById(id);
 
-		List<Imagenes> listaImg = prediccion.getImagenes();
+		List<Imagenes> listaImg = repoImagenes.findAllByPrediccionId(id);
 
 		for (int i = 0; i < listaImg.size(); i++) {
-			if (listaImg.get(i).getPrediccion() == prediccion) {
-				listaImg.remove(i);
-			}
+			repoImagenes.delete(listaImg.get(i));	
 		}
 
-		List<Profiles> listaProfiles = prediccion.getProfiles();
+		List<Profiles> listaProfiles = repoProfiles.findAllByPrediccionId(id);
 
 		for (int i = 0; i < listaProfiles.size(); i++) {
-			if (listaProfiles.get(i).getPrediccion() == prediccion) {
-				listaProfiles.remove(i);
-			}
+			repoProfiles.delete(listaProfiles.get(i));
 		}
+		
+		List<Pacientes> listaPacientes = repoPacientes.findAllByPrediccionId(id);
 
+		for (int i = 0; i < listaPacientes.size(); i++) {
+			repoPacientes.delete(listaPacientes.get(i));	
+		}
+		
 		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + prediccion.getId();
 
 		File directorioPrediccion = new File(rutaPrediccion);

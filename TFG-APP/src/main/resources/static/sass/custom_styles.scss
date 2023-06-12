@@ -385,12 +385,18 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	font-weight: bolder;
 }
 
+
+.input-select-prediccion-option{
+	font-weight: bold;
+}
+
+
 .radio-button-container {
 	display: flex;
 	justify-content: left;
 	width: 100%;
-	background-color: rgb(225, 233, 251);
 	padding: 5px;
+	margin-bottom: 5px;
 }
 
 
@@ -409,9 +415,6 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	height: 18px;
 }
 
-#radioButton1:checked + .radio-button-label + .radio-button-container{
-	border: 3px solid rgb(125, 156, 236);
-}
 
 @media (max-width: 1140px) {
 

@@ -1206,9 +1206,16 @@ new Vue({
 			let radios = document.querySelectorAll('input[type="radio"]');
 
 			for (let i = 0; i < radios.length; i++) {
-
-				if (radios[i].id !== event.target.id) {
+				let radioButtonContainer = radios[i].closest('.radio-button-container');
+				let radioButtonLabel = radios[i].nextElementSibling;
+				if (radios[i].id === event.target.id) {
+					radioButtonContainer.setAttribute("style", "background-color: rgb(223, 231, 251); border: 3px solid rgb(123, 154, 234);");		
+					radioButtonLabel.setAttribute("style", "color: rgb(91, 130, 232)");
+				}
+				else{
 					radios[i].checked = false;
+					radioButtonContainer.setAttribute("style", "");
+					radioButtonLabel.setAttribute("style", "");
 				}
 
 			}
@@ -1346,12 +1353,12 @@ new Vue({
 					                <label for="selectDescripcion" class="form-label text-custom-light-color fw-bold" style="font-size: 22px;">Seleccione una predicción</label>
 									
 									<select class="input-select-prediccion" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
-			                       		<option v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
+			                       		<option class="input-select-prediccion-option" v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
 			                    	</select>
 				                    	
 		                    	</div>
 		                    	
-		                    	<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container" tabindex=0>
+		                    	<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container">
 								  						  
 									  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton1" id="radioButton1">
 									  <label class="radio-button-label" for="radioButton1">
@@ -1359,11 +1366,11 @@ new Vue({
 									  </label>
 								</div>
 										
-								<div v-if="pantalla2.pacientesPrediccion > 0" class="form-check">
-								  <input class="form-check-input" type="radio" @change="seleccionarRadioButton" name="radioButton2" id="radioButton2">
-								  <label class="form-check-label" for="radioButton2">
-								    Subir mis datos de población a la base de datos
-								  </label>
+								<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container">
+								 	  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton2" id="radioButton2">
+									  <label class="radio-button-label" for="radioButton2">
+									    Subir mis de población a la base de datos
+									  </label>
 								</div>
 								
 								<div v-if="pantalla2.pacientesPrediccion === 0 || pantalla2.uploadPoblacionInfo" class="form-group mt-4 mb-3">
