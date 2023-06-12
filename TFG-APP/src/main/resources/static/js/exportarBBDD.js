@@ -26,11 +26,6 @@ new Vue({
 			.catch(error => console.error(error));
 	},
 
-	watch: {
-
-
-	},
-
 	methods: {
 		selectAllChanged() {
 			const THIZ = this;
@@ -69,6 +64,30 @@ new Vue({
 			xhr.send();
 
 
+		},
+		
+		exportarTodo(){
+			fetch(window.location.origin + "/tablas/exportarTodo", {
+				method: "GET",
+			})
+		        .then((response) => {
+		          if (response.ok) {
+		            return response.blob();
+		          } else {
+		            throw new Error('Error exporting database dump');
+		          }
+		        })
+		        .then((blob) => {
+		          const url = window.URL.createObjectURL(blob);
+		          const link = document.createElement('a');
+		          link.href = url;
+		          link.download = 'database_structure.sql';
+		          link.click();
+		          window.URL.revokeObjectURL(url);
+		        })
+		        .catch((error) => {
+		          console.error(error);
+		        });
 		}
 	},
 
@@ -105,7 +124,8 @@ new Vue({
 						</tbody>
 					</table>
 				</div>
-				<button class="btn btn-outline-custom-color fs-6 fw-semibold mt-2" @click="exportar()">Exportar</button>
+				<button class="btn btn-outline-custom-color fs-6 fw-semibold mt-2" @click="exportar()">Exportar tablas seleccionadas</button>
+				<button class="btn btn-outline-custom-color fs-6 fw-semibold mt-2" @click="exportarTodo()">Exportar base de datos completa</button>
 			</div>
 
 		</div>

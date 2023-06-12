@@ -1,7 +1,11 @@
 package com.tfg.controllers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -11,9 +15,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.BufferedOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -85,10 +96,6 @@ public class TablasController {
 		
 	@GetMapping("/exportarTabla")
     public ResponseEntity<byte[]> exportarTabla(@RequestParam String tabla) throws IOException {
-        // Conexión a la base de datos
-        //String url = "jdbc:mysql://localhost:3306/tfg";
-        //String usuario = "root";
-        //String contraseña = "root";
 
         try (Connection con = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword);
              Statement stmt = con.createStatement();
@@ -133,7 +140,112 @@ public class TablasController {
         }
     }
     
-    
+	@GetMapping("/exportarTodo")
+    public ResponseEntity<FileSystemResource> exportarTodo() {
+		String databaseName = null;
+		try {
+            URI uri = new URI(this.bbddConnectionUrl.substring(5));
+            databaseName = uri.getPath().substring(1);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+		try (Connection connection = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword)) {
 
+            String dumpFilePath = "database_structure.sql";
+
+            StringBuilder dumpContent = new StringBuilder();
+
+         // Export database structure
+            String structureQuery = "SHOW CREATE DATABASE " + databaseName;
+            try (Statement structureStatement = connection.createStatement();
+                 ResultSet structureResult = structureStatement.executeQuery(structureQuery)) {
+                if (structureResult.next()) {
+                    String createDatabaseStatement = structureResult.getString(2);
+                    dumpContent.append(createDatabaseStatement).append(";\n\n");
+                }
+            }
+
+            // Export table structures
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet tables = metaData.getTables(connection.getCatalog(), null, null, new String[]{"TABLE"});
+            while (tables.next()) {
+                String tableName = tables.getString("TABLE_NAME");
+                String tableStructure = getTableStructure(connection, tableName);
+                dumpContent.append(tableStructure).append(";\n\n");
+            }
+
+            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(dumpFilePath))) {
+                outputStream.write(dumpContent.toString().getBytes());
+            }
+
+            FileSystemResource fileResource = new FileSystemResource(dumpFilePath);
+            return ResponseEntity.ok()
+                    .body(fileResource);
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+	/* Exportar solo estructura*/
+	private String getTableStructure(Connection connection, String tableName) throws SQLException {
+        StringBuilder tableStructure = new StringBuilder();
+
+        String structureQuery = "SHOW CREATE TABLE " + tableName;
+        try (Statement structureStatement = connection.createStatement();
+             ResultSet structureResult = structureStatement.executeQuery(structureQuery)) {
+            if (structureResult.next()) {
+                String createTableStatement = structureResult.getString(2);
+                tableStructure.append(createTableStatement);
+            }
+        }
+
+        return tableStructure.toString();
+    }
+	
+	
+	
+	/* --------------Exportar estructura y datos-------------------
+    private String exportTable(Connection connection, String tableName) throws SQLException {
+        StringBuilder tableDump = new StringBuilder();
+
+        // Export table structure
+        String structureQuery = "SHOW CREATE TABLE " + tableName;
+        try (Statement structureStatement = connection.createStatement();
+             ResultSet structureResult = structureStatement.executeQuery(structureQuery)) {
+            if (structureResult.next()) {
+                String createTableStatement = structureResult.getString(2);
+                tableDump.append(createTableStatement).append(";\n\n");
+            }
+        }
+
+        // Export table data
+        String dataQuery = "SELECT * FROM " + tableName;
+        try (Statement dataStatement = connection.createStatement();
+             ResultSet dataResult = dataStatement.executeQuery(dataQuery)) {
+            ResultSetMetaData metaData = dataResult.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (dataResult.next()) {
+                tableDump.append("INSERT INTO ").append(tableName).append(" VALUES (");
+                for (int i = 1; i <= columnCount; i++) {
+                    Object value = dataResult.getObject(i);
+                    if (value == null) {
+                        tableDump.append("NULL");
+                    } else if (value instanceof Number) {
+                        tableDump.append(value);
+                    } else {
+                        tableDump.append("'").append(value).append("'");
+                    }
+                    if (i < columnCount) {
+                        tableDump.append(", ");
+                    }
+                }
+                tableDump.append(");\n");
+            }
+        }
+
+        return tableDump.toString();
+    }*/
 	
 }
