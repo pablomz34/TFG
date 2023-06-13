@@ -164,15 +164,20 @@ public class TablasController {
                     dumpContent.append(createDatabaseStatement).append(";\n\n");
                 }
             }
-
+        	
             // Export table structures
             DatabaseMetaData metaData = connection.getMetaData();
             ResultSet tables = metaData.getTables(connection.getCatalog(), null, null, new String[]{"TABLE"});
+          
+            dumpContent.append("SET FOREIGN_KEY_CHECKS=0;\n\n");
+            
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 String tableStructure = getTableStructure(connection, tableName);
                 dumpContent.append(tableStructure).append(";\n\n");
             }
+            
+            dumpContent.append("SET FOREIGN_KEY_CHECKS=1;\n\n");
 
             try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(dumpFilePath))) {
                 outputStream.write(dumpContent.toString().getBytes());

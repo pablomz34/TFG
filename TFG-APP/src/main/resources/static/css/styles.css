@@ -12530,10 +12530,11 @@ textarea.form-control-lg {
 .input-select-prediccion {
   position: relative;
   width: 100%;
+  max-width: 100%;
   background-color: rgb(223, 231, 251);
   padding: 10px;
-  font-size: 20px;
   outline: none;
+  font-size: 20px;
   border-top: none;
   border-left: none;
   padding-left: 20px;
@@ -12545,6 +12546,7 @@ textarea.form-control-lg {
 }
 
 .input-select-prediccion-option {
+  font-size: 20px;
   font-weight: bold;
 }
 
