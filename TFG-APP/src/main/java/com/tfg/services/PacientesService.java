@@ -28,19 +28,28 @@ public class PacientesService implements IPacientesService {
 
 	@Override
 	public void guardarPoblacion(MultipartFile multipartFile, Long idPrediccion) throws IOException {
-
-		
-		List<Pacientes> pacientes = repos.findAllByPrediccionId(idPrediccion);
 		
 		try {
             InputStream inputStream = multipartFile.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             
-            String linea;
-            while ((linea = reader.readLine()) != null) {
+            //Nos saltamos la primera linea de los headers
+            reader.readLine();
+            
+            String datosPaciente;
+            
+            while ((datosPaciente = reader.readLine()) != null) {
                 Pacientes paciente = new Pacientes();
                 
-                paciente.setDataPaciente(linea);
+                int firstCommaIndex = datosPaciente.indexOf(',');
+                
+                String variableObjetivo = datosPaciente.substring(0, firstCommaIndex).trim();
+                String variablesClinicas = datosPaciente.substring(firstCommaIndex + 1).trim();
+                
+                paciente.setVariableObjetivo(variableObjetivo);
+                
+                paciente.setVariablesClinicas(variablesClinicas);
+                
                 paciente.setPrediccion(prediccionesRepo.findPrediccionById(idPrediccion));
                 
                 repos.save(paciente);

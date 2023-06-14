@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tfg.entities.HeadersPacientes;
 import com.tfg.entities.Imagenes;
 import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
+import com.tfg.repositories.HeadersPacientesRepository;
 import com.tfg.repositories.ImagenesRepository;
 import com.tfg.repositories.PacientesRepository;
 import com.tfg.repositories.PrediccionesRepository;
@@ -30,6 +32,9 @@ public class PrediccionesService implements IPrediccionesService {
 	
 	@Autowired 
 	private ProfilesRepository repoProfiles;
+	
+	@Autowired 
+	private HeadersPacientesRepository repoHeadersPacientes;
 	
 	@Autowired 
 	private PacientesRepository repoPacientes;
@@ -105,6 +110,12 @@ public class PrediccionesService implements IPrediccionesService {
 
 		for (int i = 0; i < listaProfiles.size(); i++) {
 			repoProfiles.delete(listaProfiles.get(i));
+		}
+		
+		HeadersPacientes headersPacientes = repoHeadersPacientes.findByPrediccionId(id);
+		
+		if(headersPacientes != null) {
+			repoHeadersPacientes.delete(headersPacientes);
 		}
 		
 		List<Pacientes> listaPacientes = repoPacientes.findAllByPrediccionId(id);

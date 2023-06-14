@@ -61,6 +61,7 @@ import com.tfg.entities.Imagenes;
 import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
+import com.tfg.services.IHeadersPacientesService;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
@@ -91,6 +92,9 @@ public class FasesController {
 
 	@Autowired
 	private IPacientesService pacientesService;
+	
+	@Autowired
+	private IHeadersPacientesService headersPacientesService;
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
@@ -172,7 +176,7 @@ public class FasesController {
 
 		String poblacionData = "";
 		for (int i = 0; i < poblacion.size(); i++) {
-			poblacionData += poblacion.get(i).getDataPaciente() + "\n";
+			poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
 		}
 
 		File tempFile = File.createTempFile("temp", "prediccion" + idPrediccionPoblacion + ".csv");
@@ -191,10 +195,18 @@ public class FasesController {
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (multipartFile != null) {
+			
+			
+			if(prediccion.getHeadersPacientes() != null) {
+				headersPacientesService.borrarHeadersPoblacion(prediccion.getId());
+			}
 
 			if (prediccion.getPacientes().size() > 0) {
 				pacientesService.borrarPoblacion(prediccion.getId());
+				
 			}
+				
+			headersPacientesService.guardarHeadersPoblacion(multipartFile, prediccion.getId());
 
 			pacientesService.guardarPoblacion(multipartFile, prediccion.getId());
 		}
