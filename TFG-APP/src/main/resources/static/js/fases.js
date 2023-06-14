@@ -1349,7 +1349,12 @@ new Vue({
 			            </div>
 			            <div class="card-body">
 			                <form id="selectPrediccionForm" @submit.prevent="seleccionarPrediccionAndPoblacionInfo">
-			                	<div class="form-group mb-3">
+			                	<div v-if="pantalla2.descripciones.length == 0">
+			                		<h4 class="text-center">No hay predicciones creadas</h4>
+			                		<h4 class="text-center"><a :href="'predicciones'">Crea una aquí</a></h4>
+			  
+			                	</div>			           
+			                	<div v-else class="form-group mb-3">
 					                <label for="selectDescripcion" class="form-label text-custom-light-color fw-bold" style="font-size: 22px;">Seleccione una predicción</label>
 									
 									<select class="input-select-prediccion" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
