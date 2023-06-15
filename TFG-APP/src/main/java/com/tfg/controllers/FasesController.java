@@ -32,7 +32,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -319,7 +318,7 @@ public class FasesController {
 	public ResponseEntity<?> getVarianceMetrics(
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
-			throws IllegalStateException, IOException, JSONException {
+			throws IllegalStateException, IOException {
 
 		if (multipartFile != null) {
 			String error = this.validarInputFile(multipartFile);

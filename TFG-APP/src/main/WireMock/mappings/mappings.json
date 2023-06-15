@@ -1,0 +1,31 @@
+{
+"request": {
+"method": "GET",
+"urlPathPattern": "/clustering/getOptimalNClusters",
+"queryParameters": 
+{
+"max_clusters": {
+"matches": "[0-9]+" 
+}
+},
+"headers":{
+"Content-Type": {
+"matches": "multipart/form-data.*"
+}	
+},
+"bodyPatterns": [
+{
+"matches": ".*Content-Disposition: form-data; name=\"file\"; filename=\".*\\.csv\".*"
+}
+]
+},
+"response": {
+"status": 200,
+"bodyFileName": "nClustersImagen.png",
+"headers":{
+"access-control-allow-credentials": "true",
+"access-control-allow-origin": "*",
+"content-type": "image/png"
+}
+}
+}
