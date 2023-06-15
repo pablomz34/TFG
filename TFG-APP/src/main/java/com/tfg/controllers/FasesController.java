@@ -56,6 +56,7 @@ import java.io.FileReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
+import com.tfg.entities.HeadersPacientes;
 import com.tfg.entities.Imagenes;
 import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
@@ -91,7 +92,7 @@ public class FasesController {
 
 	@Autowired
 	private IPacientesService pacientesService;
-	
+
 	@Autowired
 	private IHeadersPacientesService headersPacientesService;
 
@@ -169,13 +170,54 @@ public class FasesController {
 		return entityResponse;
 	}
 
-	private File llamadaBBDDPoblacion(String idPrediccionPoblacion) throws IOException {
+	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase) throws IOException {
 
 		List<Pacientes> poblacion = pacientesService.findPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
-
+		HeadersPacientes headers = headersPacientesService.findHeadersPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
 		String poblacionData = "";
-		for (int i = 0; i < poblacion.size(); i++) {
-			poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+		switch (fase) {
+		case "fase1":
+			poblacionData += headers.getHeadersVariableObjetivo()+ ",";
+			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			}
+			break;
+		case "fase2":
+			poblacionData += headers.getHeadersVariableObjetivo()+ ",";
+			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			}
+			break;
+		case "fase3":
+			poblacionData += headers.getHeadersVariableObjetivo()+ ",";
+			poblacionData += headers.getHeadersAlgoritmos()+ "\n";
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+				poblacionData += poblacion.get(i).getAlgoritmos() + "\n";
+			}
+			break;
+		case "fase4":
+			poblacionData += headers.getHeadersVariableObjetivo()+ ",";
+			poblacionData += headers.getHeadersAlgoritmos()+ ",";
+			poblacionData += headers.getHeadersVariablesClinicas()+ "\n";
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+				poblacionData += poblacion.get(i).getAlgoritmos() + ",";
+				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			}
+			break;
+		case "fase5":
+			poblacionData += headers.getHeadersAlgoritmos()+ ",";
+			poblacionData += headers.getHeadersVariablesClinicas()+ "\n";
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getAlgoritmos() + ",";
+				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			}
+			break;
 		}
 
 		File tempFile = File.createTempFile("temp", "prediccion" + idPrediccionPoblacion + ".csv");
@@ -194,17 +236,16 @@ public class FasesController {
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (multipartFile != null) {
-			
-			
-			if(prediccion.getHeadersPacientes() != null) {
+
+			if (prediccion.getHeadersPacientes() != null) {
 				headersPacientesService.borrarHeadersPoblacion(prediccion.getId());
 			}
 
 			if (prediccion.getPacientes().size() > 0) {
 				pacientesService.borrarPoblacion(prediccion.getId());
-				
+
 			}
-				
+
 			headersPacientesService.guardarHeadersPoblacion(multipartFile, prediccion.getId());
 
 			pacientesService.guardarPoblacion(multipartFile, prediccion.getId());
@@ -238,7 +279,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1");
 
 			responseEntity = llamadaServidorNgrok(urlOptimalNClusters, ownFile);
 
@@ -292,7 +333,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2");
 
 			responseEntity = llamadaServidorNgrok(urlSubPopulations, ownFile);
 
@@ -333,7 +374,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase3");
 
 			responseEntity = llamadaServidorNgrok(urlVarianceMetrics, ownFile);
 
@@ -445,7 +486,6 @@ public class FasesController {
 			@RequestParam(name = "idPrediccionPoblacion") String idPrediccionPoblacion,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
-		
 
 		idPrediccionPoblacion = StringEscapeUtils.escapeJava(idPrediccionPoblacion);
 
@@ -549,7 +589,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5");
 
 			responseEntity = llamadaServidorNgrok(urlModelPerformance, ownFile);
 
@@ -591,7 +631,7 @@ public class FasesController {
 
 		if (multipartFile == null) {
 
-			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4");
 
 			responseEntity = llamadaServidorNgrok(urlImagenCluster, ownFile);
 		} else if (multipartFile != null) {
@@ -625,10 +665,10 @@ public class FasesController {
 
 		if (multipartFile == null) {
 
-			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion);
+			File ownFile = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4");
 
 			responseEntity = llamadaServidorNgrok(urlPerfilCluster, ownFile);
-			
+
 		} else if (multipartFile != null) {
 
 			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());

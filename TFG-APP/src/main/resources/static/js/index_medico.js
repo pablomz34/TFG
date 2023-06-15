@@ -229,7 +229,7 @@ new Vue({
 						<form @submit.prevent="getPrediccionValues">	
 							<div class="form-group mb-3">	                 
 	                    		<label for="predicciones" class="form-label">Predicciones</label>
-								<select class="form-select" name="predicciones" v-model="descripcionSeleccionada" required>
+								<select class="form-select" id="predicciones" name="predicciones" v-model="descripcionSeleccionada" required>
 		                       		<option v-for="i in descripciones" :value="i">{{i}}</option>
 		                    	</select>
 		                    </div>
@@ -244,7 +244,7 @@ new Vue({
 							</div>
 						</form>
 					</div>
-					<div v-else>
+					<div v-else class="card-body">
 						<p class="mt-3 text-center  text-custom-color fs-5 fw-bold">No hay predicciones disponibles</p>
 					</div>
 				</div>

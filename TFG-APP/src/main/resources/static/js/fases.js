@@ -1374,7 +1374,7 @@ new Vue({
 								<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container">
 								 	  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton2" id="radioButton2">
 									  <label class="radio-button-label" for="radioButton2">
-									    Subir mis de población a la base de datos
+									    Subir mi csv de población a la base de datos
 									  </label>
 								</div>
 								
