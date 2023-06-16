@@ -134,8 +134,8 @@ Vue.component('fase2', {
 			
 			
 			
-			formData.append('nClustersAglomerativo', this.nClustersAglomerativo);
-			formData.append('nClustersKModes', this.nClustersKModes);
+			formData.append('n_agglomerative', this.nClustersAglomerativo);
+			formData.append('n_kmodes', this.nClustersKModes);
 			
 			
 			if(THIZ.csvInput){

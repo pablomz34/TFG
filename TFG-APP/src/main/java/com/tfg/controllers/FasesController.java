@@ -1,6 +1,7 @@
 package com.tfg.controllers;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -219,7 +220,7 @@ public class FasesController {
 
 			headersPacientesService.guardarHeadersPoblacion(multipartFile, prediccion.getId());
 
-			pacientesService.guardarPoblacion(multipartFile, prediccion.getId());
+			pacientesService.guardarPoblacionInicial(multipartFile, prediccion.getId());
 		}
 
 		return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
@@ -280,8 +281,8 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<?> getSubPopulations(@RequestParam("nClustersAglomerativo") String nClustersAglomerativo,
-			@RequestParam("nClustersKModes") String nClustersKModes,
+	public ResponseEntity<?> getSubPopulations(@RequestParam("n_agglomerative") String nClustersAglomerativo,
+			@RequestParam("n_kmodes") String nClustersKModes,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
 
@@ -303,7 +304,7 @@ public class FasesController {
 			}
 		}
 
-		String urlSubPopulations = UrlServidor + "clustering/getSubpopulations?n_agglomerative="
+		String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
 				+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes);
 
 		InputStream inputStream;
@@ -331,6 +332,10 @@ public class FasesController {
 		}
 
 		byte[] csvBytes = inputStream.readAllBytes();
+		InputStream input = new ByteArrayInputStream(csvBytes);
+		
+		//headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));		
+		pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
 
 		httpClient.close();
 

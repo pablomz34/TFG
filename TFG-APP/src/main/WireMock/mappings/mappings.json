@@ -1,30 +1,67 @@
 {
-	"request": {
-		"method": "POST",
-		"urlPathPattern": "/clustering/getOptimalNClusters",
-		"queryParameters": {
-			"max_clusters": {
-				"matches": "[0-9]+"
+	"mappings": [
+		{
+			"request": {
+				"method": "POST",
+				"urlPathPattern": "/clustering/getOptimalNClusters",
+				"queryParameters": {
+					"max_clusters": {
+						"matches": "[0-9]+"
+					}
+				},
+				"headers": {
+					"Content-Type": {
+						"matches": "multipart/form-data.*"
+					}
+				},
+				"bodyPatterns": [
+					{
+						"matches": ".*Content-Disposition: form-data; name=\"file\"; filename=\".*\\.csv\".*"
+					}
+				]
+			},
+			"response": {
+				"status": 200,
+				"bodyFileName": "nClustersImagen.png",
+				"headers": {
+					"access-control-allow-credentials": "true",
+					"access-control-allow-origin": "*",
+					"content-type": "image/png"
+				}
 			}
 		},
-		"headers": {
-			"Content-Type": {
-				"matches": "multipart/form-data.*"
+		{
+			"request": {
+				"method": "POST",
+				"urlPathPattern": "/clustering/getSubpopulations",
+				"queryParameters": {
+					"n_agglomerative": {
+						"matches": "[0-9]+"
+					},
+					"n_kmodes": {
+						"matches": "[0-9]+"
+					}
+				},
+				"headers": {
+					"Content-Type": {
+						"matches": "multipart/form-data.*"
+					}
+				},
+				"bodyPatterns": [
+					{
+						"matches": ".*Content-Disposition: form-data; name=\"file\"; filename=\".*\\.csv\".*"
+					}
+				]
+			},
+			"response": {
+				"status": 200,
+				"bodyFileName": "SubPopulationsResponse.csv",
+				"headers": {
+					"access-control-allow-credentials": "true",
+					"access-control-allow-origin": "*",
+					"content-type": "text/csv; charset=utf-8"
+				}
 			}
-		},
-		"bodyPatterns": [
-			{
-				"matches": ".*Content-Disposition: form-data; name=\"file\"; filename=\".*\\.csv\".*"
-			}
-		]
-	},
-	"response": {
-		"status": 200,
-		"bodyFileName": "nClustersImagen.png",
-		"headers": {
-			"access-control-allow-credentials": "true",
-			"access-control-allow-origin": "*",
-			"content-type": "image/png"
 		}
-	}
+	]
 }

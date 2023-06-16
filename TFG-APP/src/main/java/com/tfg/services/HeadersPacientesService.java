@@ -21,41 +21,40 @@ import com.tfg.repositories.PrediccionesRepository;
 @Transactional
 public class HeadersPacientesService implements IHeadersPacientesService {
 
-	@Autowired 
+	@Autowired
 	private PrediccionesRepository prediccionesRepo;
-	
+
 	@Autowired
 	private HeadersPacientesRepository repos;
-	
-	
+
 	@Override
 	public void guardarHeadersPoblacion(MultipartFile multipartFile, Long idPrediccion) throws IOException {
-		
+
 		try {
-            InputStream inputStream = multipartFile.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            
-            String headersString = reader.readLine();
-            
-            HeadersPacientes headersPaciente = new HeadersPacientes();
-            
-            int firstCommaIndex = headersString.indexOf(',');
-            
-            String headersVariableObjetivo = headersString.substring(0, firstCommaIndex).trim();
-            String headersVariablesClinicas = headersString.substring(firstCommaIndex + 1).trim();
-            
-            headersPaciente.setHeadersVariableObjetivo(headersVariableObjetivo);
-            
-            headersPaciente.setHeadersVariablesClinicas(headersVariablesClinicas);
-            
-            headersPaciente.setPrediccion(prediccionesRepo.findPrediccionById(idPrediccion));
-            
-            repos.save(headersPaciente);
-                
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+			InputStream inputStream = multipartFile.getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+			String headersString = reader.readLine();
+
+			HeadersPacientes headersPaciente = new HeadersPacientes();
+
+			int firstCommaIndex = headersString.indexOf(',');
+
+			String headersVariableObjetivo = headersString.substring(0, firstCommaIndex).trim();
+			String headersVariablesClinicas = headersString.substring(firstCommaIndex + 1).trim();
+
+			headersPaciente.setHeadersVariableObjetivo(headersVariableObjetivo);
+
+			headersPaciente.setHeadersVariablesClinicas(headersVariablesClinicas);
+
+			headersPaciente.setPrediccion(prediccionesRepo.findPrediccionById(idPrediccion));
+
+			repos.save(headersPaciente);
+
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -67,8 +66,38 @@ public class HeadersPacientesService implements IHeadersPacientesService {
 	@Override
 	public void borrarHeadersPoblacion(Long idPrediccion) {
 		HeadersPacientes headersPacientes = repos.findByPrediccionId(idPrediccion);
-		
+
 		repos.delete(headersPacientes);
+	}
+
+	@Override
+	public void addAlgoritmosHeadersPoblacion(InputStream file, Long idPrediccion) throws IOException {
+		try {
+			HeadersPacientes headersPaciente = repos.findByPrediccionId(idPrediccion);
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+
+			String[] headersString = reader.readLine().split(",");
+
+			int saltos = headersPaciente.getHeadersVariablesClinicas().split(",").length;
+
+			StringBuilder builder = new StringBuilder();
+
+			for (int i = saltos + 1; i < headersString.length; i++) {
+				builder.append(headersString[i].trim());
+				if (i < headersString.length - 1)
+					builder.append(",");
+			}
+
+			headersPaciente.setHeadersAlgoritmos(builder.toString());
+
+			repos.save(headersPaciente);
+
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
