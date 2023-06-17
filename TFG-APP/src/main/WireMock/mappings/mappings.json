@@ -484,12 +484,59 @@
 				"headers": {
 					"access-control-allow-credentials": "true",
 					"access-control-allow-origin": "*",
-					"content-type": "application/json",
-					"content-length": "501"
+					"content-type": "application/json"
 				},
 				"jsonBody": {
 					"id_model": 23,
 					"auc": 91
+				}
+			}
+		},
+		{
+			"request": {
+				"method": "POST",
+				"urlPathPattern": "/survivalAndProfiling/getNewPatientClassification",
+				"headers": {
+					"Content-Type": {
+						"matches": "application/json; charset=UTF-8"
+					}
+				},
+				"bodyPatterns": [
+					{
+						"matchesJsonPath": "$.GENDER",
+						"contains": "valor1"
+					},
+					{
+						"matchesJsonPath": "$.EDUCATION",
+						"contains": "valor2"
+					},
+					{
+						"matchesJsonPath": "$.ETHCAT",
+						"contains": "valor3"
+					},
+					{
+						"matchesJsonPath": "$.WORK_INCOME_TCR",
+						"contains": "valor4"
+					},
+					{
+						"matchesJsonPath": "$.PRI_PAYMENT_TCR_KI",
+						"contains": "valor5"
+					},
+					{
+						"matchesJsonPath": "$.AGE_RANGE",
+						"contains": "valor6"
+					}
+				]
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"access-control-allow-credentials": "true",
+					"access-control-allow-origin": "*",
+					"content-type": "application/json"
+				},
+				"jsonBody": {
+					"Cluster": 2
 				}
 			}
 		}

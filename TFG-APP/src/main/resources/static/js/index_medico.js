@@ -111,6 +111,7 @@ new Vue({
 
 							}
 							THIZ.isPrediccionSelected = true
+							THIZ.error1 = '';
 						})
 						.catch(error => console.error(error));
 
