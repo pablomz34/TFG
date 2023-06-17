@@ -334,7 +334,10 @@ public class FasesController {
 		byte[] csvBytes = inputStream.readAllBytes();
 		InputStream input = new ByteArrayInputStream(csvBytes);
 		
-		//headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));		
+		headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));		
+		
+		input = new ByteArrayInputStream(csvBytes);
+		
 		pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
 
 		httpClient.close();
