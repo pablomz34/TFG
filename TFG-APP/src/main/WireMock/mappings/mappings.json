@@ -62,6 +62,58 @@
 					"content-type": "text/csv; charset=utf-8"
 				}
 			}
+		},
+		{
+			"request": {
+				"method": "POST",
+				"urlPathPattern": "/clustering/getVarianceMetrics",
+				"headers": {
+					"Content-Type": {
+						"matches": "multipart/form-data.*"
+					}
+				},
+				"bodyPatterns": [
+					{
+						"matches": ".*Content-Disposition: form-data; name=\"file\"; filename=\".*\\.csv\".*"
+					}
+				]
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"access-control-allow-credentials": "true",
+					"access-control-allow-origin": "*",
+					"content-type": "application/json",
+					"content-length": "501"
+				},
+				"jsonBody": [
+					[{},
+					{
+						"metric": "agglomerative",
+						"tss_value": 1718.4617599213175,
+						"total_wc": 1665.9466225306396,
+						"total_bc": 52.51513739067786
+					},
+					{
+						"metric": "kmodes",
+						"tss_value": 1718.4617599213175,
+						"total_wc": 1489.5286017356984,
+						"total_bc": 228.9331581856191
+					},
+					{
+						"metric": "kmeans_labels",
+						"tss_value": 1718.4617599213175,
+						"total_wc": 1641.919483029802,
+						"total_bc": 76.5422768915154
+					},
+					{
+						"metric": "mini_batch_labels",
+						"tss_value": 1718.4617599213175,
+						"total_wc": 1661.4722036595092,
+						"total_bc": 56.98955626180827
+					}]
+				]
+			}
 		}
 	]
 }

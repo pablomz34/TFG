@@ -358,7 +358,7 @@ public class FasesController {
 			}
 		}
 
-		String urlVarianceMetrics = UrlServidor + "clustering/getVarianceMetrics";
+		String urlVarianceMetrics = UrlMock + "clustering/getVarianceMetrics";
 
 		InputStream inputStream;
 
