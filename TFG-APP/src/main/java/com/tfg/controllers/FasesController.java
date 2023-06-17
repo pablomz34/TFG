@@ -582,7 +582,7 @@ public class FasesController {
 			}
 		}
 
-		String urlModelPerformance = UrlServidor + "survivalAndProfiling/getModelPerformance";
+		String urlModelPerformance = UrlMock + "survivalAndProfiling/getModelPerformance";
 
 		InputStream inputStream;
 
