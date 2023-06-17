@@ -496,27 +496,43 @@ public class FasesController {
 				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 			}
 		}
+		
+		File file;
+		
+		
+		if(multipartFile==null) {
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4");
+		}
+		else {
+			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-		this.guardarFeatures(multipartFile, "survivalAndProfiling/createPopulationProfile", -1, idPrediccionPoblacion);
+			multipartFile.transferTo(file);
+		}
+		
+					
+
+		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, idPrediccionPoblacion);
 
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
-			this.guardarFeatures(multipartFile,
+			this.guardarFeatures(file,
 					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i,
 					idPrediccionPoblacion);
 		}
 
 		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + idPrediccionPoblacion;
 
-		this.guardarImagenes(multipartFile, "survivalAndProfiling/createAllSurvivalCurves",
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
 				rutaPrediccion + File.separator + "allClusters.png",
 				"/clustersImages/prediccion" + idPrediccionPoblacion + "/allClusters.png", -1, idPrediccionPoblacion);
 		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
-			this.guardarImagenes(multipartFile,
+			this.guardarImagenes(file,
 					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
 					rutaPrediccion + File.separator + "cluster" + Integer.toString(i) + ".png",
 					"/clustersImages/prediccion" + idPrediccionPoblacion + "/cluster" + Integer.toString(i) + ".png", i,
 					idPrediccionPoblacion);
 		}
+		
+		file.delete();
 
 		return new ResponseEntity<>(prediccion.getMaxClusters(), HttpStatus.OK);
 
@@ -627,31 +643,16 @@ public class FasesController {
 
 	}
 
-	private void guardarImagenes(MultipartFile multipartFile, String url, String rutaImagenServidor,
+	private void guardarImagenes(File file, String url, String rutaImagenServidor,
 			String rutaImagenBDD, Integer numCluster, String idPrediccionPoblacion) throws IOException {
 
-		String urlImagenCluster = UrlServidor + url;
+		String urlImagenCluster = UrlMock + url;
 
 		InputStream inputStream = null;
 
-		File file = null;
-
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		if (multipartFile == null) {
-
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4");
-
-			inputStream = llamadaServidorNgrok(urlImagenCluster, file, httpClient);
-		} else if (multipartFile != null) {
-
-			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-			multipartFile.transferTo(file);
-
-			inputStream = llamadaServidorNgrok(urlImagenCluster, file, httpClient);
-
-		}
+		inputStream = llamadaServidorNgrok(urlImagenCluster, file, httpClient);
 
 		byte[] imageBytes = inputStream.readAllBytes();
 
@@ -661,38 +662,20 @@ public class FasesController {
 
 		httpClient.close();
 
-		file.delete();
-
 		imagenesService.guardarImagen(numCluster, rutaImagenBDD, Long.parseLong(idPrediccionPoblacion));
 
 	}
 
-	private void guardarFeatures(MultipartFile multipartFile, String url, Integer numCluster,
+	private void guardarFeatures(File file, String url, Integer numCluster,
 			String idPrediccionPoblacion) throws ClientProtocolException, IOException {
 
-		String urlPerfilCluster = UrlServidor + url;
+		String urlPerfilCluster = UrlMock + url;
 
 		InputStream inputStream = null;
 
-		File file = null;
-
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		if (multipartFile == null) {
-
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4");
-
-			inputStream = llamadaServidorNgrok(urlPerfilCluster, file, httpClient);
-
-		} else if (multipartFile != null) {
-
-			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-			multipartFile.transferTo(file);
-
-			inputStream = llamadaServidorNgrok(urlPerfilCluster, file, httpClient);
-
-		}
+		inputStream = llamadaServidorNgrok(urlPerfilCluster, file, httpClient);
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
@@ -713,8 +696,6 @@ public class FasesController {
 		String featuresString = gson.toJson(map);
 
 		httpClient.close();
-
-		file.delete();
 
 		profilesService.guardarProfile(numCluster, featuresString, Long.parseLong(idPrediccionPoblacion));
 
