@@ -6,7 +6,8 @@ Vue.component('fase1', {
 			csvFile: '',
 			imagenCreada: false,
 			imagenUrl: '',
-			error: ''
+			error: '',
+			mostrarCargando: false,
 		}
 	},
 	methods: {
@@ -15,7 +16,7 @@ Vue.component('fase1', {
 			const THIZ = this;
 
 			const formData = new FormData();
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 
 			formData.append('max_clusters', this.nClusters);
 
@@ -37,7 +38,7 @@ Vue.component('fase1', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -51,7 +52,7 @@ Vue.component('fase1', {
 					const url = URL.createObjectURL(blob);
 					THIZ.imagenCreada = true;
 					THIZ.imagenUrl = url;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				//.catch(error => console.error(error))
 				.catch(error => console.error(error))
@@ -66,7 +67,7 @@ Vue.component('fase1', {
 	template: `
 	<div class="container mb-5 mt-5">
 		<span>
-	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
+	        <div id="cargando" v-show="mostrarCargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
@@ -128,16 +129,19 @@ Vue.component('fase2', {
 			nClustersKModes: '',
 			csvFile: '',
 			error: '',
+			mostrarCargando: false
 		}
 	},
 
 	methods: {
 
-		getSubPopulations() {
+		getSubPopulations: function() {
 			const THIZ = this;
+			THIZ.mostrarCargando=true;
 			THIZ.error = '';
+		
 			const formData = new FormData();
-			$('#cargando').show();
+			
 
 
 
@@ -164,7 +168,7 @@ Vue.component('fase2', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -184,7 +188,8 @@ Vue.component('fase2', {
 					document.body.appendChild(link);
 					link.click();
 					document.body.removeChild(link);
-					$('#cargando').hide();
+					THIZ.mostrarCargando=false;
+					
 				})
 				.catch(error => console.error(error));
 		},
@@ -198,7 +203,7 @@ Vue.component('fase2', {
 	template: `
 	<div class="container mb-5 mt-5">
 	    <span>
-	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
+	        <div id="cargando" v-show="mostrarCargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
@@ -260,6 +265,7 @@ Vue.component('fase3', {
 			headers: [{ header: "Metric", pos: 0 }, { header: "Tss_value", pos: 1 }, { header: "Total_wc", pos: 2 }, { header: "Total_bc", pos: 3 }],
 			datosCargados: false,
 			error: '',
+			mostrarCargando: false,
 		}
 	},
 
@@ -268,7 +274,7 @@ Vue.component('fase3', {
 			const THIZ = this;
 			THIZ.error = '';
 			const formData = new FormData();
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 
 			if (THIZ.csvInput) {
 				formData.append('file', this.$refs.csvFile.files[0]);
@@ -285,7 +291,7 @@ Vue.component('fase3', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.json();
@@ -294,7 +300,7 @@ Vue.component('fase3', {
 				.then(data => {
 					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j]
 					THIZ.datosCargados = true;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 
@@ -307,7 +313,7 @@ Vue.component('fase3', {
 	template: `
 	<div class="container mb-5 mt-5">
 	    <span>
-	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
+	        <div id="cargando" v-show="mostrarCargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
@@ -401,7 +407,8 @@ Vue.component('fase4', {
 			error0: '',
 			error1: '',
 			error2: '',
-			error3: ''
+			error3: '',
+			mostrarCargando: false,
 		}
 	},
 
@@ -433,7 +440,7 @@ Vue.component('fase4', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						//THIZ.error1 = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -445,14 +452,14 @@ Vue.component('fase4', {
 					for (i = 0; i < data.length; i++) {
 						THIZ.descripciones.push(data[i]);
 					}
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 		},
 
 		seleccionarPrediccion: function() {
 			const THIZ = this;
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 			THIZ.error0 = '';
 			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?crearPrediccion=" + this.crear +
 				"&descripcion=" + this.descripcionSeleccionada, {
@@ -462,7 +469,7 @@ Vue.component('fase4', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error0 = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.text();
@@ -471,7 +478,7 @@ Vue.component('fase4', {
 					THIZ.idPrediccion = data;
 					if (this.crear) THIZ.descripciones.push(this.descripcionSeleccionada);
 					THIZ.continuar = true;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 		},
@@ -483,7 +490,7 @@ Vue.component('fase4', {
 			THIZ.error1 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 
 			if (THIZ.csvInput) {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccion);
@@ -503,7 +510,7 @@ Vue.component('fase4', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error1 = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -514,7 +521,7 @@ Vue.component('fase4', {
 
 					THIZ.nClusters = data;
 					THIZ.curvasAndPerfilesCreados = true;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 
@@ -523,7 +530,7 @@ Vue.component('fase4', {
 
 		mostrarClusterSurvivalCurve: function() {
 			const THIZ = this;
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 			THIZ.curvasCargadas = false;
 
 			THIZ.error2 = '';
@@ -544,7 +551,7 @@ Vue.component('fase4', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error2 = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.text();
@@ -553,14 +560,14 @@ Vue.component('fase4', {
 					THIZ.curvasUrl = data;
 					THIZ.nombreDescargaCurvas = 'prediccion' + this.idPrediccion + 'cluster' + this.clusterSeleccionadoCurves + '.png';
 					THIZ.curvasCargadas = true;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 		},
 
 		mostrarClusterProfile: function() {
 			const THIZ = this;
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 
 			THIZ.error3 = '';
 			THIZ.perfilCargado = false;
@@ -581,7 +588,7 @@ Vue.component('fase4', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error3 = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.json();
@@ -596,7 +603,7 @@ Vue.component('fase4', {
 					THIZ.variables = data.features;
 
 					THIZ.perfilCargado = true;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 		},
@@ -619,7 +626,7 @@ Vue.component('fase4', {
 	template: `
 	<div class="container mb-5 mt-5">
 	    <span>
-	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
+	        <div id="cargando" v-show="mostrarCargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
@@ -667,7 +674,7 @@ Vue.component('fase4', {
 							<form @submit.prevent="seleccionarPrediccion">
 								<div class="form-group mb-3">
 									<label for="descripcionSeleccionada" class="form-label">Elige una descripción existente para editar la predicción</label>
-									<select class="form-select" name="descripciones" v-model="descripcionSeleccionada" required>
+									<select class="form-select" name="descripciones" id="descripcionSeleccionada" v-model="descripcionSeleccionada" required>
 			                       		<option value="" disabled selected></option>
 			                       		<option v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
 			                    	</select>
@@ -708,7 +715,7 @@ Vue.component('fase4', {
 	                <form @submit.prevent="createPopulationAndCurves">
 	                    <div v-if="csvInput" class="form-group mb-3">
 	                        <label for="csv1" class="form-label">Archivo csv</label>
-	                        <input class="form-control" accept=".csv" type="file" id="csv" ref="csvFile" required />
+	                        <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required />
 	                    </div>
 	
 	                    <div class="form-group mb-2">
@@ -746,7 +753,7 @@ Vue.component('fase4', {
 	                <form @submit.prevent="mostrarClusterSurvivalCurve">
 	                    <div class="form-group mb-3">	                 
                     		<label for="clusterSeleccionadoCurves" class="form-label">Número de cluster</label>
-							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoCurves" required>
+							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoCurves" id="clusterSeleccionadoCurves" required>
 	                       		<option value="-1">Todas las curvas</option>
 	                       		<option v-for="i in nClustersRange" :value="i">{{i}}</option>
 	                    	</select>
@@ -772,7 +779,7 @@ Vue.component('fase4', {
 	                <form @submit.prevent="mostrarClusterProfile">
 	                    <div class="form-group mb-3">
 	                        <label for="clusterSeleccionadoProfile" class="form-label">Número de cluster</label>
-							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoProfile" required>
+							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoProfile" id="clusterSeleccionadoProfile" required>
 	                       		<option value="-1">Todas las curvas</option>
 	                       		<option v-for="i in nClustersRange" :value="i">{{i}}</option>
 	                    	</select>
@@ -845,6 +852,7 @@ Vue.component('fase5', {
 			idModel: '',
 			auc: '',
 			error: '',
+			mostrarCargando: false,
 		}
 	},
 
@@ -856,7 +864,7 @@ Vue.component('fase5', {
 			THIZ.datosCargados = false;
 			THIZ.error = '';
 			const formData = new FormData();
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 
 
 			if (THIZ.csvInput) {
@@ -875,7 +883,7 @@ Vue.component('fase5', {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error = "Error: " + errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.json();
@@ -884,7 +892,7 @@ Vue.component('fase5', {
 					THIZ.idModel = data.id_model;
 					THIZ.auc = data.auc + '%';
 					THIZ.datosCargados = true;
-					$('#cargando').hide();
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 		},
@@ -897,7 +905,7 @@ Vue.component('fase5', {
 	template: `
 	<div class="container mb-5 mt-5">
 	    <span>
-	        <div id="cargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
+	        <div id="cargando" v-show="mostrarCargando" style="position: fixed; display: none; width: 100%; height: 100%; margin: 0; padding: 0; top: 0; left: 0; background: rgba(255, 255, 255, 0.75); z-index: 9999;">
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
