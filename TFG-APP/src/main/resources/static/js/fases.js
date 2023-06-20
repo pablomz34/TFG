@@ -137,11 +137,11 @@ Vue.component('fase2', {
 
 		getSubPopulations: function() {
 			const THIZ = this;
-			THIZ.mostrarCargando=true;
+			THIZ.mostrarCargando = true;
 			THIZ.error = '';
-		
+
 			const formData = new FormData();
-			
+
 
 
 
@@ -188,8 +188,8 @@ Vue.component('fase2', {
 					document.body.appendChild(link);
 					link.click();
 					document.body.removeChild(link);
-					THIZ.mostrarCargando=false;
-					
+					THIZ.mostrarCargando = false;
+
 				})
 				.catch(error => console.error(error));
 		},
@@ -1320,6 +1320,73 @@ new Vue({
 			$(fase).click();
 		},
 
+		cambioPantalla3a1(THIZ) {
+
+			THIZ.csvInput = false;
+
+			THIZ.pantalla1.selectedIdCard = '';
+		},
+
+		cambioPantalla3a2Y2a1(THIZ, cambio2a1) {
+
+			if (cambio2a1) {
+				THIZ.csvInput = false;
+
+				THIZ.pantalla1.selectedIdCard = '';
+
+				THIZ.pantalla2.descripciones = [];
+			}
+
+			THIZ.idPrediccionPoblacion = '';
+
+			THIZ.pantalla2.descripcionSeleccionada = '';
+
+			THIZ.pantalla2.pacientesPrediccion = '';
+
+			THIZ.pantalla2.csvUploadPoblacion = '';
+
+			THIZ.pantalla2.showContinueButton = false;
+
+			THIZ.pantalla2.uploadPoblacionInfo = false;
+
+		},
+		cambiarShowPantallas(nuevaPantalla, antiguaPantalla) {
+
+			nuevaPantalla.showPantalla = true;
+
+			antiguaPantalla.showPantalla = false;
+		},
+		goBack() {
+
+			const THIZ = this;
+
+			if (THIZ.pantalla3.showPantalla) {
+
+				if (THIZ.csvInput) {
+
+					this.cambiarShowPantallas(THIZ.pantalla1, THIZ.pantalla3);
+
+					this.cambioPantalla3a1(THIZ);
+
+				}
+				else {
+
+					this.cambiarShowPantallas(THIZ.pantalla2, THIZ.pantalla3);
+
+					this.cambioPantalla3a2Y2a1(THIZ,false);
+
+				}
+
+			}
+			else if (THIZ.pantalla2.showPantalla) {
+
+				this.cambiarShowPantallas(THIZ.pantalla1, THIZ.pantalla2);
+
+				this.cambioPantalla3a2Y2a1(THIZ, true);
+
+			}
+		}
+
 	},
 
 	//	updated() {
@@ -1340,36 +1407,39 @@ new Vue({
 			THIZ.pantalla2.showContinueButton = false;
 			THIZ.pantalla2.csvUploadPoblacion = '';
 
-			fetch(window.location.origin + "/admin/fases/getPacientesPrediccion?descripcion=" + newValue, {
-				method: "GET"
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						//THIZ.error = "Error: " + errorMessage;
 
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.text();
+			if (newValue.length > 0) {
+
+				fetch(window.location.origin + "/admin/fases/getPacientesPrediccion?descripcion=" + newValue, {
+					method: "GET"
 				})
-				.then(pacientes => {
+					.then(async res => {
+						if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+							const errorMessage = await res.text();
+							//THIZ.error = "Error: " + errorMessage;
 
-					THIZ.pantalla2.pacientesPrediccion = Number(pacientes);
+							throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+						}
+						return res.text();
+					})
+					.then(pacientes => {
 
-				})
-				.catch(error => console.error(error));
+						THIZ.pantalla2.pacientesPrediccion = Number(pacientes);
 
+					})
+					.catch(error => console.error(error));
+			}
 		}
 
 
 
 	},
 	template: `
-	<div class="container pt-2">	
+	<div class="container-fluid pt-2 position-relative">	
 	
 	
 		<div v-if="pantalla1.showPantalla" class="container pt-2">
-			<div class="row justify-content-around mt-5">
+			<div class="row justify-content-around" style="margin-top: 65px;">
 	
 				<div class="col-md-4 mb-5">
 					<div class="row justify-content-center">
@@ -1397,7 +1467,12 @@ new Vue({
 		
 		
 		<div v-if="pantalla2.showPantalla" class="container pt-2">
-			<div class="row justify-content-around mt-5">
+		
+			
+			<button type="button" @click="goBack" class="back-button">Atrás <i class="fa-solid fa-arrow-left back-button-i"></i></button>	
+			
+		
+			<div class="row justify-content-around" style="margin-top: 65px;">
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">
 			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
@@ -1454,49 +1529,59 @@ new Vue({
 		        	</div>
 	        	</div>				
 			</div>
+			
+			
+			
 		</div>
 		
 	    
 	    <div v-if="pantalla3.showPantalla" class="container pt-2"> 
 	    
-		    <div class="col-12 mb-3">
-				<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
+	    	<button type="button" @click="goBack" class="back-button">Atrás <i class="fa-solid fa-arrow-left back-button-i"></i></button>	
+	    
+	    	<div class="row" style="margin-top: 65px;">
+	    
+			    <div class="col-12 mb-3">
+					<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
+				</div>
+				
+				<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
+				  <li class="nav-item pt-2" role="presentation">
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" v-show="this.faseSeleccionada==1">Nº Óptimo de Clusters</button>
+				  </li>
+				  <li class="nav-item pt-2" role="presentation">
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" v-show="this.faseSeleccionada==2">Subpoblaciones</button>
+				  </li>
+				  <li class="nav-item pt-2" role="presentation">
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" v-show="faseSeleccionada==3">Métricas de varianza</button>
+				  </li>
+				  <li class="nav-item pt-2" role="presentation">
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" v-show="faseSeleccionada==4">Gráficas y estadísticas de población</button>
+				  </li>
+				  <li class="nav-item pt-2" role="presentation">
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" v-show="faseSeleccionada==5">Rendimiento del modelo</button>
+				  </li>
+				</ul>
+				<div class="tab-content" id="pills-tabContent">
+				  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="fase1" tabindex="0">
+				  	<fase1 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  </div>
+				  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="fase2" tabindex="0">
+				  	<fase2 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase" />
+				  </div>
+				  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="fase3" tabindex="0">
+				  	<fase3 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  </div>
+				  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="fase4" tabindex="0">
+				  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  </div>
+				  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="fase5" tabindex="0">
+				  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  </div>
+				</div>
+			
 			</div>
 			
-			<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
-			  <li class="nav-item pt-2" role="presentation">
-			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" v-show="this.faseSeleccionada==1">Nº Óptimo de Clusters</button>
-			  </li>
-			  <li class="nav-item pt-2" role="presentation">
-			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" v-show="this.faseSeleccionada==2">Subpoblaciones</button>
-			  </li>
-			  <li class="nav-item pt-2" role="presentation">
-			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" v-show="faseSeleccionada==3">Métricas de varianza</button>
-			  </li>
-			  <li class="nav-item pt-2" role="presentation">
-			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" v-show="faseSeleccionada==4">Gráficas y estadísticas de población</button>
-			  </li>
-			  <li class="nav-item pt-2" role="presentation">
-			    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" v-show="faseSeleccionada==5">Rendimiento del modelo</button>
-			  </li>
-			</ul>
-			<div class="tab-content" id="pills-tabContent">
-			  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="fase1" tabindex="0">
-			  	<fase1 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
-			  </div>
-			  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="fase2" tabindex="0">
-			  	<fase2 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase" />
-			  </div>
-			  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="fase3" tabindex="0">
-			  	<fase3 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
-			  </div>
-			  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="fase4" tabindex="0">
-			  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
-			  </div>
-			  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="fase5" tabindex="0">
-			  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
-			  </div>
-			</div>
 		</div>
 				
 	</div>
