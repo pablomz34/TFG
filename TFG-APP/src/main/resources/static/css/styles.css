@@ -12506,7 +12506,6 @@ textarea.form-control-lg {
   font-size: 1.75vw;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-weight: bold;
-  text-align: left;
   background-color: rgb(123, 154, 234);
   padding: 7px;
   border-radius: 5px;
@@ -12521,7 +12520,6 @@ textarea.form-control-lg {
 }
 
 .next-button-i {
-  text-align: right;
   align-items: center;
   padding-top: 3.5%;
   font-size: 1.75vw;
@@ -12529,15 +12527,15 @@ textarea.form-control-lg {
 
 .back-button {
   position: absolute;
-  top: 5%;
+  top: 0%;
+  margin-top: 20px;
   left: 2.5%;
   display: flex;
   justify-content: space-between;
-  width: 15vw;
+  width: 10vw;
   font-size: 1.75vw;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-weight: bold;
-  text-align: right;
   background-color: rgb(123, 154, 234);
   padding: 7px;
   border-radius: 5px;
@@ -12552,7 +12550,6 @@ textarea.form-control-lg {
 }
 
 .back-button-i {
-  text-align: left;
   align-items: center;
   padding-top: 3.5%;
   font-size: 1.75vw;

@@ -266,6 +266,7 @@ Vue.component('fase3', {
 			datosCargados: false,
 			error: '',
 			mostrarCargando: false,
+			algoritmoOptimo: ''
 		}
 	},
 
@@ -298,7 +299,27 @@ Vue.component('fase3', {
 
 				})
 				.then(data => {
+					
 					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j]
+					
+					let minimoWc = THIZ.lista[0].total_wc;
+					
+					let maximoBc = THIZ.lista[0].total_bc;
+					
+					let nombre_algoritmo = THIZ.lista[0].metric;
+					
+					for(let i=1; i < THIZ.lista.length; i++){
+						
+						if(THIZ.lista[i].total_wc <= minimoWc && THIZ.lista[i].total_bc >= maximoBc){
+							minimoWc = THIZ.lista[i].total_wc;
+							maximoBc = THIZ.lista[i].total_bc;
+							nombre_algoritmo = THIZ.lista[i].metric;
+						}
+											
+					}
+					
+					THIZ.algoritmoOptimo = nombre_algoritmo;				
+					
 					THIZ.datosCargados = true;
 					THIZ.mostrarCargando = false;
 				})
@@ -306,7 +327,7 @@ Vue.component('fase3', {
 
 		},
 		cambiarFase() {
-			this.$emit('cambiarFase');
+			this.$emit('cambiarFase', this.algoritmoOptimo);
 		}
 	},
 
@@ -378,7 +399,7 @@ Vue.component('fase3', {
 
 
 Vue.component('fase4', {
-	props: ['idPrediccionPoblacion', 'csvInput'],
+	props: ['idPrediccionPoblacion', 'csvInput', 'algoritmoOptimo'],
 	data: function() {
 		return {
 			crear: true,
@@ -413,6 +434,7 @@ Vue.component('fase4', {
 	},
 
 	created() {
+		
 		this.getDescripciones();
 	},
 
@@ -499,6 +521,7 @@ Vue.component('fase4', {
 			}
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+				formData.append('algoritmoOptimo', THIZ.algoritmoOptimo);
 			}
 
 
@@ -844,7 +867,7 @@ Vue.component('fase4', {
 
 
 Vue.component('fase5', {
-	props: ['idPrediccionPoblacion', 'csvInput'],
+	props: ['idPrediccionPoblacion', 'csvInput', 'algoritmoOptimo'],
 	data: function() {
 		return {
 			csvFile: '',
@@ -872,6 +895,7 @@ Vue.component('fase5', {
 			}
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+				formData.append('algoritmoOptimo', THIZ.algoritmoOptimo);
 			}
 
 
@@ -1147,6 +1171,7 @@ new Vue({
 				showPantalla: false,
 			},
 			faseSeleccionada: 1,
+			algoritmoOptimoFase3: ''
 		}
 	},
 
@@ -1313,8 +1338,13 @@ new Vue({
 
 		},
 
-		cambiarFase() {
+		cambiarFase(algoritmo) {
+			
 			const THIZ = this;
+			
+			if(algoritmo){
+				THIZ.algoritmoOptimoFase3 = algoritmo;
+			}	
 			THIZ.faseSeleccionada = THIZ.faseSeleccionada + 1;
 			var fase = '#fase' + String(this.faseSeleccionada);
 			$(fase).click();
@@ -1469,7 +1499,7 @@ new Vue({
 		<div v-if="pantalla2.showPantalla" class="container pt-2">
 		
 			
-			<button type="button" @click="goBack" class="back-button">Atrás <i class="fa-solid fa-arrow-left back-button-i"></i></button>	
+			<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
 			
 		
 			<div class="row justify-content-around" style="margin-top: 65px;">
@@ -1537,7 +1567,7 @@ new Vue({
 	    
 	    <div v-if="pantalla3.showPantalla" class="container pt-2"> 
 	    
-	    	<button type="button" @click="goBack" class="back-button">Atrás <i class="fa-solid fa-arrow-left back-button-i"></i></button>	
+	    	<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
 	    
 	    	<div class="row" style="margin-top: 65px;">
 	    
@@ -1573,10 +1603,10 @@ new Vue({
 				  	<fase3 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="fase4" tabindex="0">
-				  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="fase5" tabindex="0">
-				  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" @cambiarFase="cambiarFase"/>
 				  </div>
 				</div>
 			

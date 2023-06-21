@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,12 +147,19 @@ public class FasesController {
 		return response.getEntity().getContent();
 	}
 
-	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase) throws IOException {
+	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase, String algoritmoOptimo) throws IOException {
 
 		List<Pacientes> poblacion = pacientesService.findPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
 		HeadersPacientes headers = headersPacientesService
 				.findHeadersPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
 		String poblacionData = "";
+		
+		List<String> headersAlgoritmos = new ArrayList<String>();
+		
+		int algoritmoOptimoIndex;
+		
+		List<String> algoritmos = new ArrayList<String>();
+		
 		switch (fase) {
 		case "fase1":
 			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
@@ -174,19 +183,34 @@ public class FasesController {
 			break;
 		case "fase4":
 			poblacionData += headers.getHeadersVariableObjetivo() + ",";
-			poblacionData += headers.getHeadersAlgoritmos() + ",";
+			
+			headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+			
+			algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+			
+			poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
 			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
 			for (int i = 0; i < poblacion.size(); i++) {
 				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
-				poblacionData += poblacion.get(i).getAlgoritmos() + ",";
+				
+				algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));				
+				
+				poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
 				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
 			}
 			break;
 		case "fase5":
-			poblacionData += headers.getHeadersAlgoritmos() + ",";
+			
+			headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+			
+			algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+			
+			poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
 			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
 			for (int i = 0; i < poblacion.size(); i++) {
-				poblacionData += poblacion.get(i).getAlgoritmos() + ",";
+				
+				algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));	
+				poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
 				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
 			}
 			break;
@@ -199,6 +223,7 @@ public class FasesController {
 		return tempFile;
 
 	}
+	 
 
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
 	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
@@ -255,7 +280,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1");
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1", null);
 
 			inputStream = llamadaServidorNgrok(urlOptimalNClusters, file, httpClient);
 
@@ -315,7 +340,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2");
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null);
 
 			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
 
@@ -371,7 +396,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase3");
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase3", null);
 
 			inputStream = llamadaServidorNgrok(urlVarianceMetrics, file, httpClient);
 
@@ -483,6 +508,7 @@ public class FasesController {
 	@PostMapping(value = "/createPopulationAndCurves", consumes = "multipart/form-data")
 	public ResponseEntity<?> createPopulationProfile(
 			@RequestParam(name = "idPrediccionPoblacion") String idPrediccionPoblacion,
+			@RequestParam(name = "algoritmoOptimo") @Nullable String algoritmoOptimo,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 
@@ -499,9 +525,8 @@ public class FasesController {
 		
 		File file;
 		
-		
 		if(multipartFile==null) {
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4");
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4", algoritmoOptimo);
 		}
 		else {
 			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
@@ -588,6 +613,7 @@ public class FasesController {
 	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
 	public ResponseEntity<?> getModelPerformance(
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
+			@RequestParam(name = "algoritmoOptimo") @Nullable String algoritmoOptimo,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
@@ -608,7 +634,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5");
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5", algoritmoOptimo);
 
 			inputStream = llamadaServidorNgrok(urlModelPerformance, file, httpClient);
 
