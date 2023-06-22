@@ -18,4 +18,6 @@ public interface IPacientesService {
 	public List<Pacientes> findPacientesByPrediccionId(Long idPrediccion);
 	
 	public void borrarPoblacion(Long idPrediccion);
+	
+	public Boolean addPaciente(String variables, String variableObjetivo, Long idPrediccion);
 }

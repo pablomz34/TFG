@@ -34,7 +34,9 @@ import com.google.gson.Gson;
 import com.tfg.dto.ImagenesDto;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
+import com.tfg.entities.Pacientes;
 import com.tfg.services.IImagenesService;
+import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 
@@ -53,6 +55,9 @@ public class MedicoController {
 
 	@Autowired
 	private IImagenesService imagenesService;
+
+	@Autowired
+	private IPacientesService pacientesService;
 
 	@GetMapping
 	public String indexMedico() {
@@ -104,7 +109,7 @@ public class MedicoController {
 		map = new ObjectMapper().readValue(responseJsonString, HashMap.class);
 
 		Integer numCluster = (Integer) map.get("Cluster");
-		
+
 		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
 
 		// Integer numCluster = 2;
@@ -167,11 +172,11 @@ public class MedicoController {
 			throws IllegalStateException, IOException {
 
 		String features = profilesService.findFeaturesAllClusters(Long.parseLong(idPrediccion));
-		
-		if(features == "") {
+
+		if (features == "") {
 			return new ResponseEntity<>("No hay datos asignados a esta prediccion", HttpStatus.BAD_REQUEST);
 		}
-		
+
 		HashMap<String, Object> map = null;
 		map = new ObjectMapper().readValue(features, HashMap.class);
 
@@ -185,21 +190,20 @@ public class MedicoController {
 
 	@GetMapping("/getIdPrediccion")
 	public ResponseEntity<?> getIdPrediccion(@RequestParam("descripcionPrediccion") String descripcionPrediccion) {
-		
+
 		if (descripcionPrediccion == null || descripcionPrediccion.isEmpty()) {
 			String errorDescripcionVacía = "";
 			errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
 			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		descripcionPrediccion = StringEscapeUtils.escapeJava(descripcionPrediccion);
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcionPrediccion);
-		
-		if(prediccion != null) {
+
+		if (prediccion != null) {
 			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-		}
-		else {
+		} else {
 			return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
 		}
 
@@ -208,6 +212,24 @@ public class MedicoController {
 	@GetMapping("/getDescripcionesPredicciones")
 	public ResponseEntity<?> getDescripcionesPredicciones() {
 		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
+	}
+
+	@PostMapping("/addPacienteBBDD")
+	public ResponseEntity<?> addPacienteBBDD(@RequestParam("idPrediccion") String idPrediccion,
+			@RequestBody HashMap<String, Object> json) {
+		
+		String variables = json.get("variables").toString().replace(">=", "GET").replace("<=", "LET").replace(">", "GT")
+				.replace("<", "LT").replace(" ", "");
+		Integer l = (variables.length() - 1);
+		variables = variables.substring(1, l);
+		String variableObjetivo = json.get("variableObjetivo").toString();
+
+		if (pacientesService.addPaciente(variables, variableObjetivo, Long.parseLong(idPrediccion))) {
+			return new ResponseEntity<>("Paciente añadido de forma satisfactoria", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("Ocurrió un error al añadir al paciente", HttpStatus.BAD_REQUEST);
+		}
+
 	}
 
 }

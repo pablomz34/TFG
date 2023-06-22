@@ -4,12 +4,12 @@ new Vue({
 		return {
 			herramientaPredictivaInputs: [],
 			nCluster: '',
-			imagenUrl: '',
 			isPrediccionSelected: false,
 			descripciones: [],
 			descripcionSeleccionada: '',
 			datosCargados: false,
 			curvaUrl: '',
+			curvaCargada: false,
 			idPrediccion: '',
 			datasetStatistics: [
 				{ nombre: 'Id Prediction', valor: '' },
@@ -23,6 +23,9 @@ new Vue({
 			nombreDescargaCurvas: '',
 			error0: '',
 			error1: '',
+			mostrarCargando: false,
+			mostrarModalAddPaciente: true,
+			variableObjetivo: '',
 		}
 	},
 
@@ -42,9 +45,10 @@ new Vue({
 	methods: {
 		getPrediccionValues: function() {
 			const THIZ = this;
-			$('#cargando').show();
+			THIZ.mostrarCargando = true;
 			THIZ.error0 = ''
 			THIZ.datosCargados = false;
+			THIZ.curvaCargada = false;
 			THIZ.isPrediccionSelected = false;
 			fetch(window.location.origin + "/medico/getIdPrediccion?descripcionPrediccion=" + this.descripcionSeleccionada, {
 				method: "GET"
@@ -53,7 +57,7 @@ new Vue({
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error0 = errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -69,7 +73,7 @@ new Vue({
 							if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 								const errorMessage = await res.text();
 								THIZ.error0 = errorMessage;
-								$('#cargando').hide();
+								THIZ.mostrarCargando = false;
 								throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 							}
 
@@ -119,7 +123,7 @@ new Vue({
 				.catch(error => console.error(error));
 
 
-			$('#cargando').hide();
+			THIZ.mostrarCargando = false;
 
 		},
 
@@ -127,7 +131,9 @@ new Vue({
 			const THIZ = this;
 			THIZ.datosCargados = false;
 			THIZ.error1 = '';
-			$('#cargando').show();
+			THIZ.curvaCargada = false;
+			THIZ.mostrarCargando = true;
+			
 
 			let jsonData = {};
 
@@ -149,7 +155,7 @@ new Vue({
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.error1 = errorMessage;
-						$('#cargando').hide();
+						THIZ.mostrarCargando = false;
 						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -169,7 +175,16 @@ new Vue({
 					THIZ.variables = data.clusterData.features;
 
 					THIZ.datosCargados = true;
-					$('#cargando').hide();
+
+					const imageUrl = this.curvaUrl;
+					fetch(imageUrl)
+						.then(async res => {
+							if(res.ok) THIZ.curvaCargada = true;
+							else THIZ.curvaCargada = false;
+						})
+						.catch(error => console.error(error));
+
+					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
 		},
@@ -203,21 +218,71 @@ new Vue({
 					URL.revokeObjectURL(url);
 				})
 				.catch(error => console.error(error));
-		}
+		},
+
+		addPacienteBBDD: function() {
+			const THIZ = this;
+			let jsonData = {};
+			let variables = [];
+
+			for (let i = 0; i < this.herramientaPredictivaInputs.length; i++) {
+				variables.push(this.herramientaPredictivaInputs[i].seleccion);
+			}
+			jsonData['variables'] = variables;
+			jsonData['variableObjetivo'] = this.variableObjetivo;
+			fetch(window.location.origin + "/medico/addPacienteBBDD?idPrediccion=" + this.idPrediccion, {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(jsonData)
+			})
+				.then(async res => {
+					if (!res.ok) {
+						const errorMessage = await res.text();
+						THIZ.error1 = errorMessage;
+						THIZ.mostrarCargando = false;
+						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(this.esconderModal())
+				.catch(error => console.error(error));
+		},
+
+		
+
+		mostrarModal() {
+			
+			const THIZ = this;
+			THIZ.variableObjetivo= '';
+			let modal = new bootstrap.Modal(document.getElementById('addPacienteModal'));
+
+			THIZ.addPacienteModal = modal;
+
+			THIZ.addPacienteModal.show();
+
+		},
+		esconderModal() {
+
+			const THIZ = this;
+
+			THIZ.addPacienteModal.hide();
+
+		},
+
+
 	},
 
 
 	template: `
 	<div class="container mb-5 mt-5">
-	
-		
-		
 		<span>
-			<div id="cargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
+			<div id="cargando" v-show="mostrarCargando" style="position:fixed; display:none; width: 100%; height: 100%; margin:0; padding:0; top:0; left:0; background:rgba(255,255,255,0.75);">
         		<img id="cargando" src="/images/cargando.gif" style="top:50%; left:50%; position: fixed; transform: translate(-50%, -50%);"/>
    			 </div>
 		</span>
-		<div id="container">
+		<div>
 			<div class="row col-md-6 offset-md-3 mt-5 mb-5">
 				<div v-if="error0 != ''" class="alert alert-danger">
 					{{this.error0}}
@@ -294,15 +359,55 @@ new Vue({
 					<button class="btn btn-outline-custom-color fs-5 fw-semibold" @click="descargarPdf">
 						<i class="fa-regular fa-file-pdf"></i>
 					</button>
+					<button class="btn btn-outline-custom-color fs-5 fw-semibold" @click="mostrarModal">
+						Añadir paciente
+					</button>
+					<div class="modal fade" id="addPacienteModal" tabindex="-1"
+						aria-labelledby="addPacienteModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered">
+							<div class="modal-content">
+								<div class="modal-header bg-custom-light-color">
+									<h1 class="modal-title fs-5 text-white" id="addPacienteModelLabel">Nuevo paciente</h1>
+									<button type="button" class="btn-close bg-white"
+										@click="esconderModal"></button>
+								</div>
+								<div class="modal-body">
+									<form>
+										<div class="form-group mb-4">
+											<div class="input-container mt-2">
+												<label for="addPaciente"
+													class="input-container-label fw-bold">Variable objetivo</label>
+												<input class="input-container-input"
+													v-model="variableObjetivo" type="number"
+													id="addPaciente">
+											</div>
+										</div>
+				
+										<div class="form-group">
+											<div class="row justify-content-center">
+												<div class="col text-center">
+													<button type="button" @click="addPacienteBBDD"
+														class="btn btn-outline-custom-color fs-5">Guardar</button>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
 				</h4>
 	        </div>
 	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
-	            <div class="card-body">
-	                <p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
+	            <div v-if="curvaCargada" class="card-body">
+	                <p><em>¡Imagen cargada correctamente! Haz clic sobre ella para descargarla</em></p>
 	                <a v-bind:href="curvaUrl" :download="nombreDescargaCurvas">
 	                    <img id="curvaUrl" v-bind:src="curvaUrl" style="max-width: 100%;"/>    
 	                </a>
-	            </div>
+	            </div>	  
+	            <div v-else class="card-body">
+	                <p><em>No se pudo cargar la imagen</em></p>  
+	            </div>	
 	        </div>
 	        <div class="card col-5 rounded-4 p-0 mb-2 shadow">
 	            <div class="card-body">

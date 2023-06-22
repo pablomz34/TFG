@@ -129,4 +129,20 @@ public class PacientesService implements IPacientesService {
 		}
 
 	}
+
+	@Override
+	public Boolean addPaciente(String variables, String variableObjetivo, Long idPrediccion) {
+		Pacientes paciente = new Pacientes();
+		try {
+			paciente.setVariablesClinicas(variables);
+			paciente.setVariableObjetivo(variableObjetivo);
+			paciente.setPrediccion(prediccionesRepo.findPrediccionById(idPrediccion));
+			repos.save(paciente);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
+	}
 }
