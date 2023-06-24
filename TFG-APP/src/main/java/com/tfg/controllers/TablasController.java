@@ -141,7 +141,7 @@ public class TablasController {
     }
     
 	@GetMapping("/exportarTodo")
-    public ResponseEntity<FileSystemResource> exportarTodo() {
+    public ResponseEntity<String> exportarTodo() {
 		String databaseName = null;
 		try {
             URI uri = new URI(this.bbddConnectionUrl.substring(5));
@@ -151,42 +151,27 @@ public class TablasController {
         }
 		try (Connection connection = DriverManager.getConnection(this.bbddConnectionUrl, this.bbddUser, this.bbddPassword)) {
 
-            String dumpFilePath = "database_structure.sql";
 
             StringBuilder dumpContent = new StringBuilder();
 
-         // Export database structure
-            String structureQuery = "SHOW CREATE DATABASE " + databaseName;
-            try (Statement structureStatement = connection.createStatement();
-                 ResultSet structureResult = structureStatement.executeQuery(structureQuery)) {
-                if (structureResult.next()) {
-                    String createDatabaseStatement = structureResult.getString(2);
-                    dumpContent.append(createDatabaseStatement).append(";\n\n");
-                }
-            }
-        	
             // Export table structures
             DatabaseMetaData metaData = connection.getMetaData();
             ResultSet tables = metaData.getTables(connection.getCatalog(), null, null, new String[]{"TABLE"});
-          
+
             dumpContent.append("SET FOREIGN_KEY_CHECKS=0;\n\n");
-            
+
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 String tableStructure = getTableStructure(connection, tableName);
                 dumpContent.append(tableStructure).append(";\n\n");
             }
-            
+
             dumpContent.append("SET FOREIGN_KEY_CHECKS=1;\n\n");
 
-            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(dumpFilePath))) {
-                outputStream.write(dumpContent.toString().getBytes());
-            }
+            String dumpContentString = dumpContent.toString();
 
-            FileSystemResource fileResource = new FileSystemResource(dumpFilePath);
-            return ResponseEntity.ok()
-                    .body(fileResource);
-        } catch (SQLException | IOException e) {
+            return ResponseEntity.ok().body(dumpContentString);
+        } catch (SQLException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
