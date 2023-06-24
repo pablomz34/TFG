@@ -8,6 +8,7 @@ Vue.component('fase1', {
 			imagenUrl: '',
 			error: '',
 			mostrarCargando: false,
+			siguienteFase: false,
 		}
 	},
 	methods: {
@@ -52,6 +53,7 @@ Vue.component('fase1', {
 					const url = URL.createObjectURL(blob);
 					THIZ.imagenCreada = true;
 					THIZ.imagenUrl = url;
+					THIZ.siguienteFase = true;
 					THIZ.mostrarCargando = false;
 				})
 				//.catch(error => console.error(error))
@@ -104,6 +106,11 @@ Vue.component('fase1', {
 	            </div>
 	        </div>
 	    </div>
+	    
+	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
+		</div>
+	    
 	    <div class="row justify-content-around">
 	        <div v-if="imagenCreada" class="card col-10 rounded-4 p-0 shadow">
 	            <div class="card-body">
@@ -114,9 +121,6 @@ Vue.component('fase1', {
 	            </div>
 	        </div>
 	    </div>
-	    <div class="row justify-content-center m-2">	
-			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
-		</div>
 	</div>
 	`
 });
@@ -129,7 +133,8 @@ Vue.component('fase2', {
 			nClustersKModes: '',
 			csvFile: '',
 			error: '',
-			mostrarCargando: false
+			mostrarCargando: false,
+			siguienteFase: false,
 		}
 	},
 
@@ -188,6 +193,7 @@ Vue.component('fase2', {
 					document.body.appendChild(link);
 					link.click();
 					document.body.removeChild(link);
+					THIZ.siguienteFase = true;
 					THIZ.mostrarCargando = false;
 
 				})
@@ -250,7 +256,7 @@ Vue.component('fase2', {
 	            </div>
 	        </div>
 	    </div>
-	    <div class="row justify-content-center m-2">	
+	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
 			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 		</div>
 	</div>
@@ -266,7 +272,8 @@ Vue.component('fase3', {
 			datosCargados: false,
 			error: '',
 			mostrarCargando: false,
-			algoritmoOptimo: ''
+			algoritmoOptimo: '',
+			siguienteFase: false,
 		}
 	},
 
@@ -321,6 +328,7 @@ Vue.component('fase3', {
 					THIZ.algoritmoOptimo = nombre_algoritmo;				
 					
 					THIZ.datosCargados = true;
+					THIZ.siguienteFase = true;
 					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
@@ -367,6 +375,10 @@ Vue.component('fase3', {
 	            </div>
 	        </div>
 	    </div>
+	    
+	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
+		</div>
 	
 	    <div v-if="datosCargados" class="table-responsive shadow-lg p-0 mt-4">
 	        <table class="table table-custom-color table-striped-columns table-hover shadow-lg m-0">
@@ -388,9 +400,6 @@ Vue.component('fase3', {
 	            </tbody>
 	        </table>
 	    </div>
-	    <div class="row justify-content-center m-2">	
-			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
-		</div>
 	</div>
 	`
 });
@@ -430,6 +439,7 @@ Vue.component('fase4', {
 			error2: '',
 			error3: '',
 			mostrarCargando: false,
+			siguienteFase: false,
 		}
 	},
 
@@ -544,6 +554,7 @@ Vue.component('fase4', {
 
 					THIZ.nClusters = data;
 					THIZ.curvasAndPerfilesCreados = true;
+					THIZ.siguienteFase = true;
 					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
@@ -753,6 +764,10 @@ Vue.component('fase4', {
 	        </div>
 	    </div>
 	    
+	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
+		</div>
+	    
 	    <div class="row justify-content-around">
 	        <div v-if="error2 != ''" class="col-5 alert alert-danger">
 	            {{this.error2}}
@@ -764,7 +779,6 @@ Vue.component('fase4', {
 	        <div v-if="error3 != ''" class="col-5 alert alert-danger">
 	            {{this.error3}}
 	        </div>	
-	         
 	    </div>
 	    
 	    <div class="row justify-content-around">
@@ -858,9 +872,6 @@ Vue.component('fase4', {
 	            </div>
 	        </div>
 	    </div>
-	    <div class="row justify-content-center m-2">	
-			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
-		</div>
 	</div>
 	`
 });
