@@ -107,7 +107,7 @@ Vue.component('fase1', {
 	        </div>
 	    </div>
 	    
-	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+	    <div v-if="!csvInput && siguienteFase" class="row justify-content-center m-2">	
 			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 		</div>
 	    
@@ -226,14 +226,14 @@ Vue.component('fase2', {
 	                <form @submit.prevent="getSubPopulations">
 	                    <div class="form-group mb-3">
 	                    	<div class="input-container">
-		                        <label class="input-container-label fw-bold" for="nClusters">Nº de clusters del algoritmo aglomerativo</label>
+		                        <label class="input-container-label fw-bold" for="nClustersAglomerativo">Nº de clusters del algoritmo aglomerativo</label>
 		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required />
 	                   		</div>
 	                    </div>
 	
 	                    <div class="form-group mb-3">
 	                    	<div class="input-container">
-		                        <label class="input-container-label fw-bold" for="nClusters">Nº de clusters del algoritmo kmodes</label>
+		                        <label class="input-container-label fw-bold" for="nClustersKModes">Nº de clusters del algoritmo kmodes</label>
 		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="nClustersKModes" id="nClustersKModes" required />
 	                    	</div>
 	                    </div>
@@ -256,7 +256,7 @@ Vue.component('fase2', {
 	            </div>
 	        </div>
 	    </div>
-	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+	    <div v-if="!csvInput && siguienteFase" class="row justify-content-center m-2">	
 			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 		</div>
 	</div>
@@ -306,27 +306,27 @@ Vue.component('fase3', {
 
 				})
 				.then(data => {
-					
+
 					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j]
-					
+
 					let minimoWc = THIZ.lista[0].total_wc;
-					
+
 					let maximoBc = THIZ.lista[0].total_bc;
-					
+
 					let nombre_algoritmo = THIZ.lista[0].metric;
-					
-					for(let i=1; i < THIZ.lista.length; i++){
-						
-						if(THIZ.lista[i].total_wc <= minimoWc && THIZ.lista[i].total_bc >= maximoBc){
+
+					for (let i = 1; i < THIZ.lista.length; i++) {
+
+						if (THIZ.lista[i].total_wc <= minimoWc && THIZ.lista[i].total_bc >= maximoBc) {
 							minimoWc = THIZ.lista[i].total_wc;
 							maximoBc = THIZ.lista[i].total_bc;
 							nombre_algoritmo = THIZ.lista[i].metric;
 						}
-											
+
 					}
-					
-					THIZ.algoritmoOptimo = nombre_algoritmo;				
-					
+
+					THIZ.algoritmoOptimo = nombre_algoritmo;
+
 					THIZ.datosCargados = true;
 					THIZ.siguienteFase = true;
 					THIZ.mostrarCargando = false;
@@ -376,7 +376,7 @@ Vue.component('fase3', {
 	        </div>
 	    </div>
 	    
-	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+	    <div v-if="!csvInput && siguienteFase" class="row justify-content-center m-2">	
 			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 		</div>
 	
@@ -444,7 +444,7 @@ Vue.component('fase4', {
 	},
 
 	created() {
-		
+
 		this.getDescripciones();
 	},
 
@@ -764,7 +764,7 @@ Vue.component('fase4', {
 	        </div>
 	    </div>
 	    
-	    <div v-if="siguienteFase" class="row justify-content-center m-2">	
+	    <div v-if="!csvInput && siguienteFase" class="row justify-content-center m-2">	
 			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 		</div>
 	    
@@ -931,9 +931,6 @@ Vue.component('fase5', {
 				})
 				.catch(error => console.error(error));
 		},
-		cambiarFase() {
-			this.$emit('cambiarFase');
-		}
 	},
 
 
@@ -1350,13 +1347,13 @@ new Vue({
 		},
 
 		cambiarFase(algoritmo) {
-			
+
 			const THIZ = this;
-			
-			if(algoritmo){
+
+			if (algoritmo) {
 				THIZ.algoritmoOptimoFase3 = algoritmo;
-			}	
-			THIZ.faseSeleccionada = THIZ.faseSeleccionada + 1;
+			}
+			THIZ.faseSeleccionada = this.faseSeleccionada + 1;
 			var fase = '#fase' + String(this.faseSeleccionada);
 			$(fase).click();
 		},
@@ -1400,6 +1397,7 @@ new Vue({
 		goBack() {
 
 			const THIZ = this;
+			THIZ.faseSeleccionada = 1;
 
 			if (THIZ.pantalla3.showPantalla) {
 
@@ -1414,7 +1412,7 @@ new Vue({
 
 					this.cambiarShowPantallas(THIZ.pantalla2, THIZ.pantalla3);
 
-					this.cambioPantalla3a2Y2a1(THIZ,false);
+					this.cambioPantalla3a2Y2a1(THIZ, false);
 
 				}
 
@@ -1429,13 +1427,6 @@ new Vue({
 		}
 
 	},
-
-	//	updated() {
-	//		$('#fase2').hide();
-	//		$('#fase3').hide();
-	//		$('#fase4').hide();
-	//		$('#fase5').hide();
-	//	},
 
 
 	watch: {
@@ -1588,36 +1579,36 @@ new Vue({
 				
 				<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" v-show="this.faseSeleccionada==1">Nº Óptimo de Clusters</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" v-show="this.csvInput || this.faseSeleccionada==1">Nº Óptimo de Clusters</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" v-show="this.faseSeleccionada==2">Subpoblaciones</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==2">Subpoblaciones</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" v-show="faseSeleccionada==3">Métricas de varianza</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==3">Métricas de varianza</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" v-show="faseSeleccionada==4">Gráficas y estadísticas de población</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==4">Gráficas y estadísticas de población</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" v-show="faseSeleccionada==5">Rendimiento del modelo</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==5">Rendimiento del modelo</button>
 				  </li>
 				</ul>
 				<div class="tab-content" id="pills-tabContent">
 				  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="fase1" tabindex="0">
-				  	<fase1 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  	<fase1 v-if="csvInput || faseSeleccionada==1" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="fase2" tabindex="0">
-				  	<fase2 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase" />
+				  	<fase2 v-if="csvInput || faseSeleccionada==2" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="fase3" tabindex="0">
-				  	<fase3 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  	<fase3 v-if="csvInput || faseSeleccionada==3" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="fase4" tabindex="0">
-				  	<fase4 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" @cambiarFase="cambiarFase"/>
+				  	<fase4 v-if="csvInput || faseSeleccionada==4" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="fase5" tabindex="0">
-				  	<fase5 :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" @cambiarFase="cambiarFase"/>
+				  	<fase5 v-if="csvInput || faseSeleccionada==5" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3"/>
 				  </div>
 				</div>
 			
