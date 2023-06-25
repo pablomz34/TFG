@@ -201,6 +201,7 @@ new Vue({
 			}
 			jsonData['statistics'] = statistics;
 			jsonData['variables'] = variables;
+			jsonData['idPrediccion'] = this.idPrediccion;
 			fetch(window.location.origin + "/report/download?nCluster=" + this.nCluster, {
 				method: "POST",
 				headers: {

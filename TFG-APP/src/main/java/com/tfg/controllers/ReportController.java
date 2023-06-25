@@ -50,6 +50,7 @@ public class ReportController {
 		List<VariablesDto> variables = new ArrayList<>();
 		Map<String,Object> statisticsMap = (Map<String, Object>) json.get("statistics");
 		Map<String,Object> variablesMap = (Map<String, Object>) json.get("variables");
+		String idPrediccion = (String) json.get("idPrediccion");
 		
 		for(Map.Entry<String, Object> i : statisticsMap.entrySet()) {
 			StatisticsDto f = new StatisticsDto();
@@ -67,7 +68,7 @@ public class ReportController {
 		
 		String titulo = (Integer.parseInt(nCluster) != -1) ? ("Reporte - Cluster " + nCluster) : ("Reporte - All Clusters");
 		
-		ClassPathResource resource = (Integer.parseInt(nCluster) != -1) ? new ClassPathResource("static/clustersImages/prediccion1/cluster" + nCluster + ".png") : new ClassPathResource("static/clustersImages/prediccion1/allClusters.png");
+		ClassPathResource resource = (Integer.parseInt(nCluster) != -1) ? new ClassPathResource("static/clustersImages/prediccion" + idPrediccion + "/cluster" + nCluster + ".png") : new ClassPathResource("static/clustersImages/prediccion" + idPrediccion + "/allClusters.png");
 		InputStream inputStream = resource.getInputStream();
 		byte[] clusterImage = inputStream.readAllBytes();
 		
