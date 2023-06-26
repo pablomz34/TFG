@@ -883,7 +883,6 @@ Vue.component('fase5', {
 		return {
 			csvFile: '',
 			datosCargados: false,
-			idModel: '',
 			auc: '',
 			error: '',
 			mostrarCargando: false,
@@ -924,7 +923,6 @@ Vue.component('fase5', {
 					return res.json();
 				})
 				.then(data => {
-					THIZ.idModel = data.id_model;
 					THIZ.auc = data.auc + '%';
 					THIZ.datosCargados = true;
 					THIZ.mostrarCargando = false;
@@ -942,7 +940,7 @@ Vue.component('fase5', {
 	        </div>
 	    </span>
 	
-	    <div class="row col-md-6 offset-md-3">
+	    <div class="row col-md-6 offset-md-3 text-center">
 	        <div v-if="error != ''" class="alert alert-danger">
 	            {{this.error}}
 	        </div>
@@ -971,18 +969,16 @@ Vue.component('fase5', {
 	        </div>
 	    </div>
 	
-	    <div class="row col-md-6 offset-md-3 mt-1">
+	    <div class="row col-md-4 offset-md-4 mt-1 justify-center text-center">
 	        <div v-if="datosCargados" class="card rounded-4 p-0 mb-2 shadow">
-	            <div class="card-body">
+	            <div class="card-body">	            
 	                <div class="form-group mb-3">
-	                    <label>Id model</label>
-	                    <input type="text" class="form-control border border-success" v-model="idModel" disabled />
+	                	<div class="input-container">
+	                        <label class="input-container-label fw-bold">AUC</label>
+	                        <input type="text" class="input-container-input pe-1 fw-bold" v-model="auc" disabled/>
+	                	</div>
 	                </div>
-	                <div class="form-group mb-3">
-	                    <label>Auc</label>
-	                    <input type="text" class="form-control border border-success" v-model="auc" disabled />
-	                </div>
-	            </div>
+	            </div>        
 	        </div>
 	    </div>
 	</div>
@@ -1355,6 +1351,9 @@ new Vue({
 			}
 			THIZ.faseSeleccionada = this.faseSeleccionada + 1;
 			var fase = '#fase' + String(this.faseSeleccionada);
+			
+			var myButton = document.getElementById("fase"+this.faseSeleccionada);
+			myButton.disabled = false;
 			$(fase).click();
 		},
 
@@ -1579,19 +1578,19 @@ new Vue({
 				
 				<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" v-show="this.csvInput || this.faseSeleccionada==1">Nº Óptimo de Clusters</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" :disabled="!this.csvInput && this.faseSeleccionada!=1">Nº Óptimo de Clusters</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==2">Subpoblaciones</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=2" selected>Subpoblaciones</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==3">Métricas de varianza</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=3">Métricas de varianza</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==4">Gráficas y estadísticas de población</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=4">Gráficas y estadísticas de población</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" v-show="this.csvInput || this.faseSeleccionada==5">Rendimiento del modelo</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=5">Rendimiento del modelo</button>
 				  </li>
 				</ul>
 				<div class="tab-content" id="pills-tabContent">
