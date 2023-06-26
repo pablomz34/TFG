@@ -2,40 +2,26 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head th:insert="~{fragmentos/head.html}"></head>
-<title>Predicciones</title>
+<title>Fases</title>
 
-<body class="bg-light-subtle">
+<body>
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 
 	<div class="container">
 
-		<div id="predicciones">
+		<div id="algoritmos">
 
-			<div v-if="prediccionCreadaErrorMessage != ''" class="mt-2">
+			<div v-if="errorMessage != ''" class="mt-2">
 				<div class="alert alert-danger alert-dismissible fade show" role="alert">
-					{{prediccionCreadaErrorMessage}}
+					{{errorMessage}}
 					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
 			</div>
 
-			<div v-if="prediccionCreadaCorrectamenteMessage != ''" class="mt-2">
+			<div v-if="successMessage != ''" class="mt-2">
 				<div class="alert alert-info alert-dismissible fade show" role="alert">
-					{{prediccionCreadaCorrectamenteMessage}}
-					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				</div>
-			</div>
-
-			<div v-if="prediccionEliminadaErrorMessage != ''" class="mt-2">
-				<div class="alert alert-danger alert-dismissible fade show" role="alert">
-					{{prediccionEliminadaErrorMessage}}
-					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				</div>
-			</div>
-
-			<div v-if="prediccionEliminadaCorrectamenteMessage != ''" class="mt-2">
-				<div class="alert alert-info alert-dismissible fade show" role="alert">
-					{{prediccionEliminadaCorrectamenteMessage}}
+					{{successMessage}}
 					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
 			</div>
@@ -43,37 +29,35 @@
 			<div class="row mt-5 justify-content-around">
 				<div class="col">
 					<div class="row justify-content-center">
-						<button class="btn btn-custom-color fs-5 w-50" @click="showToastCrearPrediccion"><i
+						<button class="btn btn-custom-color fs-5 w-50" @click="showModal('crearAlgoritmoModal')"><i
 								class="fa-solid fa-plus fs-5"></i> Crear
-							prediccion</button>
+							algoritmo</button>
 
-						<div class="modal fade" id="crearPrediccionModal" tabindex="-1"
-							aria-labelledby="crearPrediccionModalLabel" aria-hidden="true">
+						<div class="modal fade" id="crearAlgoritmoModal" tabindex="-1"
+							aria-labelledby="crearAlgoritmoModalLabel" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-centered">
 								<div class="modal-content">
 									<div class="modal-header bg-custom-light-color">
-										<h1 class="modal-title fs-5 text-white" id="crearPrediccionModalLabel">Nueva
-											predicción</h1>
-										<button type="button" class="btn-close bg-white"
-											@click="hideCrearPrediccionModal"></button>
+										<h1 class="modal-title fs-5 text-white" id="crearAlgoritmoModalLabel">Nuevo
+											algoritmo de clustering</h1>
+										<button type="button" class="btn-close bg-white" @click="hideModal"></button>
 									</div>
 									<div class="modal-body">
 										<form>
 											<div class="form-group mb-4">
 												<div class="input-container mt-2">
-													<label for="crearPrediccion"
-														class="input-container-label fw-bold">Descripción de la
-														predicción</label>
-													<input class="input-container-input"
-														v-model="crearPrediccionDescripcion" type="text"
-														id="crearPrediccion">
+													<label for="crearAlgoritmo"
+														class="input-container-label fw-bold">Nombre
+														del algoritmo</label>
+													<input class="input-container-input" v-model="nombreAlgoritmo"
+														type="text" id="crearAlgoritmo">
 												</div>
 											</div>
 
 											<div class="form-group">
 												<div class="row justify-content-center">
 													<div class="col text-center">
-														<button type="button" @click="crearPrediccion"
+														<button type="button" @click="crearAlgoritmo"
 															class="btn btn-outline-custom-color fs-5">Guardar</button>
 													</div>
 												</div>
@@ -89,20 +73,19 @@
 
 				<div class="col">
 					<div class="row justify-content-center">
-						<button class="btn btn-custom-color fs-5 w-50" @click="showToastEliminarPrediccion"><i
+						<button class="btn btn-custom-color fs-5 w-50" @click="showModal('borrarAlgoritmoModal')"><i
 								class="fa-solid fa-trash fs-5"></i>
-							Eliminar
-							predicción</button>
+							Borrar algoritmo</button>
 
-						<div class="modal fade" id="eliminarPrediccionModal" tabindex="-1" aria-hidden="true">
+						<div class="modal fade" id="borrarAlgoritmoModal" tabindex="-1" aria-hidden="true">
 							<div class="modal-dialog modal-dialog-centered">
 								<div class="modal-content">
 									<div class="modal-header bg-custom-light-color">
 										<form class="w-100">
 											<div class="search-input-container">
-												<input class="search-input" type="text" placeholder="Buscar predicción"
-													v-model="searchedDescripcion" v-on:keyup="buscarPredicciones"
-													id="eliminarPrediccion">
+												<input class="search-input" type="text" placeholder="Buscar algoritmo"
+													v-model="searchedAlgoritmo" @keyup="buscarAlgoritmosCoincidentes"
+													id="borrarAlgoritmo">
 												<i class="search-input-container-i fa-solid fa-magnifying-glass"></i>
 											</div>
 
@@ -111,10 +94,6 @@
 									<div class="modal-body bg-light">
 										<div id="modalBodyRow" class="row justify-content-center overflow-y-auto"
 											style="max-height: 500px !important;">
-											<div class="noResults-component">
-												¡No hay ninguna coincidencia!
-											</div>
-
 										</div>
 									</div>
 								</div>
@@ -124,7 +103,7 @@
 				</div>
 			</div>
 
-			<div id="eliminarPrediccionToast" style="z-index: 9999;"
+			<div id="borrarAlgoritmoToast" style="z-index: 9999;"
 				class="toast position-absolute top-50 start-50 translate-middle" data-bs-autohide="false" role="alert"
 				aria-live="assertive" aria-atomic="true">
 				<div class="toast-header bg-custom-light-color bg-gradient">
@@ -134,24 +113,26 @@
 				</div>
 				<div class="toast-body">
 					<div class="row justify-content-center mb-2">
-						<strong class="text-center text-custom-light-color fw-bold fs-6">¿Seguro que desea eliminar esta
-							predicción?</strong>
+						<strong class="text-center text-custom-light-color fw-bold fs-6">¿Seguro que desea borrar este
+							algoritmo?</strong>
 					</div>
 					<div class="row justify-content-around">
 						<div class="col-5">
-							<button type="button" @click="eliminarPrediccion" class="btn btn-success">Confirmar <i
+							<button type="button" @click="borrarAlgoritmo" class="btn btn-success">Confirmar <i
 									class="fa-solid fa-check"></i></button>
 						</div>
 						<div class="col-5">
 							<button type="button" class="btn btn-danger" data-bs-dismiss="toast"
-								aria-label="Close">Cancelar <i class="fa-solid fa-xmark"></i></button>
+								aria-label="Close">Cancelar
+								<i class="fa-solid fa-xmark"></i></button>
 						</div>
 					</div>
 				</div>
 			</div>
+
 		</div>
-		
-		<script src="/js/predicciones.js"></script>
+
+		<script src="/js/algoritmos.js"></script>
 
 </body>
 

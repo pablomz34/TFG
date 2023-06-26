@@ -239,7 +239,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 }
 
 
-.eliminar-prediccion-label {
+.results-search-label {
 	font-size: 16px;
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	font-weight: bold;
@@ -248,7 +248,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 }
 
 
-.eliminar-prediccion-component-container {
+.results-search-component-container {
 	display: flex;
 	justify-content: space-between;
 	width: 95%;
@@ -260,7 +260,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 }
 
 
-.eliminar-prediccion-component {
+.results-search-component {
 	display: flex;
 	max-width: 90%;
 	flex-direction: column;
@@ -273,7 +273,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	color: white;
 }
 
-.eliminar-prediccion-component-i {
+.results-search-component-i {
 	max-width: 5%;
 	font-size: 20px;
 	padding-top: 5px;
@@ -281,7 +281,7 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	cursor: pointer;
 }
 
-.eliminar-prediccion-component-i:hover {
+.results-search-component-i:hover {
 	color: rgb(82, 118, 226);
 }
 

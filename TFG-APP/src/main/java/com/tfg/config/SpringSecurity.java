@@ -22,6 +22,7 @@ import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
 import com.tfg.handlers.LoginSuccessHandler;
 import com.tfg.repositories.UsuariosRepository;
+import com.tfg.services.IAlgoritmosClusteringService;
 @Configuration
 @EnableWebSecurity
 public class SpringSecurity implements CommandLineRunner {
@@ -41,7 +42,7 @@ public class SpringSecurity implements CommandLineRunner {
     
     @Autowired
 	private LoginSuccessHandler loginSuccessHandler;
-
+    
     @Bean
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
