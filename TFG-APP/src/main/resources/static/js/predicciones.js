@@ -133,7 +133,7 @@ new Vue({
 		crearEliminarPrediccionLabel(modalBodyRow) {
 			let eliminarPrediccionLabel = document.createElement("div");
 
-			eliminarPrediccionLabel.setAttribute("class", "eliminar-prediccion-label");
+			eliminarPrediccionLabel.setAttribute("class", "results-search-label");
 
 			eliminarPrediccionLabel.innerHTML = "Coincidencias";
 
@@ -151,11 +151,11 @@ new Vue({
 
 				let eliminarPrediccionIcon = document.createElement("i");
 
-				eliminarPrediccionContainer.setAttribute("class", "eliminar-prediccion-component-container");
+				eliminarPrediccionContainer.setAttribute("class", "results-search-component-container");
 
-				eliminarPrediccionComponent.setAttribute("class", "eliminar-prediccion-component");
+				eliminarPrediccionComponent.setAttribute("class", "results-search-component");
 
-				eliminarPrediccionIcon.setAttribute("class", "eliminar-prediccion-component-i fa-solid fa-trash");
+				eliminarPrediccionIcon.setAttribute("class", "results-search-component-i fa-solid fa-trash");
 
 				eliminarPrediccionIcon.addEventListener("click", function(event) {
 
