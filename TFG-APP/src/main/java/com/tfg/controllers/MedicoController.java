@@ -217,6 +217,11 @@ public class MedicoController {
 	@PostMapping("/addPacienteBBDD")
 	public ResponseEntity<?> addPacienteBBDD(@RequestParam("idPrediccion") String idPrediccion,
 			@RequestBody HashMap<String, Object> json) {
+		String error = validarInputNumber(json.get("variableObjetivo").toString());
+
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
 		
 		String variables = json.get("variables").toString().replace(">=", "GET").replace("<=", "LET").replace(">", "GT")
 				.replace("<", "LT").replace(" ", "");
@@ -230,6 +235,21 @@ public class MedicoController {
 			return new ResponseEntity<>("Ocurrió un error al añadir al paciente", HttpStatus.BAD_REQUEST);
 		}
 
+	}
+	
+	private String validarInputNumber(String numClusters) {
+
+		if (numClusters == null || numClusters.isEmpty()) {
+			return "Por favor, introduzca una cantidad";
+
+		}
+		try {
+			Integer.parseInt(numClusters);
+		} catch (NumberFormatException e) {
+			return "El valor introducido no es válido";
+
+		}
+		return "";
 	}
 
 }

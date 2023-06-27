@@ -23,6 +23,7 @@ new Vue({
 			nombreDescargaCurvas: '',
 			error0: '',
 			error1: '',
+			error2: '',
 			mostrarCargando: false,
 			mostrarModalAddPaciente: true,
 			variableObjetivo: '',
@@ -133,7 +134,7 @@ new Vue({
 			THIZ.error1 = '';
 			THIZ.curvaCargada = false;
 			THIZ.mostrarCargando = true;
-			
+
 
 			let jsonData = {};
 
@@ -179,7 +180,7 @@ new Vue({
 					const imageUrl = this.curvaUrl;
 					fetch(imageUrl)
 						.then(async res => {
-							if(res.ok) THIZ.curvaCargada = true;
+							if (res.ok) THIZ.curvaCargada = true;
 							else THIZ.curvaCargada = false;
 						})
 						.catch(error => console.error(error));
@@ -223,6 +224,7 @@ new Vue({
 
 		addPacienteBBDD: function() {
 			const THIZ = this;
+			THIZ.error2 = '';
 			let jsonData = {};
 			let variables = [];
 
@@ -241,22 +243,24 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) {
 						const errorMessage = await res.text();
-						THIZ.error1 = errorMessage;
+						THIZ.error2 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error en la respuesta del servidor: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
+					else{
+						this.esconderModal();
+					}
 					return res.text();
 				})
-				.then(this.esconderModal())
 				.catch(error => console.error(error));
 		},
 
-		
+
 
 		mostrarModal() {
-			
+
 			const THIZ = this;
-			THIZ.variableObjetivo= '';
+			THIZ.variableObjetivo = '';
 			let modal = new bootstrap.Modal(document.getElementById('addPacienteModal'));
 
 			THIZ.addPacienteModal = modal;
@@ -267,6 +271,7 @@ new Vue({
 		esconderModal() {
 
 			const THIZ = this;
+			THIZ.error2 = '';
 
 			THIZ.addPacienteModal.hide();
 
@@ -373,22 +378,24 @@ new Vue({
 										@click="esconderModal"></button>
 								</div>
 								<div class="modal-body">
-									<form>
+									<div v-if="this.error2 != ''" class="alert alert-danger fs-5">
+										{{this.error2}}
+									</div>
+									<form @submit.prevent="addPacienteBBDD">
 										<div class="form-group mb-4">
 											<div class="input-container mt-2">
 												<label for="addPaciente"
 													class="input-container-label fw-bold">Variable objetivo</label>
 												<input class="input-container-input"
-													v-model="variableObjetivo" type="number"
-													id="addPaciente">
+													v-model="variableObjetivo" type="number" 
+													id="addPaciente" required />
 											</div>
 										</div>
 				
 										<div class="form-group">
 											<div class="row justify-content-center">
 												<div class="col text-center">
-													<button type="button" @click="addPacienteBBDD"
-														class="btn btn-outline-custom-color fs-5">Guardar</button>
+													<button class="btn btn-outline-custom-color fs-5" type="submit">Guardar</button>
 												</div>
 											</div>
 										</div>
