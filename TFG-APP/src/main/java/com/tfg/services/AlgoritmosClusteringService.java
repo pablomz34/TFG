@@ -92,4 +92,10 @@ public class AlgoritmosClusteringService implements IAlgoritmosClusteringService
 		
 	}
 
+	@Override
+	public List<AlgoritmosClustering> findAllAlgoritmos() {
+	
+		return repos.findAll();
+	}
+
 }

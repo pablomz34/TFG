@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,11 +42,13 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
+import com.tfg.entities.AlgoritmosClustering;
 import com.tfg.entities.HeadersPacientes;
 import com.tfg.entities.Imagenes;
 import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
+import com.tfg.services.IAlgoritmosClusteringService;
 import com.tfg.services.IHeadersPacientesService;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IPacientesService;
@@ -79,6 +82,9 @@ public class FasesController {
 
 	@Autowired
 	private IHeadersPacientesService headersPacientesService;
+	
+	@Autowired
+	private IAlgoritmosClusteringService algoritmosClusteringService;
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
@@ -223,8 +229,12 @@ public class FasesController {
 		return tempFile;
 
 	}
-	 
-
+	
+	@GetMapping("/getAllAlgoritmos")
+	public List<AlgoritmosClustering> getAlgoritmosExcludingAgglomerativeAndKmodes(){
+		return algoritmosClusteringService.findAllAlgoritmos();
+	}
+	
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
 	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
@@ -306,17 +316,18 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<?> getSubPopulations(@RequestParam("n_agglomerative") String nClustersAglomerativo,
-			@RequestParam("n_kmodes") String nClustersKModes,
+	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") String algoritmosJsonString,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
-
-		String error = this.validarInputNumber(nClustersAglomerativo, 2, 20);
+		
+		List<Map<String, Object>> algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
+		
+		String error = this.validarInputNumber((String) algoritmos.get(0).get("nClusters"), 2, 20);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
-		error = this.validarInputNumber(nClustersKModes, 2, 20);
+		error = this.validarInputNumber((String) algoritmos.get(1).get("nClusters"), 2, 20);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
@@ -330,7 +341,7 @@ public class FasesController {
 		}
 
 		String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
-				+ Integer.parseInt(nClustersAglomerativo) + "&n_kmodes=" + Integer.parseInt(nClustersKModes);
+				+ algoritmos.get(0).get("nClusters") + "&n_kmodes=" + algoritmos.get(1).get("nClusters");
 
 		InputStream inputStream;
 

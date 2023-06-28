@@ -17,4 +17,6 @@ public interface IAlgoritmosClusteringService {
 	public void borrarAlgoritmo(Long idAlgoritmo);
 	
 	public List<AlgoritmosClustering> findAlgoritmosCoincidentes(String nombreAlgoritmo);
+	
+	public List<AlgoritmosClustering> findAllAlgoritmos();
 }
