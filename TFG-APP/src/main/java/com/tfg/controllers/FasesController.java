@@ -27,6 +27,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -82,7 +83,7 @@ public class FasesController {
 
 	@Autowired
 	private IHeadersPacientesService headersPacientesService;
-	
+
 	@Autowired
 	private IAlgoritmosClusteringService algoritmosClusteringService;
 
@@ -153,72 +154,181 @@ public class FasesController {
 		return response.getEntity().getContent();
 	}
 
-	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase, String algoritmoOptimo) throws IOException {
+	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase, String algoritmoOptimo,
+			List<Integer> indexes) throws IOException {
 
 		List<Pacientes> poblacion = pacientesService.findPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
 		HeadersPacientes headers = headersPacientesService
 				.findHeadersPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
 		String poblacionData = "";
-		
+
+		List<String> headersVariablesClinicas = new ArrayList<String>();
+		List<String> variablesClinicas = new ArrayList<String>();
 		List<String> headersAlgoritmos = new ArrayList<String>();
-		
-		int algoritmoOptimoIndex;
-		
 		List<String> algoritmos = new ArrayList<String>();
-		
+
+		int algoritmoOptimoIndex;
+
 		switch (fase) {
 		case "fase1":
-			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-			for (int i = 0; i < poblacion.size(); i++) {
-				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			if (indexes.size() == 0) {
+				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
+				for (int i = 0; i < poblacion.size(); i++) {
+					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+				}
+			} else {
+				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+					if (indexes.contains(i)) {
+						poblacionData += headersVariablesClinicas.get(i);
+						poblacionData += i == (indexes.get(indexes.size()-1)) ? "\n" : ",";
+					}
+					
+				}
+
+				for (int i = 0; i < poblacion.size(); i++) {
+					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+					for (int j = 0; j < variablesClinicas.size(); j++) {
+						if (indexes.contains(j)) {
+							poblacionData += variablesClinicas.get(j);
+							poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+						}
+						
+					}
+				}
 			}
+
 			break;
 		case "fase2":
-			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-			for (int i = 0; i < poblacion.size(); i++) {
-				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			if (indexes.size() == 0) {
+				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
+				for (int i = 0; i < poblacion.size(); i++) {
+					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+				}
+
+			} else {
+				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+					if (indexes.contains(i)) {
+						poblacionData += headersVariablesClinicas.get(i);
+						poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+					}
+					
+				}
+
+				for (int i = 0; i < poblacion.size(); i++) {
+					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+					for (int j = 0; j < variablesClinicas.size(); j++) {
+						if (indexes.contains(j)) {
+							poblacionData += variablesClinicas.get(j);
+							poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+						}
+						
+					}
+				}
 			}
 			break;
 		case "fase3":
-			poblacionData += headers.getHeadersVariableObjetivo() + ",";
-			poblacionData += headers.getHeadersAlgoritmos() + "\n";
-			for (int i = 0; i < poblacion.size(); i++) {
-				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
-				poblacionData += poblacion.get(i).getAlgoritmos() + "\n";
+			if (indexes.size() == 0) {
+				poblacionData += headers.getHeadersVariableObjetivo() + ",";
+				poblacionData += headers.getHeadersAlgoritmos() + "\n";
+				for (int i = 0; i < poblacion.size(); i++) {
+					poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+					poblacionData += poblacion.get(i).getAlgoritmos() + "\n";
+				}
 			}
+
 			break;
 		case "fase4":
-			poblacionData += headers.getHeadersVariableObjetivo() + ",";
-			
-			headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
-			
-			algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
-			
-			poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
-			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-			for (int i = 0; i < poblacion.size(); i++) {
-				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
-				
-				algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));				
-				
-				poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
-				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			if (indexes.size() == 0) {
+				poblacionData += headers.getHeadersVariableObjetivo() + ",";
+
+				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+
+				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+
+				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
+				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
+				for (int i = 0; i < poblacion.size(); i++) {
+					poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+
+					algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));
+
+					poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
+					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+				}
+			} else {
+				poblacionData += headers.getHeadersVariableObjetivo() + ",";
+
+				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+
+				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+
+				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
+
+				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+					if (indexes.contains(i)) {
+						poblacionData += headersVariablesClinicas.get(i);
+					}
+					poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+				}
+
+				for (int i = 0; i < poblacion.size(); i++) {
+					poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+					for (int j = 0; j < variablesClinicas.size(); j++) {
+						if (indexes.contains(j)) {
+							poblacionData += variablesClinicas.get(j);
+						}
+						poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+					}
+				}
 			}
+
 			break;
 		case "fase5":
-			
-			headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
-			
-			algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
-			
-			poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
-			poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-			for (int i = 0; i < poblacion.size(); i++) {
-				
-				algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));	
-				poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
-				poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			if (indexes.size() == 0) {
+				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+
+				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+
+				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
+				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
+				for (int i = 0; i < poblacion.size(); i++) {
+
+					algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));
+					poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
+					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+				}
+			} else {
+				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+
+				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+
+				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
+
+				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+					if (indexes.contains(i)) {
+						poblacionData += headersVariablesClinicas.get(i);
+						poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+					}
+					
+				}
+
+				for (int i = 0; i < poblacion.size(); i++) {
+					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+					for (int j = 0; j < variablesClinicas.size(); j++) {
+						if (indexes.contains(j)) {
+							poblacionData += variablesClinicas.get(j);
+							poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
+						}
+						
+					}
+				}
 			}
+
 			break;
 		}
 
@@ -229,12 +339,12 @@ public class FasesController {
 		return tempFile;
 
 	}
-	
+
 	@GetMapping("/getAllAlgoritmos")
-	public List<AlgoritmosClustering> getAlgoritmosExcludingAgglomerativeAndKmodes(){
+	public List<AlgoritmosClustering> getAlgoritmosExcludingAgglomerativeAndKmodes() {
 		return algoritmosClusteringService.findAllAlgoritmos();
 	}
-	
+
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
 	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
@@ -264,6 +374,7 @@ public class FasesController {
 	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
 	public ResponseEntity<?> getOptimalNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
+			@RequestParam(name = "indexes", required = false) @Nullable List<Integer> indexes,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
@@ -278,6 +389,7 @@ public class FasesController {
 				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 			}
 		}
+		
 
 		String urlOptimalNClusters = UrlMock + "clustering/getOptimalNClusters?max_clusters="
 				+ Integer.parseInt(max_clusters);
@@ -290,7 +402,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1", null);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1", null, indexes);
 
 			inputStream = llamadaServidorNgrok(urlOptimalNClusters, file, httpClient);
 
@@ -318,10 +430,11 @@ public class FasesController {
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
 	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") String algoritmosJsonString,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
-		
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile,
+			@RequestPart(name = "indexes", required = false) @Nullable List<Integer> indexes) throws IOException {
+
 		List<Map<String, Object>> algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
-		
+
 		String error = this.validarInputNumber((String) algoritmos.get(0).get("nClusters"), 2, 20);
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -351,7 +464,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null, indexes);
 
 			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
 
@@ -369,11 +482,11 @@ public class FasesController {
 
 		byte[] csvBytes = inputStream.readAllBytes();
 		InputStream input = new ByteArrayInputStream(csvBytes);
-		
-		headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));		
-		
+
+		headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));
+
 		input = new ByteArrayInputStream(csvBytes);
-		
+
 		pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
 
 		httpClient.close();
@@ -407,7 +520,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase3", null);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase3", null, null);
 
 			inputStream = llamadaServidorNgrok(urlVarianceMetrics, file, httpClient);
 
@@ -520,7 +633,8 @@ public class FasesController {
 	public ResponseEntity<?> createPopulationProfile(
 			@RequestParam(name = "idPrediccionPoblacion") String idPrediccionPoblacion,
 			@RequestParam(name = "algoritmoOptimo") @Nullable String algoritmoOptimo,
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile,
+			@RequestPart(name = "indexes", required = false) @Nullable List<Integer> indexes)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 
 		idPrediccionPoblacion = StringEscapeUtils.escapeJava(idPrediccionPoblacion);
@@ -533,19 +647,16 @@ public class FasesController {
 				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
+
 		File file;
-		
-		if(multipartFile==null) {
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4", algoritmoOptimo);
-		}
-		else {
+
+		if (multipartFile == null) {
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4", algoritmoOptimo, indexes);
+		} else {
 			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
 			multipartFile.transferTo(file);
 		}
-		
-					
 
 		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, idPrediccionPoblacion);
 
@@ -567,7 +678,7 @@ public class FasesController {
 					"/clustersImages/prediccion" + idPrediccionPoblacion + "/cluster" + Integer.toString(i) + ".png", i,
 					idPrediccionPoblacion);
 		}
-		
+
 		file.delete();
 
 		return new ResponseEntity<>(prediccion.getMaxClusters(), HttpStatus.OK);
@@ -625,7 +736,8 @@ public class FasesController {
 	public ResponseEntity<?> getModelPerformance(
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
 			@RequestParam(name = "algoritmoOptimo") @Nullable String algoritmoOptimo,
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile,
+			@RequestPart(name = "indexes", required = false) @Nullable List<Integer> indexes)
 			throws IllegalStateException, IOException {
 
 		if (multipartFile != null) {
@@ -645,7 +757,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5", algoritmoOptimo);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5", algoritmoOptimo, indexes);
 
 			inputStream = llamadaServidorNgrok(urlModelPerformance, file, httpClient);
 
@@ -680,8 +792,8 @@ public class FasesController {
 
 	}
 
-	private void guardarImagenes(File file, String url, String rutaImagenServidor,
-			String rutaImagenBDD, Integer numCluster, String idPrediccionPoblacion) throws IOException {
+	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD,
+			Integer numCluster, String idPrediccionPoblacion) throws IOException {
 
 		String urlImagenCluster = UrlMock + url;
 
@@ -703,8 +815,8 @@ public class FasesController {
 
 	}
 
-	private void guardarFeatures(File file, String url, Integer numCluster,
-			String idPrediccionPoblacion) throws ClientProtocolException, IOException {
+	private void guardarFeatures(File file, String url, Integer numCluster, String idPrediccionPoblacion)
+			throws ClientProtocolException, IOException {
 
 		String urlPerfilCluster = UrlMock + url;
 

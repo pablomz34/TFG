@@ -20,12 +20,13 @@ Vue.component('fase1', {
 			THIZ.mostrarCargando = true;
 
 			formData.append('max_clusters', this.nClusters);
-
+			var indexes = [1, 3];
 			if (THIZ.csvInput) {
 				formData.append('file', this.$refs.csvFile.files[0]);
 			}
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+				formData.append('indexes', indexes);
 			}
 
 
@@ -179,16 +180,16 @@ Vue.component('fase2', {
 	methods: {
 
 		getSubPopulations: function() {
-			
+
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
 			THIZ.error = '';
 
 			const formData = new FormData();
-			
+
 			//formData.append('n_agglomerative', this.nClustersAglomerativo);
 			//formData.append('n_kmodes', this.nClustersKModes);
-			
+
 			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
 
 			formData.append('algoritmos', algoritmosSeleccionadosJson);
