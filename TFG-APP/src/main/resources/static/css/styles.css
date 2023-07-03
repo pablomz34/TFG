@@ -12630,6 +12630,46 @@ textarea.form-control-lg {
   top: 30%;
 }
 
+.seleccionar-variables-component {
+  position: relative;
+  width: 95%;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 2px 2px 4px 1px rgb(123, 154, 234);
+  border: 3px solid rgb(99, 132, 231);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  padding-left: 12%;
+  color: rgb(99, 132, 231);
+  cursor: pointer;
+}
+
+.seleccionar-variables-component:hover {
+  box-shadow: 3px 3px 6px 2px rgb(123, 154, 234);
+}
+
+.seleccionar-variables-component-rectangle {
+  position: absolute;
+  width: 10%;
+  height: 100%;
+  border-radius: 7px 0% 0% 7px;
+  top: 0%;
+  left: 0%;
+  background-color: rgb(82, 119, 228);
+}
+
+.seleccionar-variables-component-i {
+  position: absolute;
+  color: rgb(39, 90, 224);
+  font-weight: bold;
+  font-size: 25px;
+  right: 0%;
+  padding-right: 15px;
+  top: 30%;
+}
+
 @media (max-width: 1140px) {
   .next-button {
     font-size: 2.5vw;

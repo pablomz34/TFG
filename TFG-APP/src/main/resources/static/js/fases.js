@@ -1,5 +1,5 @@
 Vue.component('fase1', {
-	props: ['idPrediccionPoblacion', 'csvInput'],
+	props: ['idPrediccionPoblacion', 'csvInput', 'indices'],
 	data: function() {
 		return {
 			nClusters: '',
@@ -127,7 +127,7 @@ Vue.component('fase1', {
 });
 
 Vue.component('fase2', {
-	props: ['idPrediccionPoblacion', 'csvInput'],
+	props: ['idPrediccionPoblacion', 'csvInput', 'indices'],
 	data: function() {
 		return {
 			nClustersAglomerativo: '',
@@ -170,8 +170,6 @@ Vue.component('fase2', {
 						}
 
 					}
-
-
 				})
 				.catch(error => console.error(error))
 		}
@@ -562,7 +560,7 @@ Vue.component('fase3', {
 
 
 Vue.component('fase4', {
-	props: ['idPrediccionPoblacion', 'csvInput', 'algoritmoOptimo'],
+	props: ['idPrediccionPoblacion', 'csvInput', 'algoritmoOptimo', 'indices'],
 	data: function() {
 		return {
 			crear: true,
@@ -1032,7 +1030,7 @@ Vue.component('fase4', {
 
 
 Vue.component('fase5', {
-	props: ['idPrediccionPoblacion', 'csvInput', 'algoritmoOptimo'],
+	props: ['idPrediccionPoblacion', 'csvInput', 'algoritmoOptimo', 'indices'],
 	data: function() {
 		return {
 			csvFile: '',
@@ -1312,6 +1310,7 @@ new Vue({
 		return {
 			csvInput: false,
 			idPrediccionPoblacion: '',
+			indicesVariablesClinicasSeleccionadas: [],
 			pantalla1: {
 				showPantalla: true,
 				selectedIdCard: '',
@@ -1326,13 +1325,22 @@ new Vue({
 				showPantalla: false,
 			},
 			pantalla3: {
-				showPantalla: false,
+				showSeleccionarVariableButton: false,
+				numVariablesClinicas: '',
+				searchedVariableClinica: '',
+				variablesClinicasPreSeleccionadas: [],
+				variablesClinicasSeleccionadas: [],
+				variablesClinicasCoincidentes: [],
+				seleccionarVariablesClinicasModal: '',
+				showPantalla: false
+			},
+			pantalla4: {
+				showPantalla: false
 			},
 			faseSeleccionada: 1,
 			algoritmoOptimoFase3: ''
 		}
 	},
-
 
 	methods: {
 		selectCardPantalla1(idCard) {
@@ -1412,7 +1420,7 @@ new Vue({
 			}
 			else if (THIZ.pantalla1.selectedIdCard === 'card2') {
 				THIZ.pantalla1.showPantalla = false;
-				THIZ.pantalla3.showPantalla = true;
+				THIZ.pantalla4.showPantalla = true;
 				THIZ.csvInput = true;
 			}
 
@@ -1487,9 +1495,20 @@ new Vue({
 
 					THIZ.idPrediccionPoblacion = idPrediccionPoblacion;
 
-					THIZ.pantalla2.showPantalla = false;
+					fetch(window.location.origin + "/admin/fases/getMaximoVariablesClinicas?idPrediccionPoblacion=" + idPrediccionPoblacion, {
+						method: "GET"
+					})
+						.then(res => res.text())
+						.then(numVariablesClinicas => {
 
-					THIZ.pantalla3.showPantalla = true;
+							THIZ.pantalla2.showPantalla = false;
+
+							THIZ.pantalla3.showPantalla = true;
+
+							THIZ.pantalla3.numVariablesClinicas = Number(numVariablesClinicas);
+
+						})
+						.catch(error => console.error(error));
 
 				})
 				.catch(error => console.error(error));
@@ -1511,22 +1530,50 @@ new Vue({
 			$(fase).click();
 		},
 
-		cambioPantalla3a1(THIZ) {
+		resetearVariablesPantalla(identificador) {
+
+			if (identificador === 0) {
+				this.resetearPantalla1ConCsvInput();
+			}
+			else if (identificador === 1) {
+				this.resetearPantalla1SinCsvInput();
+			}
+			else if (identificador === 2) {
+
+				this.resetearPantalla2();
+
+			}
+			else if (identificador === 3) {
+				
+				this.resetearPantalla3();
+
+			}
+		},
+
+		resetearPantalla1ConCsvInput() {
+
+			const THIZ = this;
 
 			THIZ.csvInput = false;
 
 			THIZ.pantalla1.selectedIdCard = '';
 		},
+		resetearPantalla1SinCsvInput() {
 
-		cambioPantalla3a2Y2a1(THIZ, cambio2a1) {
+			const THIZ = this;
 
-			if (cambio2a1) {
-				THIZ.csvInput = false;
+			THIZ.csvInput = false;
 
-				THIZ.pantalla1.selectedIdCard = '';
+			THIZ.pantalla1.selectedIdCard = '';
 
-				THIZ.pantalla2.descripciones = [];
-			}
+			THIZ.pantalla2.descripciones = [];
+
+			this.resetearPantalla2();
+		},
+		resetearPantalla2() {
+			const THIZ = this;
+
+			THIZ.pantalla3.numVariablesClinicas = '';
 
 			THIZ.idPrediccionPoblacion = '';
 
@@ -1540,6 +1587,23 @@ new Vue({
 
 			THIZ.pantalla2.uploadPoblacionInfo = false;
 
+			this.resetearPantalla3();
+		},
+		resetearPantalla3() {
+			const THIZ = this;
+
+			THIZ.pantalla3.showSeleccionarVariableButton = false;
+
+			THIZ.pantalla3.searchedVariableClinica = '';
+
+			THIZ.pantalla3.variablesClinicasPreSeleccionadas = [];
+
+			THIZ.pantalla3.variablesClinicasSeleccionadas = [];
+
+			THIZ.pantalla3.variablesClinicasCoincidentes = [];
+
+			THIZ.pantalla3.seleccionarVariablesClinicasModal = '';
+
 		},
 		cambiarShowPantallas(nuevaPantalla, antiguaPantalla) {
 
@@ -1552,33 +1616,300 @@ new Vue({
 			const THIZ = this;
 			THIZ.faseSeleccionada = 1;
 
-			if (THIZ.pantalla3.showPantalla) {
+			if (THIZ.pantalla4.showPantalla) {
 
 				if (THIZ.csvInput) {
 
-					this.cambiarShowPantallas(THIZ.pantalla1, THIZ.pantalla3);
+					this.cambiarShowPantallas(THIZ.pantalla1, THIZ.pantalla4);
 
-					this.cambioPantalla3a1(THIZ);
+					this.resetearVariablesPantalla(0);
 
 				}
 				else {
 
-					this.cambiarShowPantallas(THIZ.pantalla2, THIZ.pantalla3);
+					this.cambiarShowPantallas(THIZ.pantalla3, THIZ.pantalla4);
 
-					this.cambioPantalla3a2Y2a1(THIZ, false);
+					this.resetearVariablesPantalla(3);
 
 				}
 
 			}
 			else if (THIZ.pantalla2.showPantalla) {
-
 				this.cambiarShowPantallas(THIZ.pantalla1, THIZ.pantalla2);
 
-				this.cambioPantalla3a2Y2a1(THIZ, true);
+				this.resetearVariablesPantalla(1);
+			}
+			else if (THIZ.pantalla3.showPantalla) {
+				this.cambiarShowPantallas(THIZ.pantalla2, THIZ.pantalla3);
+
+				this.resetearVariablesPantalla(2);
+			}
+			
+		},
+		showModalSeleccionarVariablesClinicas() {
+
+			const THIZ = this;
+
+			if (this.pantalla3.seleccionarVariablesClinicasModal.length === 0) {
+				let modal = new bootstrap.Modal(document.getElementById('seleccionarVariablesClinicasModal'));
+
+				THIZ.pantalla3.seleccionarVariablesClinicasModal = modal;
+			}
+
+			this.iniciarModalSeleccionarVariablesClinicas();
+
+			THIZ.pantalla3.seleccionarVariablesClinicasModal.show();
+
+		},
+		iniciarModalSeleccionarVariablesClinicas() {
+
+			const THIZ = this;
+
+			THIZ.pantalla3.searchedVariableClinica = '';
+
+			THIZ.pantalla3.showSeleccionarVariableButton = false;
+
+			let modalBodyRow = document.getElementById('modalBodyRow');
+
+			let modalBodyPreseleccionadas = document.getElementById('modalBodyPreseleccionadas');
+
+			this.resetearModalBody(modalBodyRow);
+
+			this.resetearModalBobyPreseleccionadas(modalBodyPreseleccionadas);
+
+			if (this.pantalla3.variablesClinicasSeleccionadas.length === this.pantalla3.numVariablesClinicas) {
+				this.createNoResultComponent(modalBodyRow, "¡Ya has seleccionado todas las variables!");
+			}
+			else {
+				this.createNoResultComponent(modalBodyRow, "¡No hay ninguna coincidencia!");
+			}
+
+
+		},
+		resetearModalBobyPreseleccionadas(modalBodyPreseleccionadas) {
+			while (modalBodyPreseleccionadas.firstChild) {
+				modalBodyPreseleccionadas.removeChild(modalBodyPreseleccionadas.firstChild);
+			}
+		},
+
+		resetearModalBody(modalBodyRow) {
+
+			while (modalBodyRow.firstChild) {
+				modalBodyRow.removeChild(modalBodyRow.firstChild);
+			}
+		},
+
+		createNoResultComponent(modalBodyRow, message) {
+
+			let noResultsComponent = document.createElement("div");
+
+			noResultsComponent.setAttribute("class", "noResults-component");
+
+			noResultsComponent.innerHTML = message;
+
+			modalBodyRow.append(noResultsComponent);
+		},
+
+		crearSeleccionarVariablesClinicasLabel(modalBodyRow) {
+
+			let seleccionarVariablesClinicasLabel = document.createElement("div");
+
+			seleccionarVariablesClinicasLabel.setAttribute("class", "results-search-label");
+
+			seleccionarVariablesClinicasLabel.innerHTML = "Coincidencias";
+
+			modalBodyRow.append(seleccionarVariablesClinicasLabel);
+		},
+		crearSeleccionarVariablesClinicasComponents(modalBodyRow) {
+
+			const THIZ = this;
+
+			for (let i = 0; i < this.pantalla3.variablesClinicasCoincidentes.length; i++) {
+
+				let variableClinicaCoincidente = this.pantalla3.variablesClinicasCoincidentes[i];
+
+				let foundVariableClinica = this.pantalla3.variablesClinicasSeleccionadas.find(function(obj) {
+					return obj.indice === variableClinicaCoincidente.indice && obj.nombreVariable === variableClinicaCoincidente.nombreVariable;
+				});
+
+				if (!foundVariableClinica) {
+
+					let seleccionarVariableComponent = document.createElement("div");
+
+					let seleccionarVariablesComponentRectangle = document.createElement("div");
+
+					seleccionarVariableComponent.setAttribute("class", "seleccionar-variables-component");
+
+					seleccionarVariablesComponentRectangle.setAttribute("class", "seleccionar-variables-component-rectangle");
+
+					seleccionarVariableComponent.innerHTML = this.pantalla3.variablesClinicasCoincidentes[i].nombreVariable;
+
+					seleccionarVariableComponent.addEventListener('click', function(event) {
+
+						let nombreVariable = event.target.textContent;
+
+						let indexVariable = THIZ.pantalla3.variablesClinicasCoincidentes.findIndex(variable => variable.nombreVariable === nombreVariable);
+
+						if (indexVariable != -1) {
+
+							if (!THIZ.pantalla3.showSeleccionarVariableButton) {
+								THIZ.pantalla3.showSeleccionarVariableButton = true;
+							}
+
+							let modalBodyPreseleccionadas = document.getElementById('modalBodyPreseleccionadas');
+
+							THIZ.pantalla3.variablesClinicasPreSeleccionadas.push(THIZ.pantalla3.variablesClinicasCoincidentes[indexVariable]);
+
+
+							if (modalBodyPreseleccionadas.querySelectorAll(".results-search-label").length == 0) {
+
+								let preseleccionarVariablesClinicasLabel = document.createElement("div");
+
+								preseleccionarVariablesClinicasLabel.setAttribute("class", "results-search-label");
+
+								preseleccionarVariablesClinicasLabel.innerHTML = "Preseleccionadas";
+
+								modalBodyPreseleccionadas.append(preseleccionarVariablesClinicasLabel);
+							}
+
+							let preseleccionarVariableComponent = document.createElement("div");
+
+							let preseleccionarVariableComponentRectangle = document.createElement("div");
+
+							preseleccionarVariableComponent.setAttribute("class", "seleccionar-variables-component");
+
+							preseleccionarVariableComponent.setAttribute("style", "color: rgb(39, 90, 224); border: 3px solid rgb(39, 90, 224); box-shadow: 3px 3px 6px 2px rgb(123, 154, 234)");
+
+							preseleccionarVariableComponentRectangle.setAttribute("class", "seleccionar-variables-component-rectangle");
+
+							preseleccionarVariableComponentRectangle.setAttribute("style", "background-color: rgb(39, 90, 224)");
+
+							let preseleccionarVariableComponentI = document.createElement('div');
+
+							preseleccionarVariableComponentI.setAttribute("class", "fa-solid fa-circle-check seleccionar-variables-component-i");
+
+							preseleccionarVariableComponent.innerHTML = THIZ.pantalla3.variablesClinicasCoincidentes[indexVariable].nombreVariable;
+
+							preseleccionarVariableComponent.append(preseleccionarVariableComponentRectangle);
+
+							preseleccionarVariableComponent.append(preseleccionarVariableComponentI);
+
+							modalBodyPreseleccionadas.append(preseleccionarVariableComponent);
+
+							event.target.remove();
+
+							let modalBodyRow = document.getElementById('modalBodyRow');
+
+							if (modalBodyRow.children.length === 1) {
+								if (modalBodyRow.querySelectorAll(".results-search-label").length === 1) {
+									modalBodyRow.removeChild(modalBodyRow.firstChild);
+								}
+							}
+						}
+
+					});
+
+					seleccionarVariableComponent.append(seleccionarVariablesComponentRectangle);
+
+					modalBodyRow.append(seleccionarVariableComponent);
+				}
 
 			}
-		}
 
+		},
+
+		buscarVariablesClinicasCoincidentes() {
+
+			const variablesClinicasSeleccionadasJson = JSON.stringify(this.pantalla3.variablesClinicasSeleccionadas);
+
+			const formData = new FormData();
+
+			formData.append('variablesClinicasSeleccionadas', variablesClinicasSeleccionadasJson);
+
+			fetch(window.location.origin + "/admin/fases/buscarVariablesClinicasCoincidentes?nombreVariableClinica=" + this.pantalla3.searchedVariableClinica +
+				"&idPrediccionPoblacion=" + this.idPrediccionPoblacion, {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.json())
+				.then(res => {
+
+					const THIZ = this;
+
+					let modalBodyRow = document.getElementById("modalBodyRow");
+
+					THIZ.pantalla3.variablesClinicasCoincidentes = [];
+
+					this.resetearModalBody(modalBodyRow);
+
+					if (this.pantalla3.variablesClinicasSeleccionadas.length === this.pantalla3.numVariablesClinicas) {
+
+						this.createNoResultComponent(modalBodyRow, "¡Ya has seleccionado todas las variables!");
+					}
+					else {
+						if (res.length > 0) {
+
+							THIZ.pantalla3.variablesClinicasCoincidentes = res;
+
+							for (let i = 0; i < this.pantalla3.variablesClinicasCoincidentes.length; i++) {
+
+								let variableClinicaCoincidente = this.pantalla3.variablesClinicasCoincidentes[i];
+
+								let variablePreseleccionada = this.pantalla3.variablesClinicasPreSeleccionadas.find(function(obj) {
+									return obj.indice === variableClinicaCoincidente.indice && obj.nombreVariable === variableClinicaCoincidente.nombreVariable;
+								});
+
+								if (variablePreseleccionada) {
+									this.pantalla3.variablesClinicasCoincidentes.splice(i, 1);
+									i--;
+								}
+
+							}
+
+							if (THIZ.pantalla3.variablesClinicasCoincidentes.length === 0) {
+								this.createNoResultComponent(modalBodyRow, "¡No hay ninguna coincidencia!");
+							}
+							else {
+								this.crearSeleccionarVariablesClinicasLabel(modalBodyRow);
+
+								this.crearSeleccionarVariablesClinicasComponents(modalBodyRow);
+							}
+
+						}
+						else {
+							this.createNoResultComponent(modalBodyRow, "¡No hay ninguna coincidencia!");
+						}
+
+					}
+
+				})
+				.catch(error => console.error(error));
+
+		},
+		preseleccionarVariablesClinicas() {
+
+			const THIZ = this;
+
+			for (let i = 0; i < this.pantalla3.variablesClinicasPreSeleccionadas.length; i++) {
+				THIZ.pantalla3.variablesClinicasSeleccionadas.push(this.pantalla3.variablesClinicasPreSeleccionadas[i]);
+			}
+
+			THIZ.pantalla3.variablesClinicasPreSeleccionadas = [];
+
+			THIZ.pantalla3.seleccionarVariablesClinicasModal.hide();
+		},
+		seleccionarVariablesClinicas() {
+
+			const THIZ = this;
+
+			this.pantalla3.variablesClinicasSeleccionadas.forEach(function(elemento) {
+				THIZ.indicesVariablesClinicasSeleccionadas.push(elemento.indice);
+			});
+
+			THIZ.pantalla3.showPantalla = false;
+
+			THIZ.pantalla4.showPantalla = true;
+		}
 	},
 
 
@@ -1700,14 +2031,6 @@ new Vue({
 				                        <input class="input-container-input-file" accept=".csv" @change="archivoSeleccionado" type="file" id="csv" ref="csvUploadPoblacion" required />
 		                   			</div>
 			                    </div>
-			                    
-			                     <div v-if="pantalla2.showContinueButton" class="form-group mt-4 mb-2">
-			                        <div class="row justify-content-center">
-			                            <div class="col text-center">
-			                                <button class="btn btn-outline-custom-color fs-5 fw-semibold" type="submit">Continuar</button>
-			                            </div>
-			                        </div>
-		                   		</div>
 		                   		
 			                </form>
 			            </div>
@@ -1715,12 +2038,74 @@ new Vue({
 	        	</div>				
 			</div>
 			
-			
+				
+			<div v-if="pantalla2.showContinueButton" class="row justify-content-center mt-5">	
+					<button type="button" @click="seleccionarPrediccionAndPoblacionInfo" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
+			</div>
 			
 		</div>
 		
+		
+		<div v-if="pantalla3.showPantalla" class="container pt-2">
+		
+			
+			<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
+			
+		
+			<div class="row justify-content-around" style="margin-top: 65px;">
+				<div class="col-md-6">
+					<div class="card rounded-4 p-0 shadow">
+			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+			                <h2 class="text-center text-white">Seleccionar variables clinicas</h2>
+			            </div>
+			            <div class="card-body">
+			            	<div class="row justify-content-center">
+				                <button class="btn btn-custom-color fs-5 w-50" @click="showModalSeleccionarVariablesClinicas"><i
+									class="fa-solid fa-plus fs-5"></i> Seleccionar variables</button>
+								
+								<div class="modal fade" id="seleccionarVariablesClinicasModal" tabindex="-1" aria-hidden="true">
+									<div class="modal-dialog modal-dialog-centered">
+										<div class="modal-content">
+											<div class="modal-header bg-custom-light-color">
+												<form class="w-100">
+													<div class="search-input-container">
+														<input class="search-input" type="text" placeholder="Buscar variable clinica"
+															v-model="pantalla3.searchedVariableClinica" @keyup="buscarVariablesClinicasCoincidentes"
+															id="seleccionarVariableClinica">
+														<i class="search-input-container-i fa-solid fa-magnifying-glass"></i>
+													</div>
+		
+												</form>
+											</div>
+											<div class="modal-body bg-light">
+												<div id="modalBodyRow" class="row justify-content-center overflow-y-auto"
+													style="max-height: 500px !important;">
+												</div>
+												<div id="modalBodyPreseleccionadas" class="row justify-content-center overflow-y-auto"
+													style="max-height: 500px !important;">
+												</div>
+											</div>
+											<div v-if="pantalla3.showSeleccionarVariableButton" class="modal-footer justify-content-center">										
+												<button @click="preseleccionarVariablesClinicas" class="btn btn-outline-custom-color fs-5 fw-semibold" type="button">Seleccionar</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							
+							</div>
+			            </div>
+		        	</div>
+	        	</div>				
+			</div>
+			
+			<div v-if="pantalla3.variablesClinicasSeleccionadas.length > 0" class="row justify-content-center mt-5">	
+					<button type="button" @click="seleccionarVariablesClinicas" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
+			</div>
+					
+		</div>
+		
 	    
-	    <div v-if="pantalla3.showPantalla" class="container pt-2"> 
+	    <div v-if="pantalla4.showPantalla" class="container pt-2"> 
 	    
 	    	<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
 	    
@@ -1749,19 +2134,19 @@ new Vue({
 				</ul>
 				<div class="tab-content" id="pills-tabContent">
 				  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="fase1" tabindex="0">
-				  	<fase1 v-if="csvInput || faseSeleccionada==1" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  	<fase1 v-if="csvInput || faseSeleccionada==1" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :indices="this.indicesVariablesClinicasSeleccionadas" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="fase2" tabindex="0">
-				  	<fase2 v-if="csvInput || faseSeleccionada==2" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
+				  	<fase2 v-if="csvInput || faseSeleccionada==2" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :indices="this.indicesVariablesClinicasSeleccionadas" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="fase3" tabindex="0">
 				  	<fase3 v-if="csvInput || faseSeleccionada==3" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="fase4" tabindex="0">
-				  	<fase4 v-if="csvInput || faseSeleccionada==4" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" @cambiarFase="cambiarFase"/>
+				  	<fase4 v-if="csvInput || faseSeleccionada==4" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" :indices="this.indicesVariablesClinicasSeleccionadas" @cambiarFase="cambiarFase"/>
 				  </div>
 				  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="fase5" tabindex="0">
-				  	<fase5 v-if="csvInput || faseSeleccionada==5" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3"/>
+				  	<fase5 v-if="csvInput || faseSeleccionada==5" :idPrediccionPoblacion="this.idPrediccionPoblacion" :csvInput="this.csvInput" :algoritmoOptimo="this.algoritmoOptimoFase3" :indices="this.indicesVariablesClinicasSeleccionadas" />
 				  </div>
 				</div>
 			

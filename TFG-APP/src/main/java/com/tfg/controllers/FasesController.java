@@ -40,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.dto.UsuariosDto;
@@ -343,6 +345,26 @@ public class FasesController {
 	@GetMapping("/getAllAlgoritmos")
 	public List<AlgoritmosClustering> getAlgoritmosExcludingAgglomerativeAndKmodes() {
 		return algoritmosClusteringService.findAllAlgoritmos();
+	}
+	
+	@PostMapping("/buscarVariablesClinicasCoincidentes")
+	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(@RequestParam("nombreVariableClinica") String nombreVariableClinica,
+			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion,
+			@RequestParam("variablesClinicasSeleccionadas") String variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException{
+				
+		List<HashMap<String, Object>> variablesClinicas = new ArrayList<HashMap<String, Object>>();
+				
+		if(!nombreVariableClinica.equals("") && nombreVariableClinica != null) {
+			variablesClinicas = headersPacientesService.findVariablesClinicasCoincidentes(nombreVariableClinica, idPrediccionPoblacion, variablesClinicasSeleccionadas);
+		}
+			
+		return new ResponseEntity(variablesClinicas, HttpStatus.OK);
+	}
+	
+	@GetMapping("/getMaximoVariablesClinicas")
+	public int getMaximoVariablesClinicas(@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
+		
+		return headersPacientesService.findMaxNumVariablesClinicas(idPrediccionPoblacion);
 	}
 
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
