@@ -20,13 +20,12 @@ Vue.component('fase1', {
 			THIZ.mostrarCargando = true;
 
 			formData.append('max_clusters', this.nClusters);
-			var indexes = [1, 3];
 			if (THIZ.csvInput) {
 				formData.append('file', this.$refs.csvFile.files[0]);
 			}
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
-				formData.append('indexes', indexes);
+				formData.append('indices', this.indices);
 			}
 
 
@@ -197,6 +196,7 @@ Vue.component('fase2', {
 			}
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
+				formData.append('indices', this.indices);
 			}
 
 			fetch(window.location.origin + "/admin/fases/getSubPopulations", {
@@ -684,6 +684,7 @@ Vue.component('fase4', {
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
 				formData.append('algoritmoOptimo', THIZ.algoritmoOptimo);
+				formData.append('indices', this.indices);
 			}
 
 
@@ -1058,6 +1059,7 @@ Vue.component('fase5', {
 			else {
 				formData.append('idPrediccionPoblacion', THIZ.idPrediccionPoblacion);
 				formData.append('algoritmoOptimo', THIZ.algoritmoOptimo);
+				formData.append('indices', this.indices);
 			}
 
 
@@ -2056,7 +2058,7 @@ new Vue({
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">
 			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-			                <h2 class="text-center text-white">Seleccionar variables clinicas</h2>
+			                <h2 class="text-center text-white">Seleccionar variables clínicas</h2>
 			            </div>
 			            <div class="card-body">
 			            	<div class="row justify-content-center">

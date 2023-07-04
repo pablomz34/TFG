@@ -157,7 +157,7 @@ public class FasesController {
 	}
 
 	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase, String algoritmoOptimo,
-			List<Integer> indexes) throws IOException {
+			List<Integer> indices) throws IOException {
 
 		List<Pacientes> poblacion = pacientesService.findPacientesByPrediccionId(Long.parseLong(idPrediccionPoblacion));
 		HeadersPacientes headers = headersPacientesService
@@ -173,161 +173,122 @@ public class FasesController {
 
 		switch (fase) {
 		case "fase1":
-			if (indexes.size() == 0) {
-				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-				for (int i = 0; i < poblacion.size(); i++) {
-					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
-				}
-			} else {
-				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
-				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
-					if (indexes.contains(i)) {
-						poblacionData += headersVariablesClinicas.get(i);
-						poblacionData += i == (indexes.get(indexes.size()-1)) ? "\n" : ",";
-					}
-					
+
+			headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+			for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+				if (indices.contains(i)) {
+					poblacionData += headersVariablesClinicas.get(i);
+					poblacionData += i == (indices.get(indices.size() - 1)) ? "\n" : ",";
 				}
 
-				for (int i = 0; i < poblacion.size(); i++) {
-					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
-					for (int j = 0; j < variablesClinicas.size(); j++) {
-						if (indexes.contains(j)) {
-							poblacionData += variablesClinicas.get(j);
-							poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-						}
-						
+			}
+
+			for (int i = 0; i < poblacion.size(); i++) {
+				variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+				for (int j = 0; j < variablesClinicas.size(); j++) {
+					if (indices.contains(j)) {
+						poblacionData += variablesClinicas.get(j);
+						poblacionData += j == (indices.get(indices.size() - 1)) ? "\n" : ",";
 					}
+
 				}
 			}
 
 			break;
 		case "fase2":
-			if (indexes.size() == 0) {
-				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-				for (int i = 0; i < poblacion.size(); i++) {
-					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+
+			headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+			for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+				if (indices.contains(i)) {
+					poblacionData += headersVariablesClinicas.get(i);
+					poblacionData += i == (indices.get(indices.size() - 1)) ? "\n" : ",";
 				}
 
-			} else {
-				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
-				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
-					if (indexes.contains(i)) {
-						poblacionData += headersVariablesClinicas.get(i);
-						poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-					}
-					
-				}
+			}
 
-				for (int i = 0; i < poblacion.size(); i++) {
-					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
-					for (int j = 0; j < variablesClinicas.size(); j++) {
-						if (indexes.contains(j)) {
-							poblacionData += variablesClinicas.get(j);
-							poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-						}
-						
+			for (int i = 0; i < poblacion.size(); i++) {
+				variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+				for (int j = 0; j < variablesClinicas.size(); j++) {
+					if (indices.contains(j)) {
+						poblacionData += variablesClinicas.get(j);
+						poblacionData += j == (indices.get(indices.size() - 1)) ? "\n" : ",";
 					}
+
 				}
 			}
+
 			break;
 		case "fase3":
-			if (indexes.size() == 0) {
-				poblacionData += headers.getHeadersVariableObjetivo() + ",";
-				poblacionData += headers.getHeadersAlgoritmos() + "\n";
-				for (int i = 0; i < poblacion.size(); i++) {
-					poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
-					poblacionData += poblacion.get(i).getAlgoritmos() + "\n";
-				}
+
+			poblacionData += headers.getHeadersVariableObjetivo() + ",";
+			poblacionData += headers.getHeadersAlgoritmos() + "\n";
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+				poblacionData += poblacion.get(i).getAlgoritmos() + "\n";
 			}
 
 			break;
 		case "fase4":
-			if (indexes.size() == 0) {
-				poblacionData += headers.getHeadersVariableObjetivo() + ",";
 
-				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+			poblacionData += headers.getHeadersVariableObjetivo() + ",";
 
-				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+			headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
 
-				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
-				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-				for (int i = 0; i < poblacion.size(); i++) {
-					poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+			algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
 
-					algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));
+			poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
 
-					poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
-					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
+			headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+			for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+				if (indices.contains(i)) {
+					poblacionData += headersVariablesClinicas.get(i);
+					poblacionData += i == (indices.get(indices.size() - 1)) ? "\n" : ",";
 				}
-			} else {
-				poblacionData += headers.getHeadersVariableObjetivo() + ",";
+				
+			}
 
-				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
-
-				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
-
-				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
-
-				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
-				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
-					if (indexes.contains(i)) {
-						poblacionData += headersVariablesClinicas.get(i);
+			for (int i = 0; i < poblacion.size(); i++) {
+				poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
+				algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));
+				poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
+				variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+				for (int j = 0; j < variablesClinicas.size(); j++) {
+					if (indices.contains(j)) {
+						poblacionData += variablesClinicas.get(j);
+						poblacionData += j == (indices.get(indices.size() - 1)) ? "\n" : ",";
 					}
-					poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-				}
-
-				for (int i = 0; i < poblacion.size(); i++) {
-					poblacionData += poblacion.get(i).getVariableObjetivo() + ",";
-					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
-					for (int j = 0; j < variablesClinicas.size(); j++) {
-						if (indexes.contains(j)) {
-							poblacionData += variablesClinicas.get(j);
-						}
-						poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-					}
+					
 				}
 			}
 
 			break;
 		case "fase5":
-			if (indexes.size() == 0) {
-				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
 
-				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
+			headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
 
-				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
-				poblacionData += headers.getHeadersVariablesClinicas() + "\n";
-				for (int i = 0; i < poblacion.size(); i++) {
+			algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
 
-					algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));
-					poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
-					poblacionData += poblacion.get(i).getVariablesClinicas() + "\n";
-				}
-			} else {
-				headersAlgoritmos = Arrays.asList(headers.getHeadersAlgoritmos().split(","));
+			poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
 
-				algoritmoOptimoIndex = headersAlgoritmos.indexOf(algoritmoOptimo);
-
-				poblacionData += headersAlgoritmos.get(algoritmoOptimoIndex) + ",";
-
-				headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
-				for (int i = 0; i < headersVariablesClinicas.size(); i++) {
-					if (indexes.contains(i)) {
-						poblacionData += headersVariablesClinicas.get(i);
-						poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-					}
-					
+			headersVariablesClinicas = Arrays.asList(headers.getHeadersVariablesClinicas().split(","));
+			for (int i = 0; i < headersVariablesClinicas.size(); i++) {
+				if (indices.contains(i)) {
+					poblacionData += headersVariablesClinicas.get(i);
+					poblacionData += i == (indices.get(indices.size() - 1)) ? "\n" : ",";
 				}
 
-				for (int i = 0; i < poblacion.size(); i++) {
-					variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
-					for (int j = 0; j < variablesClinicas.size(); j++) {
-						if (indexes.contains(j)) {
-							poblacionData += variablesClinicas.get(j);
-							poblacionData += i == (indexes.get(indexes.size()- 1)) ? "\n" : ",";
-						}
-						
+			}
+
+			for (int i = 0; i < poblacion.size(); i++) {
+				algoritmos = Arrays.asList(poblacion.get(i).getAlgoritmos().split(","));
+				poblacionData += algoritmos.get(algoritmoOptimoIndex) + ",";
+				variablesClinicas = Arrays.asList(poblacion.get(i).getVariablesClinicas().split(","));
+				for (int j = 0; j < variablesClinicas.size(); j++) {
+					if (indices.contains(j)) {
+						poblacionData += variablesClinicas.get(j);
+						poblacionData += j == (indices.get(indices.size() - 1)) ? "\n" : ",";
 					}
+
 				}
 			}
 
@@ -346,24 +307,27 @@ public class FasesController {
 	public List<AlgoritmosClustering> getAlgoritmosExcludingAgglomerativeAndKmodes() {
 		return algoritmosClusteringService.findAllAlgoritmos();
 	}
-	
+
 	@PostMapping("/buscarVariablesClinicasCoincidentes")
-	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(@RequestParam("nombreVariableClinica") String nombreVariableClinica,
+	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(
+			@RequestParam("nombreVariableClinica") String nombreVariableClinica,
 			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion,
-			@RequestParam("variablesClinicasSeleccionadas") String variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException{
-				
+			@RequestParam("variablesClinicasSeleccionadas") String variablesClinicasSeleccionadas)
+			throws JsonMappingException, JsonProcessingException {
+
 		List<HashMap<String, Object>> variablesClinicas = new ArrayList<HashMap<String, Object>>();
-				
-		if(!nombreVariableClinica.equals("") && nombreVariableClinica != null) {
-			variablesClinicas = headersPacientesService.findVariablesClinicasCoincidentes(nombreVariableClinica, idPrediccionPoblacion, variablesClinicasSeleccionadas);
+
+		if (!nombreVariableClinica.equals("") && nombreVariableClinica != null) {
+			variablesClinicas = headersPacientesService.findVariablesClinicasCoincidentes(nombreVariableClinica,
+					idPrediccionPoblacion, variablesClinicasSeleccionadas);
 		}
-			
+
 		return new ResponseEntity(variablesClinicas, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/getMaximoVariablesClinicas")
 	public int getMaximoVariablesClinicas(@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
-		
+
 		return headersPacientesService.findMaxNumVariablesClinicas(idPrediccionPoblacion);
 	}
 
@@ -396,7 +360,7 @@ public class FasesController {
 	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
 	public ResponseEntity<?> getOptimalNClusters(@RequestParam("max_clusters") String max_clusters,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
-			@RequestParam(name = "indexes", required = false) @Nullable List<Integer> indexes,
+			@RequestParam(name = "indices", required = false) @Nullable List<Integer> indices,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
@@ -411,7 +375,6 @@ public class FasesController {
 				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 			}
 		}
-		
 
 		String urlOptimalNClusters = UrlMock + "clustering/getOptimalNClusters?max_clusters="
 				+ Integer.parseInt(max_clusters);
@@ -424,7 +387,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1", null, indexes);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase1", null, indices);
 
 			inputStream = llamadaServidorNgrok(urlOptimalNClusters, file, httpClient);
 
@@ -452,8 +415,8 @@ public class FasesController {
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
 	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") String algoritmosJsonString,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile,
-			@RequestPart(name = "indexes", required = false) @Nullable List<Integer> indexes) throws IOException {
+			@RequestParam(name = "indices", required = false) @Nullable List<Integer> indices,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
 
 		List<Map<String, Object>> algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
 
@@ -486,7 +449,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null, indexes);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null, indices);
 
 			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
 
@@ -655,8 +618,8 @@ public class FasesController {
 	public ResponseEntity<?> createPopulationProfile(
 			@RequestParam(name = "idPrediccionPoblacion") String idPrediccionPoblacion,
 			@RequestParam(name = "algoritmoOptimo") @Nullable String algoritmoOptimo,
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile,
-			@RequestPart(name = "indexes", required = false) @Nullable List<Integer> indexes)
+			@RequestParam(name = "indices", required = false) @Nullable List<Integer> indices,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 
 		idPrediccionPoblacion = StringEscapeUtils.escapeJava(idPrediccionPoblacion);
@@ -673,7 +636,7 @@ public class FasesController {
 		File file;
 
 		if (multipartFile == null) {
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4", algoritmoOptimo, indexes);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase4", algoritmoOptimo, indices);
 		} else {
 			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
@@ -758,8 +721,8 @@ public class FasesController {
 	public ResponseEntity<?> getModelPerformance(
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
 			@RequestParam(name = "algoritmoOptimo") @Nullable String algoritmoOptimo,
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile,
-			@RequestPart(name = "indexes", required = false) @Nullable List<Integer> indexes)
+			@RequestParam(name = "indices", required = false) @Nullable List<Integer> indices,
+			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
 		if (multipartFile != null) {
@@ -779,7 +742,7 @@ public class FasesController {
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5", algoritmoOptimo, indexes);
+			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase5", algoritmoOptimo, indices);
 
 			inputStream = llamadaServidorNgrok(urlModelPerformance, file, httpClient);
 
