@@ -12670,6 +12670,69 @@ textarea.form-control-lg {
   top: 30%;
 }
 
+.variables-seleccionadas-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.variables-seleccionadas-label {
+  display: block;
+  text-align: center;
+  border-bottom: 3px solid rgb(74, 116, 225);
+  width: 100%;
+  font-size: 24px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: rgb(74, 116, 225);
+}
+
+.variables-seleccionadas-component {
+  position: relative;
+  z-index: 1;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  background-color: rgb(162, 183, 240);
+  box-shadow: 2px 2px 6px 2px rgb(179, 197, 242);
+  margin: 10px 2.5% 10px 2.5%;
+  padding: 12px 5% 12px 5%;
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.variables-seleccionadas-component-text {
+  width: 100%;
+  margin-right: 20%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.variables-seleccionadas-component-i {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 18px;
+  padding: 5px;
+  background-color: rgb(96, 133, 230);
+  z-index: 9999;
+  border-radius: 50%;
+  color: white;
+  transform: translate(50%, -50%);
+  cursor: pointer;
+}
+
+.variables-seleccionadas-component-i:hover {
+  color: rgb(96, 133, 230);
+  border: 3px solid rgb(96, 133, 230);
+  background-color: white;
+}
+
 @media (max-width: 1140px) {
   .next-button {
     font-size: 2.5vw;

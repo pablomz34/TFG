@@ -1702,6 +1702,8 @@ new Vue({
 		},
 
 		createNoResultComponent(modalBodyRow, message) {
+			
+			this.crearSeleccionarVariablesClinicasLabel(modalBodyRow);
 
 			let noResultsComponent = document.createElement("div");
 
@@ -1911,6 +1913,13 @@ new Vue({
 			THIZ.pantalla3.showPantalla = false;
 
 			THIZ.pantalla4.showPantalla = true;
+		},
+		eliminarVariableSeleccionada(index){
+			
+			const THIZ = this;
+			
+			this.pantalla3.variablesClinicasSeleccionadas.splice(index, 1);
+			
 		}
 	},
 
@@ -2063,7 +2072,19 @@ new Vue({
 			            <div class="card-body">
 			            	<div class="row justify-content-center">
 				                <button class="btn btn-custom-color fs-5 w-50" @click="showModalSeleccionarVariablesClinicas"><i
-									class="fa-solid fa-plus fs-5"></i> Seleccionar variables</button>
+									class="fa-solid fa-hand-pointer fs-5"></i> Seleccionar variables</button>
+								
+								
+								<div v-if="pantalla3.variablesClinicasSeleccionadas.length > 0" id="variablesSeleccionadasContainer" class="variables-seleccionadas-container" style="max-height: 500px; overflow-y: auto;">
+									
+									<label class="variables-seleccionadas-label">Variables Seleccionadas </label>
+								
+									<div v-for="(variable, index) in pantalla3.variablesClinicasSeleccionadas" class="variables-seleccionadas-component">
+										<div class="variables-seleccionadas-component-text">{{variable.nombreVariable}}</div>
+										<i @click="eliminarVariableSeleccionada(index)" class="fa-solid fa-xmark variables-seleccionadas-component-i"></i>
+									</div>
+								
+								</div>
 								
 								<div class="modal fade" id="seleccionarVariablesClinicasModal" tabindex="-1" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered">
