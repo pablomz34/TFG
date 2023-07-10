@@ -499,7 +499,7 @@ Vue.component('fase3', {
 	        </div>
 	    </span>
 	
-	    <div class="row col-md-6 offset-md-3">
+	    <div class="col-md-6 offset-md-3">
 	        <div v-if="error != ''" class="alert alert-danger">
 	            {{this.error}}
 	        </div>
@@ -528,6 +528,7 @@ Vue.component('fase3', {
 	        </div>
 	    </div>
 	    
+	    
 	    <div v-if="!csvInput && siguienteFase" class="row justify-content-center m-2">	
 			<button type="button" @click="cambiarFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 		</div>
@@ -551,6 +552,10 @@ Vue.component('fase3', {
 	                </tr>
 	            </tbody>
 	        </table>
+	    </div>
+	    
+	   	<div v-if="!csvInput && siguienteFase" class="col-md-4 offset-md-4 text-center mt-2 alert alert-success">
+			El algoritmo que se usará en fases siguientes es: {{this.algoritmoOptimo}}
 	    </div>
 	</div>
 	`
@@ -839,7 +844,7 @@ Vue.component('fase4', {
 		            </button>            
 				
 					
-					<div v-show="crear" class="row justify-content-around">
+					<div v-if="crear" class="row justify-content-around">
 						<form @submit.prevent="seleccionarPrediccion">
 							<div class="form-group mb-3">
 								<div class="input-container">
@@ -856,7 +861,7 @@ Vue.component('fase4', {
 		                    </div>
 		            	</form>
 					</div>
-					<div v-show="!crear" class="row justify-content-around">
+					<div v-else class="row justify-content-around">
 						<div v-if="descripciones.length > 0">
 							<form @submit.prevent="seleccionarPrediccion">
 								<div class="form-group mb-3">
@@ -895,8 +900,11 @@ Vue.component('fase4', {
 	
 	    <div v-if="continuar || !csvInput" class="row justify-content-around">
 	        <div class="card col-7 rounded-4 p-0 mb-3 shadow">
-	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <div v-if="csvInput" class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población</h2>
+	            </div>
+	            <div v-else class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población. Algoritmo óptimo: {{this.algoritmoOptimo}}</h2>
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="createPopulationAndCurves">
@@ -1099,8 +1107,11 @@ Vue.component('fase5', {
 	            {{this.error}}
 	        </div>
 	        <div class="card rounded-4 p-0 mb-2 shadow">
-	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	            <div v-if="csvInput" class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Rendimiento del modelo</h2>
+	            </div>
+	            <div v-if="!csvInput" class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
+	                <h2 class="text-center text-white">Rendimiento del modelo con algoritmo {{this.algoritmoOptimo}}</h2>
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getModelPerformance">
