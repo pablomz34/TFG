@@ -56,7 +56,6 @@ Vue.component('fase1', {
 					THIZ.siguienteFase = true;
 					THIZ.mostrarCargando = false;
 				})
-				//.catch(error => console.error(error))
 				.catch(error => console.error(error))
 		},
 
@@ -387,7 +386,6 @@ Vue.component('fase2', {
 				.then(res => res.json())
 				.then(res => {
 					
-					console.log(res);
 					const THIZ = this;
 
 					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
@@ -414,6 +412,8 @@ Vue.component('fase2', {
 			this.algoritmosPreSeleccionados.forEach(function(algoritmo){
 				THIZ.algoritmosSeleccionados.push(algoritmo);
 			})
+			
+			THIZ.algoritmosPreSeleccionados = [];
 
 			THIZ.modalAddAlgoritmos.hide();
 
@@ -2050,6 +2050,20 @@ new Vue({
 
 			this.pantalla3.variablesClinicasSeleccionadas.splice(index, 1);
 
+		},
+		getColorFaseSeleccionada(event){
+			
+			
+			let botonesFases = document.querySelectorAll('.btn-custom-light-color');
+			
+			botonesFases.forEach( function(boton){
+				boton.style.backgroundColor = "rgb(123, 151, 234)";
+			});
+			
+			const boton = event.target;
+			
+			boton.style.backgroundColor = 'rgb(65, 105, 225)';
+			
 		}
 	},
 
@@ -2270,19 +2284,19 @@ new Vue({
 				
 				<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" :disabled="!this.csvInput && this.faseSeleccionada!=1">Nº Óptimo de Clusters</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada" ref="fase1" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true" :disabled="!this.csvInput && this.faseSeleccionada!=1">Nº Óptimo de Clusters</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=2" selected>Subpoblaciones</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada"  id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=2" selected>Subpoblaciones</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=3">Métricas de varianza</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=3">Métricas de varianza</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=4">Gráficas y estadísticas de población</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5"  @click="getColorFaseSeleccionada" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=4">Gráficas y estadísticas de población</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=5">Rendimiento del modelo</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false" :disabled="!this.csvInput && this.faseSeleccionada!=5">Rendimiento del modelo</button>
 				  </li>
 				</ul>
 				<div class="tab-content" id="pills-tabContent">
