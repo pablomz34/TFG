@@ -303,11 +303,26 @@ public class FasesController {
 
 	}
 
-	@GetMapping("/getAllAlgoritmos")
-	public List<AlgoritmosClustering> getAlgoritmosExcludingAgglomerativeAndKmodes() {
-		return algoritmosClusteringService.findAllAlgoritmos();
+	@GetMapping("/getAlgoritmosAgglomerativeAndKmodes")
+	public List<AlgoritmosClustering> getAlgoritmosAgglomerativeAndKmodes() {
+		return algoritmosClusteringService.findAlgoritmosAgglomerativeAndKmodes();
 	}
-
+	
+	@PostMapping("/buscarAlgoritmosCoincidentes")
+	public ResponseEntity<?> buscarAlgoritmosCoincidentes(
+			@RequestParam("nombreAlgoritmo") String nombreAlgoritmo,
+			@RequestParam("algoritmosSeleccionados") String algoritmosSeleccionados,
+			@RequestParam("algoritmosPreSeleccionados") String algoritmosPreSeleccionados) throws JsonMappingException, JsonProcessingException{
+		
+		List<AlgoritmosClustering> algoritmosCoincidentes = new ArrayList<AlgoritmosClustering>();
+		
+		if (!nombreAlgoritmo.equals("") && nombreAlgoritmo != null) {
+			
+			algoritmosCoincidentes = algoritmosClusteringService.findAlgoritmosCoincidentesAndNoSeleccionados(nombreAlgoritmo, algoritmosSeleccionados, algoritmosPreSeleccionados);
+		}
+		
+		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
+	}
 	@PostMapping("/buscarVariablesClinicasCoincidentes")
 	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(
 			@RequestParam("nombreVariableClinica") String nombreVariableClinica,

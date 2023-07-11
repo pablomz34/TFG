@@ -135,10 +135,11 @@ Vue.component('fase2', {
 			error: '',
 			mostrarCargando: false,
 			siguienteFase: false,
-			algoritmosExcludingAgglomerativeAndKmodes: [],
+			searchedAlgoritmo: '',
 			modalAddAlgoritmos: '',
-			algoritmosSeleccionados: [],
-			moreAlgoritmos: false
+			algoritmosCoincidentes: [],
+			algoritmosPreSeleccionados: [],
+			algoritmosSeleccionados: []
 		}
 	},
 	mounted() {
@@ -147,30 +148,21 @@ Vue.component('fase2', {
 
 		if (!this.csvInput) {
 
-			fetch(window.location.origin + "/admin/fases/getAllAlgoritmos", {
-				method: "GET"
-			})
-				.then(res => res.json())
-				.then(res => {
+			const THIZ = this;
 
-					const THIZ = this;
+			let agglomerative_dict = {};
 
-					for (let i = 0; i < res.length; i++) {
-						let dict = {};
-						dict["id"] = res[i].id;
-						dict["nombreAlgoritmo"] = res[i].nombreAlgoritmo;
-						dict["nClusters"] = '';
-						if (res[i].nombreAlgoritmo === 'agglomerative' || res[i].nombreAlgoritmo === 'kmodes') {
+			agglomerative_dict["nombreAlgoritmo"] = "agglomerative";
+			agglomerative_dict["nClusters"] = '';
 
-							THIZ.algoritmosSeleccionados.push(dict);
-						}
-						else {
-							THIZ.algoritmosExcludingAgglomerativeAndKmodes.push(dict);
-						}
+			THIZ.algoritmosSeleccionados.push(agglomerative_dict);
 
-					}
-				})
-				.catch(error => console.error(error))
+			let kmodes_dict = {};
+
+			kmodes_dict["nombreAlgoritmo"] = "kmodes";
+			kmodes_dict["nClusters"] = '';
+
+			THIZ.algoritmosSeleccionados.push(kmodes_dict);
 		}
 	},
 
@@ -183,10 +175,7 @@ Vue.component('fase2', {
 			THIZ.error = '';
 
 			const formData = new FormData();
-
-			//formData.append('n_agglomerative', this.nClustersAglomerativo);
-			//formData.append('n_kmodes', this.nClustersKModes);
-
+			
 			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
 
 			formData.append('algoritmos', algoritmosSeleccionadosJson);
@@ -244,7 +233,7 @@ Vue.component('fase2', {
 
 			const THIZ = this;
 
-			THIZ.moreAlgoritmos = false;
+			this.resetearModalAddAlgoritmos();
 
 			if (this.modalAddAlgoritmos.length === 0) {
 
@@ -260,54 +249,180 @@ Vue.component('fase2', {
 
 			this.modalAddAlgoritmos.hide();
 		},
-		seleccionarAlgoritmo(idAlgoritmo, event) {
-
+		resetearModalAddAlgoritmos(){
+			
 			const THIZ = this;
+			
+			THIZ.searchedAlgoritmo = '';
+			
+			let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
 
-			let addAlgoritmoDiv = event.target;
+			this.resetearModalBodyRow(algoritmosCoincidentesRow);
+			
+			let algortimosPreSeleccionadosRow = document.getElementById("algortimosPreSeleccionadosRow");
 
-			let indiceAlgoritmoSeleccionado = this.algoritmosSeleccionados.findIndex(algoritmo => algoritmo.id === idAlgoritmo);
+			this.resetearModalBodyRow(algortimosPreSeleccionadosRow);
+			
+			THIZ.algoritmosCoincidentes = [];
+			
+			THIZ.algoritmosPreSeleccionados = [];
+			
+			this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
+			
+		},
+		crearLabelComponent(row, message) {
 
-			if (indiceAlgoritmoSeleccionado != -1) {
+			let label = document.createElement("div");
 
-				addAlgoritmoDiv.setAttribute("style", "");
+			label.setAttribute("class", "results-search-label");
 
-				const iconos = addAlgoritmoDiv.getElementsByTagName('i');
+			label.innerHTML = message;
 
-				for (let i = 0; i < iconos.length; i++) {
-					if (iconos[i]) {
-						addAlgoritmoDiv.removeChild(iconos[i]);
+			row.append(label);
+		},
+		createNoResultComponent(row, message) {
+
+			this.crearLabelComponent(row, "Coincidencias");
+
+			let noResultsComponent = document.createElement("div");
+
+			noResultsComponent.setAttribute("class", "noResults-component");
+
+			noResultsComponent.innerHTML = message;
+
+			row.append(noResultsComponent);
+		},
+		resetearModalBodyRow(row){
+			
+			while (row.firstChild) {
+				row.removeChild(row.firstChild);
+			}
+			
+		},
+		crearAlgoritmosCoincidentesRowComponents(row){
+			
+			const THIZ = this;
+			
+			this.crearLabelComponent(row, "Coincidencias");
+			
+			for(let i=0; i < this.algoritmosCoincidentes.length; i++){
+				
+				let algoritmoContainer = document.createElement('div');
+				
+				algoritmoContainer.setAttribute("class", "add-algoritmos-container");
+				
+				algoritmoContainer.addEventListener('click', function(event) {
+					
+					let algoritmosPreSeleccionadosRow = document.getElementById('algortimosPreSeleccionadosRow');
+					
+					if(THIZ.algoritmosPreSeleccionados.length === 0){
+						
+						let label = document.createElement("div");
+
+						label.setAttribute("class", "results-search-label");
+			
+						label.innerHTML = "Preseleccionados";
+			
+						algoritmosPreSeleccionadosRow.append(label);
 					}
-				}
+					
+					let algoritmoComponent = document.createElement("div");
+					
+					let algoritmoComponentIcon = document.createElement("i");
+					
+					algoritmoComponent.setAttribute("class", "add-algoritmos-container");
+					
+					algoritmoComponent.setAttribute("style", "box-shadow: 3px 3px 6px 2px rgb(39, 90, 224); border: 3px solid rgb(39, 90, 224); color: rgb(39, 90, 224);")
+					
+					algoritmoComponent.classList.add('seleccionado');
+					
+					algoritmoComponent.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
+					
+					algoritmoComponentIcon.setAttribute("class", "fa-solid fa-circle-check add-algoritmos-container-i");
+					
+					algoritmoComponent.append(algoritmoComponentIcon);
+					
+					algoritmosPreSeleccionadosRow.append(algoritmoComponent);
+					
+					THIZ.algoritmosPreSeleccionados.push(THIZ.algoritmosCoincidentes[i]);
+					
+					event.target.remove();
 
-				if (indiceAlgoritmoSeleccionado !== -1) {
-					THIZ.algoritmosSeleccionados.splice(indiceAlgoritmoSeleccionado, 1);
-				}
+					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
+	
+					if(algoritmosCoincidentesRow.children.length === 1){
+						
+						if(algoritmosCoincidentesRow.querySelectorAll(".results-search-label").length === 1){
+							algoritmosCoincidentesRow.removeChild(algoritmosCoincidentesRow.firstChild);
+						}
+					}
+						
+					
+					
+				});
+				
+				algoritmoContainer.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
+				
+				row.append(algoritmoContainer);
 			}
-			else {
+			
+		},
+		buscarAlgoritmosCoincidentes() {
+			
+			
+			const formData = new FormData();
+			
+			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
+						
+			formData.append('algoritmosSeleccionados', algoritmosSeleccionadosJson);
+			
+			const algoritmosPreSeleccionadosJson = JSON.stringify(this.algoritmosPreSeleccionados);
+			
+			formData.append('algoritmosPreSeleccionados', algoritmosPreSeleccionadosJson);
+					
+			fetch(window.location.origin + "/admin/fases/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.json())
+				.then(res => {
+					
+					console.log(res);
+					const THIZ = this;
 
-				addAlgoritmoDiv.setAttribute("style", "color: rgb(99, 132, 231); box-shadow: 3px 3px 6px 2px rgb(99, 132, 231); border: 4px solid rgb(99, 132, 231);");
+					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
 
-				let icono = document.createElement("i");
+					this.resetearModalBodyRow(algoritmosCoincidentesRow);
 
-				icono.setAttribute("class", "fa-solid fa-circle-check add-algoritmos-container-i")
+					if(res.length > 0){
+						
+						THIZ.algoritmosCoincidentes = res;				
+						
+						this.crearAlgoritmosCoincidentesRowComponents(algoritmosCoincidentesRow, res);
+					}
+					else{
+						this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
+					}
 
-				addAlgoritmoDiv.append(icono);
-
-				let algoritmo = this.algoritmosExcludingAgglomerativeAndKmodes.find(algoritmo => algoritmo.id === idAlgoritmo);
-
-				THIZ.algoritmosSeleccionados.push(algoritmo);
-			}
-
+				})
+				.catch(error => console.error(error));
 		},
 		addAlgoritmos() {
 
 			const THIZ = this;
 
-			THIZ.moreAlgoritmos = true;
+			this.algoritmosPreSeleccionados.forEach(function(algoritmo){
+				THIZ.algoritmosSeleccionados.push(algoritmo);
+			})
 
 			THIZ.modalAddAlgoritmos.hide();
 
+		},
+		deseleccionarAlgoritmo(index){
+			
+			const THIZ = this;
+			
+			THIZ.algoritmosSeleccionados.splice(index, 1);
 		}
 
 	},
@@ -332,31 +447,19 @@ Vue.component('fase2', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getSubPopulations">
-	                    <!--<div class="form-group mb-3">
-	                    	<div class="input-container">
-		                        <label class="input-container-label fw-bold" for="nClustersAglomerativo">Nº de clusters del algoritmo aglomerativo</label>
-		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="nClustersAglomerativo" id="nClustersAglomerativo" required />
-	                   		</div>
-	                    </div>
-	
-	                    <div class="form-group mb-3">
-	                    	<div class="input-container">
-		                        <label class="input-container-label fw-bold" for="nClustersKModes">Nº de clusters del algoritmo kmodes</label>
-		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="nClustersKModes" id="nClustersKModes" required />
-	                    	</div>
-	                    </div>-->
-	                    
-	                     <div v-for="(algoritmo, index) in algoritmosSeleccionados.slice(0,2)" class="form-group mb-3">
+	                
+	                    <div v-for="(algoritmo, index) in algoritmosSeleccionados.slice(0,2)" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label class="input-container-label fw-bold" :for="'nClusters' + algoritmo.nombreAlgoritmo">Nº de clusters del algoritmo {{algoritmo.nombreAlgoritmo}}</label>
 		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />
 	                    	</div>
 	                    </div>
 	                    
-	                    <div v-if="moreAlgoritmos" v-for="(algoritmo, index) in algoritmosSeleccionados.slice(2)" class="form-group mb-3">
+	                    <div v-if="algoritmosSeleccionados.length > 2" v-for="(algoritmo, index) in algoritmosSeleccionados.slice(2)" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label class="input-container-label fw-bold" :for="'nClusters' + algoritmo.nombreAlgoritmo">Nº de clusters del algoritmo {{algoritmo.nombreAlgoritmo}}</label>
-		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />
+		                       	<input type="number" min="1" max="8" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />	
+	                    		<i @click="deseleccionarAlgoritmo(index + 2)" class="fa-solid fa-xmark input-container-borrar-algoritmo-i"></i>
 	                    	</div>
 	                    </div>
 	
@@ -370,25 +473,41 @@ Vue.component('fase2', {
 	                    <div class="form-group mb-2">
 	                        <div class="row justify-content-around">
 	                        
-	                        	<div v-if="algoritmosExcludingAgglomerativeAndKmodes.length > 0" class="col text-center mb-2">
+	                        	<div v-if="algoritmosSeleccionados.length > 0" class="col text-center mb-2">
 	                            	<button @click="showModalAddAlgoritmos" class="btn btn-outline-custom-color fs-5 fw-semibold" type="button"><i class="fa-solid fa-plus"></i>  Algoritmos</button>
 	                            </div>
 	                            
-	                            <div class="modal fade" id="addAlgoritmosModal" tabindex="-1"
-									aria-labelledby="addAlgoritmosModalLabel" aria-hidden="true">
+	                            <div class="modal fade" id="addAlgoritmosModal" tabindex="-1" aria-hidden="true">
 									<div class="modal-dialog modal-dialog-centered">
 										<div class="modal-content">
 											<div class="modal-header bg-custom-light-color">
-												<h1 class="modal-title fs-5 text-white" id="addAlgoritmosModalLabel">Añadir algoritmos</h1>
-												<button type="button" class="btn-close bg-white" @click="hideModalAddAlgoritmos"></button>
+											
+												<form class="w-100">
+													<div class="search-input-container">
+														<input class="search-input" type="text" placeholder="Buscar algoritmo"
+															v-model="searchedAlgoritmo" @keyup="buscarAlgoritmosCoincidentes"
+															id="seleccionarAlgoritmo">
+														<i class="search-input-container-i fa-solid fa-magnifying-glass"></i>
+													</div>
+		
+												</form>
+											
 											</div>
 											<div class="modal-body" style="max-height: 350px!important; overflow-y: auto !important;">
-										
-													<div v-for="algoritmo in algoritmosExcludingAgglomerativeAndKmodes" @click="seleccionarAlgoritmo(algoritmo.id, $event)"  class="add-algoritmos-container" tab-index="0">
+												
+												<div id="algoritmosCoincidentesRow" class="row justify-content-center mb-2">
+												
+												</div>		
+												
+												<div id="algortimosPreSeleccionadosRow" class="row justify-content-center mb-2">
+												
+												
+												</div>								
+													<!--<div v-for="algoritmo in algoritmosExcludingAgglomerativeAndKmodes" @click="seleccionarAlgoritmo(algoritmo.id, $event)"  class="add-algoritmos-container" tab-index="0">
 														{{algoritmo.nombreAlgoritmo}}
-													</div>
+													</div>-->
 											</div>
-											<div class="modal-footer justify-content-center">
+											<div v-if="algoritmosPreSeleccionados.length > 0" class="modal-footer justify-content-center">
 												
 												<button @click="addAlgoritmos" class="btn btn-outline-custom-color fs-5 fw-semibold" type="button">Añadir</button>
 													
@@ -1557,7 +1676,7 @@ new Vue({
 
 			}
 			else if (identificador === 3) {
-				
+
 				this.resetearPantalla3();
 
 			}
@@ -1657,7 +1776,7 @@ new Vue({
 
 				this.resetearVariablesPantalla(2);
 			}
-			
+
 		},
 		showModalSeleccionarVariablesClinicas() {
 
@@ -1713,7 +1832,7 @@ new Vue({
 		},
 
 		createNoResultComponent(modalBodyRow, message) {
-			
+
 			this.crearSeleccionarVariablesClinicasLabel(modalBodyRow);
 
 			let noResultsComponent = document.createElement("div");
@@ -1925,12 +2044,12 @@ new Vue({
 
 			THIZ.pantalla4.showPantalla = true;
 		},
-		eliminarVariableSeleccionada(index){
-			
+		eliminarVariableSeleccionada(index) {
+
 			const THIZ = this;
-			
+
 			this.pantalla3.variablesClinicasSeleccionadas.splice(index, 1);
-			
+
 		}
 	},
 

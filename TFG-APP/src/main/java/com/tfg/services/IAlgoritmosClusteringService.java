@@ -2,6 +2,8 @@ package com.tfg.services;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.tfg.entities.AlgoritmosClustering;
 
 public interface IAlgoritmosClusteringService {
@@ -19,4 +21,8 @@ public interface IAlgoritmosClusteringService {
 	public List<AlgoritmosClustering> findAlgoritmosCoincidentes(String nombreAlgoritmo);
 	
 	public List<AlgoritmosClustering> findAllAlgoritmos();
+	
+	public List<AlgoritmosClustering> findAlgoritmosAgglomerativeAndKmodes();
+	
+	public List<AlgoritmosClustering> findAlgoritmosCoincidentesAndNoSeleccionados(String nombreAlgoritmo, String algoritmosSeleccionadosString, String algoritmosPreSeleccionadosString) throws JsonMappingException, JsonProcessingException;
 }
