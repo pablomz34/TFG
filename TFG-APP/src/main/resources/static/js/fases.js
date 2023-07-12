@@ -145,24 +145,20 @@ Vue.component('fase2', {
 
 		const THIZ = this;
 
-		if (!this.csvInput) {
+		let agglomerative_dict = {};
 
-			const THIZ = this;
+		agglomerative_dict["nombreAlgoritmo"] = "agglomerative";
+		agglomerative_dict["nClusters"] = '';
 
-			let agglomerative_dict = {};
+		THIZ.algoritmosSeleccionados.push(agglomerative_dict);
 
-			agglomerative_dict["nombreAlgoritmo"] = "agglomerative";
-			agglomerative_dict["nClusters"] = '';
+		let kmodes_dict = {};
 
-			THIZ.algoritmosSeleccionados.push(agglomerative_dict);
+		kmodes_dict["nombreAlgoritmo"] = "kmodes";
+		kmodes_dict["nClusters"] = '';
 
-			let kmodes_dict = {};
+		THIZ.algoritmosSeleccionados.push(kmodes_dict);
 
-			kmodes_dict["nombreAlgoritmo"] = "kmodes";
-			kmodes_dict["nClusters"] = '';
-
-			THIZ.algoritmosSeleccionados.push(kmodes_dict);
-		}
 	},
 
 	methods: {
@@ -2063,11 +2059,11 @@ new Vue({
 				.then(res => {
 
 					const THIZ = this;
-					
+
 					THIZ.pantalla3.variablesClinicasSeleccionadas = [];
-					
+
 					THIZ.pantalla3.variablesClinicasSeleccionadas = res;
-					
+
 				})
 				.catch(error => console.error(error));
 
@@ -2222,7 +2218,7 @@ new Vue({
 			            	<div class="row justify-content-around">
 			            		<div class="col m-2">
 					                <button class="btn btn-custom-color fs-5 w-100" @click="showModalSeleccionarVariablesClinicas">
-					                	<i class="fa-solid fa-hand-pointer fs-5"></i> Seleccionar variables</button>
+					                	<i class="fa-solid fa-hand-pointer fs-5"></i> Elegir variables</button>
 								</div>
 								<div class="col m-2">
 									<button class="btn btn-custom-color fs-5 w-100" @click="selectAllVariablesClinicas">
