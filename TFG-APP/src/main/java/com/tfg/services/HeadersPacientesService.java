@@ -169,4 +169,27 @@ public class HeadersPacientesService implements IHeadersPacientesService {
 		return variablesClinicas.split(",").length;
 	}
 
+	@Override
+	public List<HashMap<String, Object>> findAllVariablesClinicas(String idPrediccionPoblacion) {
+		
+		String allVariablesClinicas = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
+		
+		List<String> splitAllVariablesClinicas = Arrays.asList(allVariablesClinicas.split(","));
+		
+		List<HashMap<String, Object>> ret = new ArrayList<HashMap<String, Object>>();
+		
+		for(int i=0; i < splitAllVariablesClinicas.size();i++) {
+			HashMap<String, Object> variableClinica = new HashMap<String, Object>();
+			
+			variableClinica.put("nombreVariable", splitAllVariablesClinicas.get(i));
+			
+			variableClinica.put("indice", i);
+			
+			ret.add(variableClinica);
+			
+		}
+		
+		return ret;
+	}
+
 }

@@ -174,7 +174,7 @@ Vue.component('fase2', {
 			THIZ.error = '';
 
 			const formData = new FormData();
-			
+
 			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
 
 			formData.append('algoritmos', algoritmosSeleccionadosJson);
@@ -248,26 +248,26 @@ Vue.component('fase2', {
 
 			this.modalAddAlgoritmos.hide();
 		},
-		resetearModalAddAlgoritmos(){
-			
+		resetearModalAddAlgoritmos() {
+
 			const THIZ = this;
-			
+
 			THIZ.searchedAlgoritmo = '';
-			
+
 			let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
 
 			this.resetearModalBodyRow(algoritmosCoincidentesRow);
-			
+
 			let algortimosPreSeleccionadosRow = document.getElementById("algortimosPreSeleccionadosRow");
 
 			this.resetearModalBodyRow(algortimosPreSeleccionadosRow);
-			
+
 			THIZ.algoritmosCoincidentes = [];
-			
+
 			THIZ.algoritmosPreSeleccionados = [];
-			
+
 			this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
-			
+
 		},
 		crearLabelComponent(row, message) {
 
@@ -291,114 +291,111 @@ Vue.component('fase2', {
 
 			row.append(noResultsComponent);
 		},
-		resetearModalBodyRow(row){
-			
+		resetearModalBodyRow(row) {
+
 			while (row.firstChild) {
 				row.removeChild(row.firstChild);
 			}
-			
+
 		},
-		crearAlgoritmosCoincidentesRowComponents(row){
-			
+		crearAlgoritmosCoincidentesRowComponents(row) {
+
 			const THIZ = this;
-			
+
 			this.crearLabelComponent(row, "Coincidencias");
-			
-			for(let i=0; i < this.algoritmosCoincidentes.length; i++){
-				
+
+			for (let i = 0; i < this.algoritmosCoincidentes.length; i++) {
+
 				let algoritmoContainer = document.createElement('div');
-				
+
 				algoritmoContainer.setAttribute("class", "add-algoritmos-container");
-				
+
 				algoritmoContainer.addEventListener('click', function(event) {
-					
+
 					let algoritmosPreSeleccionadosRow = document.getElementById('algortimosPreSeleccionadosRow');
-					
-					if(THIZ.algoritmosPreSeleccionados.length === 0){
-						
+
+					if (THIZ.algoritmosPreSeleccionados.length === 0) {
+
 						let label = document.createElement("div");
 
 						label.setAttribute("class", "results-search-label");
-			
+
 						label.innerHTML = "Preseleccionados";
-			
+
 						algoritmosPreSeleccionadosRow.append(label);
 					}
-					
+
 					let algoritmoComponent = document.createElement("div");
-					
+
 					let algoritmoComponentIcon = document.createElement("i");
-					
+
 					algoritmoComponent.setAttribute("class", "add-algoritmos-container");
-					
+
 					algoritmoComponent.setAttribute("style", "box-shadow: 3px 3px 6px 2px rgb(39, 90, 224); border: 3px solid rgb(39, 90, 224); color: rgb(39, 90, 224);")
-					
+
 					algoritmoComponent.classList.add('seleccionado');
-					
+
 					algoritmoComponent.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
-					
+
 					algoritmoComponentIcon.setAttribute("class", "fa-solid fa-circle-check add-algoritmos-container-i");
-					
+
 					algoritmoComponent.append(algoritmoComponentIcon);
-					
+
 					algoritmosPreSeleccionadosRow.append(algoritmoComponent);
-					
+
 					THIZ.algoritmosPreSeleccionados.push(THIZ.algoritmosCoincidentes[i]);
-					
+
 					event.target.remove();
 
 					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
-	
-					if(algoritmosCoincidentesRow.children.length === 1){
-						
-						if(algoritmosCoincidentesRow.querySelectorAll(".results-search-label").length === 1){
+
+					if (algoritmosCoincidentesRow.children.length === 1) {
+
+						if (algoritmosCoincidentesRow.querySelectorAll(".results-search-label").length === 1) {
 							algoritmosCoincidentesRow.removeChild(algoritmosCoincidentesRow.firstChild);
 						}
 					}
-						
-					
-					
 				});
-				
+
 				algoritmoContainer.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
-				
+
 				row.append(algoritmoContainer);
 			}
-			
+
 		},
 		buscarAlgoritmosCoincidentes() {
-			
-			
+
+
 			const formData = new FormData();
-			
+
 			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
-						
+
 			formData.append('algoritmosSeleccionados', algoritmosSeleccionadosJson);
-			
+
 			const algoritmosPreSeleccionadosJson = JSON.stringify(this.algoritmosPreSeleccionados);
-			
+
 			formData.append('algoritmosPreSeleccionados', algoritmosPreSeleccionadosJson);
-					
+
 			fetch(window.location.origin + "/admin/fases/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
 				method: "POST",
 				body: formData
 			})
 				.then(res => res.json())
 				.then(res => {
-					
+
 					const THIZ = this;
 
 					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
 
 					this.resetearModalBodyRow(algoritmosCoincidentesRow);
 
-					if(res.length > 0){
-						
-						THIZ.algoritmosCoincidentes = res;				
-						
+					if (res.length > 0) {
+
+						THIZ.algoritmosCoincidentes = res;
+
 						this.crearAlgoritmosCoincidentesRowComponents(algoritmosCoincidentesRow, res);
 					}
-					else{
+					else {
 						this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
 					}
 
@@ -409,19 +406,19 @@ Vue.component('fase2', {
 
 			const THIZ = this;
 
-			this.algoritmosPreSeleccionados.forEach(function(algoritmo){
+			this.algoritmosPreSeleccionados.forEach(function(algoritmo) {
 				THIZ.algoritmosSeleccionados.push(algoritmo);
 			})
-			
+
 			THIZ.algoritmosPreSeleccionados = [];
 
 			THIZ.modalAddAlgoritmos.hide();
 
 		},
-		deseleccionarAlgoritmo(index){
-			
+		deseleccionarAlgoritmo(index) {
+
 			const THIZ = this;
-			
+
 			THIZ.algoritmosSeleccionados.splice(index, 1);
 		}
 
@@ -495,17 +492,9 @@ Vue.component('fase2', {
 											</div>
 											<div class="modal-body" style="max-height: 350px!important; overflow-y: auto !important;">
 												
-												<div id="algoritmosCoincidentesRow" class="row justify-content-center mb-2">
+												<div id="algoritmosCoincidentesRow" class="row justify-content-center mb-2"></div>		
 												
-												</div>		
-												
-												<div id="algortimosPreSeleccionadosRow" class="row justify-content-center mb-2">
-												
-												
-												</div>								
-													<!--<div v-for="algoritmo in algoritmosExcludingAgglomerativeAndKmodes" @click="seleccionarAlgoritmo(algoritmo.id, $event)"  class="add-algoritmos-container" tab-index="0">
-														{{algoritmo.nombreAlgoritmo}}
-													</div>-->
+												<div id="algortimosPreSeleccionadosRow" class="row justify-content-center mb-2"></div>		
 											</div>
 											<div v-if="algoritmosPreSeleccionados.length > 0" class="modal-footer justify-content-center">
 												
@@ -2051,19 +2040,37 @@ new Vue({
 			this.pantalla3.variablesClinicasSeleccionadas.splice(index, 1);
 
 		},
-		getColorFaseSeleccionada(event){
-			
-			
+		getColorFaseSeleccionada(event) {
+
+
 			let botonesFases = document.querySelectorAll('.btn-custom-light-color');
-			
-			botonesFases.forEach( function(boton){
+
+			botonesFases.forEach(function(boton) {
 				boton.style.backgroundColor = "rgb(123, 151, 234)";
 			});
-			
+
 			const boton = event.target;
-			
+
 			boton.style.backgroundColor = 'rgb(65, 105, 225)';
-			
+
+		},
+		selectAllVariablesClinicas() {
+
+			fetch(window.location.origin + "/admin/fases/getAllVariablesClinicas?idPrediccionPoblacion=" + this.idPrediccionPoblacion, {
+				method: "GET"
+			})
+				.then(res => res.json())
+				.then(res => {
+
+					const THIZ = this;
+					
+					THIZ.pantalla3.variablesClinicasSeleccionadas = [];
+					
+					THIZ.pantalla3.variablesClinicasSeleccionadas = res;
+					
+				})
+				.catch(error => console.error(error));
+
 		}
 	},
 
@@ -2202,11 +2209,9 @@ new Vue({
 		
 		
 		<div v-if="pantalla3.showPantalla" class="container pt-2">
-		
 			
 			<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
-			
-		
+					
 			<div class="row justify-content-around" style="margin-top: 65px;">
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">
@@ -2214,10 +2219,15 @@ new Vue({
 			                <h2 class="text-center text-white">Seleccionar variables clínicas</h2>
 			            </div>
 			            <div class="card-body">
-			            	<div class="row justify-content-center">
-				                <button class="btn btn-custom-color fs-5 w-50" @click="showModalSeleccionarVariablesClinicas"><i
-									class="fa-solid fa-hand-pointer fs-5"></i> Seleccionar variables</button>
-								
+			            	<div class="row justify-content-around">
+			            		<div class="col m-2">
+					                <button class="btn btn-custom-color fs-5 w-100" @click="showModalSeleccionarVariablesClinicas">
+					                	<i class="fa-solid fa-hand-pointer fs-5"></i> Seleccionar variables</button>
+								</div>
+								<div class="col m-2">
+									<button class="btn btn-custom-color fs-5 w-100" @click="selectAllVariablesClinicas">
+										<i class="fa-solid fa-list"></i> Seleccionar todas</button>
+								</div>
 								
 								<div v-if="pantalla3.variablesClinicasSeleccionadas.length > 0" id="variablesSeleccionadasContainer" class="variables-seleccionadas-container" style="max-height: 500px; overflow-y: auto;">
 									

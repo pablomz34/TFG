@@ -345,6 +345,11 @@ public class FasesController {
 
 		return headersPacientesService.findMaxNumVariablesClinicas(idPrediccionPoblacion);
 	}
+	
+	@GetMapping("/getAllVariablesClinicas")
+	public List<HashMap<String, Object>> getAllVariablesClinicas(@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion){
+		return headersPacientesService.findAllVariablesClinicas(idPrediccionPoblacion);
+	}
 
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
 	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,

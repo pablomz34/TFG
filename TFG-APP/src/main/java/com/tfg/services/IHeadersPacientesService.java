@@ -25,4 +25,6 @@ public interface IHeadersPacientesService {
 	
 	public int findMaxNumVariablesClinicas(String idPrediccionPoblacion);
 	
+	public List<HashMap<String, Object>> findAllVariablesClinicas(String idPrediccionPoblacion);
+	
 }
