@@ -137,14 +137,12 @@ new Vue({
 
 
 			let jsonData = {};
-
-			jsonData[this.herramientaPredictivaInputs[0].nombre.toUpperCase()] = this.herramientaPredictivaInputs[0].seleccion;
-			jsonData[this.herramientaPredictivaInputs[1].nombre.toUpperCase()] = this.herramientaPredictivaInputs[1].seleccion;
-			jsonData[this.herramientaPredictivaInputs[2].nombre.toUpperCase()] = this.herramientaPredictivaInputs[2].seleccion;
-			jsonData[this.herramientaPredictivaInputs[3].nombre.toUpperCase()] = this.herramientaPredictivaInputs[3].seleccion;
-			jsonData[this.herramientaPredictivaInputs[4].nombre.toUpperCase()] = this.herramientaPredictivaInputs[4].seleccion;
-			jsonData[this.herramientaPredictivaInputs[5].nombre.toUpperCase()] = this.herramientaPredictivaInputs[5].seleccion;
-
+			
+			for(let i=0; i<this.herramientaPredictivaInputs.length; i++){
+				jsonData[this.herramientaPredictivaInputs[i].nombre.toUpperCase()] = this.herramientaPredictivaInputs[i].seleccion;
+			}
+			
+			
 			fetch(window.location.origin + "/medico/getNewPatientClassification?idPrediccion=" + this.idPrediccion, {
 				method: "POST",
 				headers: {
