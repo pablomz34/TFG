@@ -2216,11 +2216,11 @@ new Vue({
 			            </div>
 			            <div class="card-body">
 			            	<div class="row justify-content-around">
-			            		<div class="col m-2">
+			            		<div v-if="this.pantalla3.numVariablesClinicas != this.pantalla3.variablesClinicasSeleccionadas.length" class="col m-2">
 					                <button class="btn btn-custom-color fs-5 w-100" @click="showModalSeleccionarVariablesClinicas">
 					                	<i class="fa-solid fa-hand-pointer fs-5"></i> Elegir variables</button>
 								</div>
-								<div class="col m-2">
+								<div v-if="this.pantalla3.numVariablesClinicas != this.pantalla3.variablesClinicasSeleccionadas.length" class="col m-2">
 									<button class="btn btn-custom-color fs-5 w-100" @click="selectAllVariablesClinicas">
 										<i class="fa-solid fa-list"></i> Seleccionar todas</button>
 								</div>
