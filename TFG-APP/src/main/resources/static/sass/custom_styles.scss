@@ -616,6 +616,74 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	background-color: white;
 }
 
+
+
+.tabla-card {
+	position: relative;
+	width: 60%;
+	height: 350px;
+	border-radius: 15px;
+	background-color: white;
+	margin-bottom: 50px;
+	border: 3px solid rgb(123, 154, 234);
+	box-shadow: 3px 3px 8px 3px rgb(123, 154, 234);
+}
+
+.tabla-card:hover{
+	box-shadow: 5px 5px 12px 5px rgb(123, 154, 234);
+}
+
+.tabla-card-rectangle{
+	position: absolute;
+	width: 60%;
+	height: 175px;
+	border-radius: 15px;
+	top: -10%;
+	left: 20%;
+	background-image: linear-gradient(to bottom,rgb(92, 130, 228), rgb(150, 174, 237));
+	box-shadow: 5px 5px 10px 4px rgb(92, 130, 228);
+}
+
+.tabla-card-table-name{
+	display: block;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: center;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	color: rgb(123, 154, 234);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.tabla-card-icon{
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 5px solid rgb(67, 111, 224);
+	color: white;
+	background-color: rgb(67, 111, 224);
+	border-radius: 50%;
+	font-weight: bold;
+	font-size: 35px;
+	transform: translate( 50%, -50%);
+}
+
+@media (max-width: 1200px){
+	
+	.tabla-card{
+		width: 75%;
+	}
+	
+}
+
+@media (max-width: 992px){
+	.tabla-card{
+		width: 100%;
+	}
+}
+
+
 @media (max-width: 1140px) {
 
 	.next-button {
@@ -633,7 +701,10 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 	.back-button-i {
 		font-size: 2.25vw;
 	}
+	
 }
+
+
 
 
 @media (max-width: 768px) {
@@ -669,6 +740,10 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 
 	.back-button-i {
 		font-size: 3vw;
+	}
+	
+	.tabla-card{
+		width: 60%;
 	}
 	
 }
@@ -707,5 +782,18 @@ $table-variants: map-merge($table-variants, $table-color-variants);
 
 	.back-button-i {
 		font-size: 4vw;
+	}
+}
+
+
+@media (max-width: 410px){
+	.tabla-card{
+		width: 75%;
+	}
+}
+
+@media (max-width: 355px){
+	.tabla-card{
+		width: 90%;
 	}
 }
