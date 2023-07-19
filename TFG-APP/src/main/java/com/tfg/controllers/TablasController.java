@@ -140,8 +140,8 @@ public class TablasController {
         }
     }
     
-	@GetMapping("/exportarTodo")
-    public ResponseEntity<String> exportarTodo() {
+	@GetMapping("/exportarEstructuraBBDD")
+    public ResponseEntity<String> exportarEstructuraBBDD() {
 		String databaseName = null;
 		try {
             URI uri = new URI(this.bbddConnectionUrl.substring(5));
