@@ -297,11 +297,13 @@ new Vue({
 					</div>
 					<div v-if="descripciones.length > 0" class="card-body">
 						<form @submit.prevent="getPrediccionValues">	
-							<div class="form-group mb-3">	                 
-	                    		<label for="predicciones" class="form-label">Predicciones</label>
-								<select class="form-select" id="predicciones" name="predicciones" v-model="descripcionSeleccionada" required>
-		                       		<option v-for="i in descripciones" :value="i">{{i}}</option>
-		                    	</select>
+							<div class="form-group mb-3">	       
+								<div class="input-container">          
+		                    		<label for="predicciones" class="input-container-label fw-bold">Predicciones</label>
+									<select class="input-container-select" id="predicciones" name="predicciones" v-model="descripcionSeleccionada" required>
+			                       		<option class="input-container-select-option" v-for="i in descripciones" :value="i">{{i}}</option>
+			                    	</select>
+		                    	</div>
 		                    </div>
 													
 							<div class="form-group mb-2">
@@ -334,11 +336,13 @@ new Vue({
 						<form @submit.prevent="getNewPatientClassification">
 						
 							<div class="form-group mb-3" v-for="i in this.herramientaPredictivaInputs">
-								<label>{{i.nombre}}</label>
-								<select class="form-select" name="herramientaPredictivaInputs" v-model="i.seleccion" required>
-									<option value="" disabled selected></option>
-									<option v-for="variable in i.variables" :value="variable">{{variable}}</option>
-								</select>
+								<div class="input-container">
+									<label class="input-container-label fw-bold">{{i.nombre}}</label>
+									<select class="input-container-select" name="herramientaPredictivaInputs" v-model="i.seleccion" required>
+										<option class="input-container-select-option" value="" disabled selected></option>
+										<option class="input-container-select-option" v-for="variable in i.variables" :value="variable">{{variable}}</option>
+									</select>
+								</div>
 							</div>
 							
 							

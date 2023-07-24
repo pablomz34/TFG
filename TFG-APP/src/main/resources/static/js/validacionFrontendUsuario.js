@@ -8,19 +8,19 @@ export function validarNombre(nombre) {
 
 	if (nombre == '') {
 		retArray = ["nombre", 'custom-is-invalid',
-			"El nombre no puede estar vacío", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+			"El nombre no puede estar vacío", "text-danger", "text-danger fa-solid fa-circle-xmark", "red",false];
 
 	}
 	else {
 
 		if (regex.test(nombre)) {
 			retArray = ["nombre", 'custom-is-valid',
-				"El nombre es correcto", "text-success", "text-success fa-solid fa-check", true];
+				"El nombre es correcto", "text-success", "text-success fa-solid fa-check", "green", true];
 
 		}
 		else {
 			retArray = ["nombre", 'custom-is-invalid',
-				"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", "text-danger fa-solid fa-circle-xmark", false]
+				"El nombre no puede contener números ni caracteres no alfanuméricos", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false]
 		}
 	}
 	return retArray;
@@ -34,18 +34,18 @@ export function validarApellidos(apellidos) {
 	if (apellidos == '') {
 
 		retArray = ["apellidos", 'custom-is-invalid',
-			"Los apellidos no puede estar vacíos", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+			"Los apellidos no puede estar vacíos", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 
 	}
 	else {
 
 		if (regex.test(apellidos)) {
 			retArray = ["apellidos", 'custom-is-valid',
-				"Los apellidos son correctos", "text-success", "text-success fa-solid fa-check", true];
+				"Los apellidos son correctos", "text-success", "text-success fa-solid fa-check", "green", true];
 		}
 		else {
 			retArray = ["apellidos", 'custom-is-invalid',
-				"Los apellidos no puede contener números ni caracteres no alfanuméricos", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+				"Los apellidos no puede contener números ni caracteres no alfanuméricos", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 		}
 	}
 
@@ -60,7 +60,7 @@ export function validarCorreo(correo, correoExiste) {
 	if (correo == '') {
 
 		retArray = ["correo", 'custom-is-invalid',
-			"El correo no puede estar vacío", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+			"El correo no puede estar vacío", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 	}
 	else {
 
@@ -69,18 +69,18 @@ export function validarCorreo(correo, correoExiste) {
 			if (correoExiste) {
 
 				retArray = ["correo", 'custom-is-invalid',
-					"El correo ya está registrado", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+					"El correo ya está registrado", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 			}
 			else {
 				retArray = ["correo", 'custom-is-valid',
-					"El correo es válido", "text-success", "text-success fa-solid fa-check", true];
+					"El correo es válido", "text-success", "text-success fa-solid fa-check", "green", true];
 			}
 
 		}
 		else {
 
 			retArray = ["correo", 'custom-is-invalid',
-				"El correo tiene que tener un formato válido, ejemplo: prueba@gmail.com", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+				"El correo tiene que tener un formato válido, ejemplo: prueba@gmail.com", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 
 		}
 	}
@@ -97,7 +97,7 @@ export function validarDni(dni, dniExiste) {
 
 	if (dni == '') {
 		retArray = ["dni", 'custom-is-invalid',
-			"El NIF/NIE no puede estar vacío", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+			"El NIF/NIE no puede estar vacío", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 	}
 	else {
 
@@ -107,24 +107,24 @@ export function validarDni(dni, dniExiste) {
 
 				if (dniExiste) {
 					retArray = ["dni", 'custom-is-invalid',
-						"El NIF/NIE ya está en uso", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+						"El NIF/NIE ya está en uso", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 				}
 				else {
 					retArray = ["dni", 'custom-is-valid',
-						"El NIF/NIE es válido", "text-success", "text-success fa-solid fa-check", true];
+						"El NIF/NIE es válido", "text-success", "text-success fa-solid fa-check", "green" ,true];
 				}
 
 
 			}
 			else {
 				retArray = ["dni", 'custom-is-invalid',
-					"El dígito de control del NIF/NIE no es válido", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+					"El dígito de control del NIF/NIE no es válido", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 			}
 
 		}
 		else {
 			retArray = ["dni", 'custom-is-invalid',
-				"El NIF/NIE tiene que tener un formato válido, ejemplo: 12345678Z o X1234567L", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+				"El NIF/NIE tiene que tener un formato válido, ejemplo: 12345678Z o X1234567L", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 		}
 	}
 
@@ -164,17 +164,17 @@ export function validarPassword(password) {
 
 	if (password == '') {
 		retArray = ["password", 'custom-is-invalid',
-			"La contraseña no puede estar vacía", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+			"La contraseña no puede estar vacía", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 	}
 	else {
 
 		if (regex.test(password)) {
 			retArray = ["password", 'custom-is-valid',
-				"Las contraseña es correcta", "text-success", "text-success fa-solid fa-check", true];
+				"Las contraseña es correcta", "text-success", "text-success fa-solid fa-check", "green", true];
 		}
 		else {
 			retArray = ["password", 'custom-is-invalid',
-				"La contraseña debe tener un mínimo de 8 caracteres de longitud y también una letra minúscula y otra mayúscula, un caracter no alfanumérico y un número", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+				"La contraseña debe tener un mínimo de 8 caracteres de longitud y también una letra minúscula y otra mayúscula, un caracter no alfanumérico y un número", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 		}
 	}
 
@@ -187,17 +187,17 @@ export function validarRepeatPassword(password, repeatedPassword) {
 
 	if (repeatedPassword == '') {
 		retArray = ["repeatPassword", 'custom-is-invalid',
-			"Por favor, repita la contraseña", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+			"Por favor, repita la contraseña", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 	}
 	else {
 
 		if (password == repeatedPassword) {
 			retArray = ["repeatPassword", 'custom-is-valid',
-				"Las contraseñas coinciden", "text-success", "text-success fa-solid fa-check", true];
+				"Las contraseñas coinciden", "text-success", "text-success fa-solid fa-check", "green", true];
 		}
 		else {
 			retArray = ["repeatPassword", 'custom-is-invalid',
-				"Las contraseñas no coinciden", "text-danger", "text-danger fa-solid fa-circle-xmark", false];
+				"Las contraseñas no coinciden", "text-danger", "text-danger fa-solid fa-circle-xmark", "red", false];
 		}
 	}
 	return retArray;

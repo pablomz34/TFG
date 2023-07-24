@@ -24,6 +24,7 @@ new Vue({
 					validationInputMessage: '',
 					validationInputMessageClass: '',
 					validationIconClass: '',
+					inputTextColor: '',
 					valido: false
 				},
 				apellidos: {
@@ -35,6 +36,7 @@ new Vue({
 					validationInputMessage: '',
 					validationInputMessageClass: '',
 					validationIconClass: '',
+					inputTextColor: '',
 					valido: false
 				},
 				correo: {
@@ -46,6 +48,7 @@ new Vue({
 					validationInputMessage: '',
 					validationInputMessageClass: '',
 					validationIconClass: '',
+					inputTextColor: '',
 					valido: false
 				},
 				dni: {
@@ -57,6 +60,7 @@ new Vue({
 					validationInputMessage: '',
 					validationInputMessageClass: '',
 					validationIconClass: '',
+					inputTextColor: '',
 					valido: false
 				},
 				password: {
@@ -68,6 +72,7 @@ new Vue({
 					validationInputMessage: '',
 					validationInputMessageClass: '',
 					validationIconClass: '',
+					inputTextColor: '',
 					valido: false
 				},
 				repeatPassword: {
@@ -206,24 +211,25 @@ new Vue({
 
 
 		},
-		actualizarVariables(inputName, validationInputClass, validationInputMessage, validationInputMessageClass, validationIconClass, valido) {
+		actualizarVariables(inputName, validationInputClass, validationInputMessage, validationInputMessageClass, validationIconClass, inputTextColor, valido) {
 			this.usuario[inputName].validationInputClass = validationInputClass;
 			this.usuario[inputName].validationInputMessage = validationInputMessage;
 			this.usuario[inputName].validationInputMessageClass = validationInputMessageClass;
 			this.usuario[inputName].validationIconClass = validationIconClass;
+			this.usuario[inputName].inputTextColor = inputTextColor;
 			this.usuario[inputName].valido = valido;
 		},
 		comprobarValidacionNombre() {
 
 			let retArray = validarNombre(this.usuario.nombre.valorModificado);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 		},
 		comprobarValidacionApellidos() {
 
 			let retArray = validarApellidos(this.usuario.apellidos.valorModificado);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 
 		},
 		comprobarValidacionCorreo() {
@@ -235,7 +241,7 @@ new Vue({
 				.then(correoExiste => {
 					let retArray = validarCorreo(this.usuario.correo.valorModificado, correoExiste);
 
-					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 				})
 				.catch(err => console.log(err));
 		},
@@ -248,7 +254,7 @@ new Vue({
 				.then(dniExiste => {
 					let retArray = validarDni(this.usuario.dni.valorModificado, dniExiste);
 
-					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 				})
 				.catch(err => console.log(err));
 
@@ -257,14 +263,14 @@ new Vue({
 			
 			let retArray = validarPassword(this.usuario.password.valorModificado);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 
 		},
 		comprobarValidacionRepeatPassword() {
 			
 			let retArray = validarRepeatPassword(this.usuario.password.valorModificado, this.usuario.repeatPassword.valorRepeatedPassword);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 
 		},
 		mostrar_passwords() {

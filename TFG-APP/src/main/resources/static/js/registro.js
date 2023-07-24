@@ -18,7 +18,8 @@ new Vue({
 					validationInputClass: '',
 					validationInputMessage: '',
 					validationInputMessageClass: '',
-					validationIconClass: ''
+					validationIconClass: '',
+					inputTextColor: ''
 				},
 				apellidos: {
 					text: '',
@@ -26,7 +27,8 @@ new Vue({
 					validationInputClass: '',
 					validationInputMessage: '',
 					validationInputMessageClass: '',
-					validationIconClass: ''
+					validationIconClass: '',
+					inputTextColor: ''
 				},
 				correo: {
 					text: '',
@@ -34,7 +36,8 @@ new Vue({
 					validationInputClass: '',
 					validationInputMessage: '',
 					validationInputMessageClass: '',
-					validationIconClass: ''
+					validationIconClass: '',
+					inputTextColor: ''
 				},
 				dni: {
 					text: '',
@@ -42,7 +45,8 @@ new Vue({
 					validationInputClass: '',
 					validationInputMessage: '',
 					validationInputMessageClass: '',
-					validationIconClass: ''
+					validationIconClass: '',
+					inputTextColor: ''
 				},
 				password: {
 					text: '',
@@ -50,7 +54,8 @@ new Vue({
 					validationInputClass: '',
 					validationInputMessage: '',
 					validationInputMessageClass: '',
-					validationIconClass: ''
+					validationIconClass: '',
+					inputTextColor: ''
 				},
 				repeatPassword: {
 					text: '',
@@ -58,7 +63,8 @@ new Vue({
 					validationInputClass: '',
 					validationInputMessage: '',
 					validationInputMessageClass: '',
-					validationIconClass: ''
+					validationIconClass: '',
+					inputTextColor: ''
 				}
 			}
 		}
@@ -66,11 +72,12 @@ new Vue({
 
 	methods: {
 
-		actualizarVariables(inputName, validationInputClass, validationInputMessage, validationInputMessageClass, validationIconClass, valido) {
+		actualizarVariables(inputName, validationInputClass, validationInputMessage, validationInputMessageClass, validationIconClass, inputTextColor, valido) {
 			this.inputs[inputName].validationInputClass = validationInputClass;
 			this.inputs[inputName].validationInputMessage = validationInputMessage;
 			this.inputs[inputName].validationInputMessageClass = validationInputMessageClass;
 			this.inputs[inputName].validationIconClass = validationIconClass;
+			this.inputs[inputName].inputTextColor = inputTextColor;
 			this.inputs[inputName].valido = valido;
 		},
 
@@ -78,14 +85,14 @@ new Vue({
 
 			let retArray = validarNombre(this.inputs.nombre.text);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 
 		},
 		comprobarValidacionApellidos() {
 
 			let retArray = validarApellidos(this.inputs.apellidos.text);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 
 		},
 		comprobarValidacionCorreo() {
@@ -96,7 +103,7 @@ new Vue({
 				.then(correoExiste => {
 					let retArray = validarCorreo(this.inputs.correo.text, correoExiste);
 
-					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 				})
 				.catch(err => console.log(err));
 		},
@@ -109,7 +116,7 @@ new Vue({
 				.then(dniExiste => {
 					let retArray = validarDni(this.inputs.dni.text, dniExiste);
 
-					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+					this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 				})
 				.catch(err => console.log(err));
 		},
@@ -117,14 +124,14 @@ new Vue({
 
 			let retArray = validarPassword(this.inputs.password.text);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 			
 		},
 		comprobarValidacionRepeatPassword() {
 
 			let retArray = validarRepeatPassword(this.inputs.password.text, this.inputs.repeatPassword.text);
 
-			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5]);
+			this.actualizarVariables(retArray[0], retArray[1], retArray[2], retArray[3], retArray[4], retArray[5], retArray[6]);
 		},
 
 		mostrar_passwords() {

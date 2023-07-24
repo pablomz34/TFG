@@ -969,11 +969,13 @@ Vue.component('fase4', {
 						<div v-if="descripciones.length > 0">
 							<form @submit.prevent="seleccionarPrediccion">
 								<div class="form-group mb-3">
-									<label for="descripcionSeleccionada" class="form-label">Elige una descripción existente para editar la predicción</label>
-									<select class="form-select" name="descripciones" id="descripcionSeleccionada" v-model="descripcionSeleccionada" required>
-			                       		<option value="" disabled selected></option>
-			                       		<option v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
-			                    	</select>
+									<div class="input-container">
+										<label for="descripcionSeleccionada" class="input-container-label fw-bold">Seleccione una descripción existente</label>
+										<select class="input-container-select" name="descripciones" id="descripcionSeleccionada" v-model="descripcionSeleccionada" required>
+				                       		<option class="input-container-select-option" value="" disabled selected></option>
+				                       		<option class="input-container-select-option" v-for="descripcion in descripciones" :value="descripcion">{{descripcion}}</option>
+				                    	</select>
+			                    	</div>
 								</div>
 								<div class="form-group mb-2">
 			                        <div class="row justify-content-center">
@@ -1013,8 +1015,10 @@ Vue.component('fase4', {
 	            <div class="card-body">
 	                <form @submit.prevent="createPopulationAndCurves">
 	                    <div v-if="csvInput" class="form-group mb-3">
-	                        <label for="csv1" class="form-label">Archivo csv</label>
-	                        <input class="form-control" accept=".csv" type="file" id="csv1" ref="csvFile" required />
+	                    	<div class="input-container">
+		                        <label for="csv1" class="input-container-input-file-label fw-bold">Archivo csv</label>
+		                        <input class="input-container-input-file" accept=".csv" type="file" id="csv1" ref="csvFile" required />
+	                    	</div>
 	                    </div>
 	
 	                    <div class="form-group mb-2">
@@ -1053,12 +1057,14 @@ Vue.component('fase4', {
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="mostrarClusterSurvivalCurve">
-	                    <div class="form-group mb-3">	                 
-                    		<label for="clusterSeleccionadoCurves" class="form-label">Número de cluster</label>
-							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoCurves" id="clusterSeleccionadoCurves" required>
-	                       		<option value="-1">Todas las curvas</option>
-	                       		<option v-for="i in nClustersRange" :value="i">{{i}}</option>
-	                    	</select>
+	                    <div class="form-group mb-3">
+	                    	<div class="input-container">	                 
+	                    		<label for="clusterSeleccionadoCurves" class="input-container-label fw-bold">Número de cluster</label>
+								<select class="input-container-select" name="nCluster" v-model="clusterSeleccionadoCurves" id="clusterSeleccionadoCurves" required>
+		                       		<option class="input-container-select-option" value="-1">Todas las curvas</option>
+		                       		<option class="input-container-select-option" v-for="i in nClustersRange" :value="i">{{i}}</option>
+		                    	</select>
+	                    	</div>
 	                    </div>	                    
 	                    	                                   	           	
 	                    <div class="form-group mb-2">
@@ -1080,11 +1086,13 @@ Vue.component('fase4', {
 	            <div class="card-body">
 	                <form @submit.prevent="mostrarClusterProfile">
 	                    <div class="form-group mb-3">
-	                        <label for="clusterSeleccionadoProfile" class="form-label">Número de cluster</label>
-							<select class="form-select" name="nCluster" v-model="clusterSeleccionadoProfile" id="clusterSeleccionadoProfile" required>
-	                       		<option value="-1">Todas las curvas</option>
-	                       		<option v-for="i in nClustersRange" :value="i">{{i}}</option>
-	                    	</select>
+	                    	<div class="input-container">
+		                        <label for="clusterSeleccionadoProfile" class="input-container-label fw-bold">Número de cluster</label>
+								<select class="input-container-select" name="nCluster" v-model="clusterSeleccionadoProfile" id="clusterSeleccionadoProfile" required>
+		                       		<option class="input-container-select-option" value="-1">Todas las curvas</option>
+		                       		<option class="input-container-select-option" v-for="i in nClustersRange" :value="i">{{i}}</option>
+		                    	</select>
+	                    	</div>
 	                    </div>
 		             	
 	                    <div class="form-group mb-2">
@@ -2160,11 +2168,14 @@ new Vue({
 			  
 			                	</div>			           
 			                	<div v-else class="form-group mb-3">
-					                <label for="selectDescripcion" class="form-label text-custom-light-color fw-bold" style="font-size: 22px;">Seleccione una predicción</label>
-									
-									<select class="input-select-prediccion" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
-			                       		<option class="input-select-prediccion-option" v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
-			                    	</select>
+			                	
+			                		<div class="input-container mt-2">
+						                <label for="selectDescripcion" class="input-container-label fw-bold">Seleccione una predicción</label>
+										
+										<select class="input-container-select" id="selectDescripcion" name="selectDescripcion" v-model="pantalla2.descripcionSeleccionada" required>
+				                       		<option class="input-container-select-option" v-for="descripcion in pantalla2.descripciones" :value="descripcion">{{descripcion}}</option>
+				                    	</select>
+			                    	</div>
 				                    	
 		                    	</div>
 		                    	
