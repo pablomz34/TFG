@@ -376,7 +376,7 @@ new Vue({
 							<div class="modal-content">
 								<div class="modal-header bg-custom-light-color">
 									<h1 class="modal-title fs-5 text-white" id="addPacienteModelLabel">Nuevo paciente</h1>
-									<button type="button" class="btn-close bg-white"
+									<button type="button" class="btn-close bg-white" style="font-size: 15px !important;"
 										@click="esconderModal"></button>
 								</div>
 								<div class="modal-body">
@@ -388,7 +388,8 @@ new Vue({
 											<div class="input-container mt-2">
 												<label for="addPaciente"
 													class="input-container-label fw-bold">Variable objetivo</label>
-												<input class="input-container-input"
+												<input class="input-container-input" style="padding-right: 3px;"
+													min=1
 													v-model="variableObjetivo" type="number" 
 													id="addPaciente" required />
 											</div>
