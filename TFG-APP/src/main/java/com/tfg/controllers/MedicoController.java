@@ -31,10 +31,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.tfg.dto.ImagenesDto;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
-import com.tfg.entities.Pacientes;
 import com.tfg.services.IImagenesService;
 import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
@@ -112,8 +110,6 @@ public class MedicoController {
 
 		idPrediccion = StringEscapeUtils.escapeJava(idPrediccion);
 
-		// Integer numCluster = 2;
-
 		String rutaImagen = imagenesService.findClusterImage(numCluster, Long.parseLong(idPrediccion)).getRuta();
 
 		Profiles profile = profilesService.findClusterProfile(numCluster, Long.parseLong(idPrediccion));
@@ -158,7 +154,7 @@ public class MedicoController {
 					.collect(Collectors.toSet());
 
 			if (!allFeatureValuesKeys.contains(jsonFeatureValue)) {
-				return "Elija una de las opciones válidas para el campo " + featureName;
+				return "Por favor, elija una de las opciones válidas para el campo " + featureName;
 			}
 
 		}
@@ -204,7 +200,7 @@ public class MedicoController {
 		if (prediccion != null) {
 			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, escoja una predicción válida", HttpStatus.BAD_REQUEST);
 		}
 
 	}
@@ -222,7 +218,7 @@ public class MedicoController {
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		String variables = json.get("variables").toString().replace(">=", "GET").replace("<=", "LET").replace(">", "GT")
 				.replace("<", "LT").replace(" ", "");
 		Integer l = (variables.length() - 1);
@@ -236,17 +232,18 @@ public class MedicoController {
 		}
 
 	}
-	
+
 	private String validarInputNumber(String numClusters) {
 
 		if (numClusters == null || numClusters.isEmpty()) {
 			return "Por favor, introduzca una cantidad";
-
 		}
 		try {
-			Integer.parseInt(numClusters);
+			if (Integer.parseInt(numClusters) <= 0) {
+				return "Por favor, escoja un valor mayor que 0";
+			}
 		} catch (NumberFormatException e) {
-			return "El valor introducido no es válido";
+			return "Por favor, introduzca un valor válido";
 
 		}
 		return "";
