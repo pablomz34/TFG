@@ -38,7 +38,7 @@ Vue.component('fase1', {
 
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -194,7 +194,7 @@ Vue.component('fase2', {
 					// Verificar si la respuesta es OK
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -444,14 +444,14 @@ Vue.component('fase2', {
 	                    <div v-for="(algoritmo, index) in algoritmosSeleccionados.slice(0,2)" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label class="input-container-label fw-bold" :for="'nClusters' + algoritmo.nombreAlgoritmo">Nº de clusters del algoritmo {{algoritmo.nombreAlgoritmo}}</label>
-		                        <input type="number" min="1" max="8" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />
+		                        <input type="number" min="2" max="20" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />
 	                    	</div>
 	                    </div>
 	                    
 	                    <div v-if="algoritmosSeleccionados.length > 2" v-for="(algoritmo, index) in algoritmosSeleccionados.slice(2)" class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label class="input-container-label fw-bold" :for="'nClusters' + algoritmo.nombreAlgoritmo">Nº de clusters del algoritmo {{algoritmo.nombreAlgoritmo}}</label>
-		                       	<input type="number" min="1" max="8" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />	
+		                       	<input type="number" min="2" max="20" class="input-container-input pe-1" v-model="algoritmo.nClusters" :id="'nClusters' + algoritmo.nombreAlgoritmo" required />	
 	                    		<i @click="deseleccionarAlgoritmo(index + 2)" class="fa-solid fa-xmark input-container-borrar-algoritmo-i"></i>
 	                    	</div>
 	                    </div>
@@ -554,7 +554,7 @@ Vue.component('fase3', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -732,7 +732,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						//THIZ.error1 = "Error: " + errorMessage;
+						THIZ.error1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -761,7 +761,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error0 = "Error: " + errorMessage;
+						THIZ.error0 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -804,7 +804,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error1 = "Error: " + errorMessage;
+						THIZ.error1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -846,7 +846,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error2 = "Error: " + errorMessage;
+						THIZ.error2 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -883,7 +883,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error3 = "Error: " + errorMessage;
+						THIZ.error3 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -1190,7 +1190,7 @@ Vue.component('fase5', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = "Error: " + errorMessage;
+						THIZ.error = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -1448,6 +1448,7 @@ new Vue({
 				showContinueButton: false,
 				uploadPoblacionInfo: false,
 				showPantalla: false,
+				errorMessage: ''
 			},
 			pantalla3: {
 				showSeleccionarVariableButton: false,
@@ -1608,7 +1609,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						//THIZ.error = "Error: " + errorMessage;
+						THIZ.error = errorMessage;
 
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -1711,6 +1712,8 @@ new Vue({
 			THIZ.pantalla2.showContinueButton = false;
 
 			THIZ.pantalla2.uploadPoblacionInfo = false;
+			
+			THIZ.pantalla2.errorMessage = '';
 
 			this.resetearPantalla3();
 		},
@@ -2088,7 +2091,7 @@ new Vue({
 			THIZ.pantalla2.pacientesPrediccion = '';
 			THIZ.pantalla2.showContinueButton = false;
 			THIZ.pantalla2.csvUploadPoblacion = '';
-
+			THIZ.pantalla2.errorMessage = '';
 
 			if (newValue.length > 0) {
 
@@ -2098,8 +2101,7 @@ new Vue({
 					.then(async res => {
 						if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 							const errorMessage = await res.text();
-							//THIZ.error = "Error: " + errorMessage;
-
+							THIZ.pantalla2.errorMessage = errorMessage;
 							throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 						}
 						return res.text();
@@ -2153,7 +2155,7 @@ new Vue({
 			
 			<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
 			
-		
+			
 			<div class="row justify-content-around" style="margin-top: 65px;">
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">
@@ -2161,6 +2163,11 @@ new Vue({
 			                <h2 class="text-center text-white">Seleccionar predicción</h2>
 			            </div>
 			            <div class="card-body">
+			            	
+							<div v-if="pantalla2.errorMessage != ''" class="alert alert-danger">
+								{{pantalla2.errorMessage}}
+							</div>
+								
 			                <form id="selectPrediccionForm" @submit.prevent="seleccionarPrediccionAndPoblacionInfo">
 			                	<div v-if="pantalla2.descripciones.length == 0">
 			                		<h4 class="text-center">No hay predicciones creadas</h4>
