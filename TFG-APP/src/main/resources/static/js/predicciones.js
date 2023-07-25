@@ -74,7 +74,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.prediccionCreadaErrorMessage = "Error: " + errorMessage;
+						THIZ.prediccionCreadaErrorMessage = errorMessage;
 						THIZ.crearPrediccionModal.hide();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -95,7 +95,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) {
 						const errorMessage = await res.text();
-						THIZ.errorSearchDescripcion = "Error: " + errorMessage;
+						THIZ.errorSearchDescripcion = errorMessage;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -246,7 +246,7 @@ new Vue({
 					if (!res.ok) {
 						const errorMessage = await res.text();
 						
-						THIZ.prediccionEliminadaErrorMessage = "Error: " + errorMessage;
+						THIZ.prediccionEliminadaErrorMessage = errorMessage;
 						
 						let toast = new bootstrap.Toast(document.getElementById('eliminarPrediccionToast'));
 						

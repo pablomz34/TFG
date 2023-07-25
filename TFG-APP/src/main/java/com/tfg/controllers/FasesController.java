@@ -106,11 +106,21 @@ public class FasesController {
 	}
 
 	@GetMapping("/getPacientesPrediccion")
-	public int getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
+	public ResponseEntity<?> getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
+			
+		if(descripcion == null || descripcion.isEmpty()) {
+			return new ResponseEntity("Selecciones una descripción que no sea vacía", HttpStatus.BAD_REQUEST);
+		}
 
 		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
-
-		return p.getPacientes().size();
+		
+		if(p == null) {
+			return new ResponseEntity("No existe ninguna predicción con esa descripción", HttpStatus.BAD_REQUEST);
+		}
+		else {
+			return new ResponseEntity(p.getPacientes().size(), HttpStatus.OK);
+		}
+		
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -873,12 +883,12 @@ public class FasesController {
 	private String validarInputNumber(String numClusters, Integer minClusters, Integer maxClusters) {
 
 		if (numClusters == null || numClusters.isEmpty()) {
-			return "Por favor escoja un número de cluster";
+			return "Por favor, escoja un número de cluster";
 
 		}
 		try {
 			Integer n = Integer.parseInt(numClusters);
-			if (n < minClusters || n >= maxClusters) {
+			if (n < minClusters || n > maxClusters) {
 				return "El valor no está dentro del rango permitido";
 			}
 		} catch (NumberFormatException e) {

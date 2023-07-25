@@ -380,7 +380,7 @@ new Vue({
 										@click="esconderModal"></button>
 								</div>
 								<div class="modal-body">
-									<div v-if="this.error2 != ''" class="alert alert-danger fs-5">
+									<div v-if="this.error2 != ''" class="alert alert-danger fs-6">
 										{{this.error2}}
 									</div>
 									<form @submit.prevent="addPacienteBBDD">
