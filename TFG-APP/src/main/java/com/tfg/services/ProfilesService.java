@@ -1,13 +1,9 @@
 package com.tfg.services;
 
-import java.util.HashMap;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tfg.entities.Imagenes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
 import com.tfg.repositories.PrediccionesRepository;

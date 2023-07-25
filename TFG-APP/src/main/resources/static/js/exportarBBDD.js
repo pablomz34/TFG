@@ -13,7 +13,7 @@ new Vue({
 
 	created() {
 		const THIZ = this;
-		fetch(window.location.origin + "/tablas/getTablas", {
+		fetch(window.location.origin + "/exportarBBDD/getTablas", {
 			method: "GET",
 		})
 			.then(async res => {
@@ -45,7 +45,7 @@ new Vue({
 		exportarTabla(tabla) {
 			// Realizar una solicitud al backend para exportar la tabla seleccionada
 			var xhr = new XMLHttpRequest();
-			xhr.open("GET", "/tablas/exportarTabla?tabla=" + tabla);
+			xhr.open("GET", "/exportarBBDD/exportarTabla?tabla=" + tabla);
 			xhr.responseType = "blob";
 			xhr.onload = function() {
 				if (xhr.status === 200) {
@@ -66,7 +66,7 @@ new Vue({
 		},
 		
 		exportarEstructuraBBDD(){
-			fetch(window.location.origin + "/tablas/exportarEstructuraBBDD", {
+			fetch(window.location.origin + "/exportarBBDD/exportarEstructuraBBDD", {
 				method: "GET",
 			})
 		        .then((response) => {

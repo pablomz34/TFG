@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.tfg.entities.AlgoritmosClustering;
-import com.tfg.entities.HeadersPacientes;
 
 import jakarta.annotation.Nullable;
 

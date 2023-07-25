@@ -48,6 +48,11 @@ public class AdminController {
 	public String adminIndex() {
 		return "index";
 	}
+	
+	@GetMapping("/fases")
+	public String fases() {
+		return "fases";
+	}
 
 	@GetMapping("/medicosRegistrados")
 	public String users(Model model) {
@@ -66,6 +71,11 @@ public class AdminController {
 	@GetMapping("/algoritmos")
 	public String algoritmos(Model model) {
 		return "algoritmos";
+	}
+	
+	@GetMapping("/exportarBBDD")
+	public String exportar() {
+		return "exportarBBDD";
 	}
 
 	@PostMapping("/crearAlgoritmo")
@@ -107,11 +117,6 @@ public class AdminController {
 			return new ResponseEntity("El algoritmo seleccionado no existe, por tanto no puede ser eliminado",
 					HttpStatus.BAD_REQUEST);
 		}
-	}
-
-	@GetMapping("/exportarBBDD")
-	public String exportar() {
-		return "exportarBBDD";
 	}
 
 	@GetMapping("/buscarPrediccionesCoincidentes")

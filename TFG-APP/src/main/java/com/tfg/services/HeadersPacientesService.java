@@ -20,9 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tfg.entities.HeadersPacientes;
-import com.tfg.entities.Pacientes;
 import com.tfg.repositories.HeadersPacientesRepository;
-import com.tfg.repositories.PacientesRepository;
 import com.tfg.repositories.PrediccionesRepository;
 
 @Service

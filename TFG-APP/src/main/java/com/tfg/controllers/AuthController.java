@@ -1,13 +1,10 @@
 package com.tfg.controllers;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,15 +37,7 @@ public class AuthController {
 	private IUsuariosService usuariosService;
 
 	@Autowired
-	private ResourceLoader resourceLoader;
-
-	@Autowired
 	private HttpSession session;
-
-	@GetMapping("/admin/fases")
-	public String fases() {
-		return "fases";
-	}
 
 	// handler method to handle home page request
 	@GetMapping("/index")
@@ -74,6 +63,29 @@ public class AuthController {
 		UsuariosDto medico = new UsuariosDto();
 		model.addAttribute("medico", medico);
 		return "registro";
+	}
+	
+	
+	@GetMapping("/login")
+	public String login() {
+
+		if (RedirectLoginRegistro()) {
+			return "redirect:/";
+		}
+
+		return "login";
+	}
+	
+	@GetMapping("/perfilUsuario/{idUsuario}")
+	public String editarUsuario(@PathVariable("idUsuario") Long idUsuario, Model model, HttpServletRequest request) {
+
+		Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
+		if (idUsuario.longValue() != sessionIdUsuario.longValue()) {
+
+			return "redirect:/";
+		}
+
+		return "perfilUsuario";
 	}
 
 	@GetMapping("/comprobarCorreoUnico")
@@ -109,18 +121,6 @@ public class AuthController {
 			return "redirect:/registro?success";
 		}
 
-	}
-
-	@GetMapping("/perfilUsuario/{idUsuario}")
-	public String editarUsuario(@PathVariable("idUsuario") Long idUsuario, Model model, HttpServletRequest request) {
-
-		Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
-		if (idUsuario.longValue() != sessionIdUsuario.longValue()) {
-
-			return "redirect:/";
-		}
-
-		return "perfilUsuario";
 	}
 
 	@GetMapping("/obtenerDatosPerfilUsuario")
@@ -271,15 +271,7 @@ public class AuthController {
 		return "";
 	}
 
-	@GetMapping("/login")
-	public String login() {
-
-		if (RedirectLoginRegistro()) {
-			return "redirect:/";
-		}
-
-		return "login";
-	}
+	
 
 	private boolean RedirectLoginRegistro() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

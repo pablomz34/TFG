@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

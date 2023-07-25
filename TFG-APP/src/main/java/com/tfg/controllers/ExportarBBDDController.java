@@ -1,11 +1,9 @@
 package com.tfg.controllers;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -15,35 +13,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.BufferedOutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.tfg.dto.UsuariosDto;
-import com.tfg.entities.Predicciones;
-import com.tfg.services.IPrediccionesService;
-import com.tfg.services.IUsuariosService;
-
-@Controller
-@RequestMapping("/tablas")
-public class TablasController {
+@RestController
+@RequestMapping("/exportarBBDD")
+public class ExportarBBDDController {
 	
 	@Value("${spring.datasource.url}")
 	private String bbddConnectionUrl;
@@ -193,49 +176,5 @@ public class TablasController {
         return tableStructure.toString();
     }
 	
-	
-	
-	/* --------------Exportar estructura y datos-------------------
-    private String exportTable(Connection connection, String tableName) throws SQLException {
-        StringBuilder tableDump = new StringBuilder();
-
-        // Export table structure
-        String structureQuery = "SHOW CREATE TABLE " + tableName;
-        try (Statement structureStatement = connection.createStatement();
-             ResultSet structureResult = structureStatement.executeQuery(structureQuery)) {
-            if (structureResult.next()) {
-                String createTableStatement = structureResult.getString(2);
-                tableDump.append(createTableStatement).append(";\n\n");
-            }
-        }
-
-        // Export table data
-        String dataQuery = "SELECT * FROM " + tableName;
-        try (Statement dataStatement = connection.createStatement();
-             ResultSet dataResult = dataStatement.executeQuery(dataQuery)) {
-            ResultSetMetaData metaData = dataResult.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            while (dataResult.next()) {
-                tableDump.append("INSERT INTO ").append(tableName).append(" VALUES (");
-                for (int i = 1; i <= columnCount; i++) {
-                    Object value = dataResult.getObject(i);
-                    if (value == null) {
-                        tableDump.append("NULL");
-                    } else if (value instanceof Number) {
-                        tableDump.append(value);
-                    } else {
-                        tableDump.append("'").append(value).append("'");
-                    }
-                    if (i < columnCount) {
-                        tableDump.append(", ");
-                    }
-                }
-                tableDump.append(");\n");
-            }
-        }
-
-        return tableDump.toString();
-    }*/
 	
 }

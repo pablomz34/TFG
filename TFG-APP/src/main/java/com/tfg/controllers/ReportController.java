@@ -41,10 +41,6 @@ public class ReportController {
 	public ResponseEntity<Resource> download(@RequestBody Map<String, Object> json, @RequestParam("nCluster") String nCluster)
 			throws JRException, IOException, SQLException {
 		Map<String,Object> params = new HashMap<>();
-//		Gson gson = new Gson();
-//		gson.toJson(json);
-//		List<Map<String, Object>> lista = new ArrayList<>();
-//		lista.add(json); 
 		
 		List<StatisticsDto> statistics = new ArrayList<>();
 		List<VariablesDto> variables = new ArrayList<>();

@@ -15,14 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
 import com.tfg.handlers.LoginSuccessHandler;
 import com.tfg.repositories.UsuariosRepository;
-import com.tfg.services.IAlgoritmosClusteringService;
 @Configuration
 @EnableWebSecurity
 public class SpringSecurity implements CommandLineRunner {
@@ -35,7 +32,6 @@ public class SpringSecurity implements CommandLineRunner {
 
     @Value("${spring.security.user.password}")
     private String adminPassword;
-
 
     @Autowired
     private UsuariosRepository userRep;
@@ -54,9 +50,9 @@ public class SpringSecurity implements CommandLineRunner {
     	http
     	.csrf().disable()
     	.authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/images/**", "/js/**", "/python/**", "/css/**", "/node_modules/**", "/sass/**").permitAll()
+                        authorize.requestMatchers("/images/**", "/js/**", "/css/**", "/node_modules/**", "/sass/**").permitAll()
                                 .requestMatchers("/registro/**", "/login/**", "/", "/index", "/comprobarDNIUnico", "/comprobarCorreoUnico", "/report/**").permitAll()
-                                .requestMatchers("/admin/**", "/tablas/**").hasRole("ADMIN")
+                                .requestMatchers("/admin/**", "/exportarBBDD/**").hasRole("ADMIN")
                                 .requestMatchers("/medico/**", "/clustersImages/**", "/perfilUsuario/**", "/obtenerDatosPerfilUsuario/**",
                                 		"/cambiarDatoPerfilUsuario/**").hasAnyRole("ADMIN", "MEDICO")
                                 .anyRequest().authenticated()
@@ -75,20 +71,6 @@ public class SpringSecurity implements CommandLineRunner {
         return http.build();
     }
     
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-      return new WebMvcConfigurer() {
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
-          registry.addMapping("/**")
-            .allowedOrigins("*") // permitir solicitudes solo desde estos orígenes
-            .allowedMethods("GET", "POST", "PUT", "DELETE") // permitir métodos HTTP específicos
-            .allowedHeaders("*"); // permitir encabezados específicos
-        }
-      };
-    }
-
-
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     	

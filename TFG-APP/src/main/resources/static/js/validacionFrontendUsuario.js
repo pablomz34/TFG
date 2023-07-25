@@ -1,6 +1,4 @@
 
-
-
 export function validarNombre(nombre) {
 
 	let retArray = [];
