@@ -2129,7 +2129,7 @@ new Vue({
 					<div class="row justify-content-center">
 						<div id="card1" class="fases-card" @click="selectCardPantalla1('card1')">
 							<i class="fases-card-i fa-solid fa-database"></i>
-							<p class="fases-card-p text-center mb-0">Usar información de la población de la base de datos</p>
+							<p class="fases-card-p text-center mb-0">Procesamiento secuencial y automatizado</p>
 						</div>
 					</div>
 				</div>
@@ -2138,7 +2138,7 @@ new Vue({
 					<div class="row justify-content-center">
 						<div id="card2" class="fases-card" @click="selectCardPantalla1('card2')">
 							<i class="fases-card-i fa-solid fa-wrench"></i>
-							<p class="fases-card-p text-center mb-0">Usar tu propia información de la población</p>
+							<p class="fases-card-p text-center mb-0">Procesamiento no secuencial y manual</p>
 						</div>
 					</div>
 				</div>
@@ -2197,7 +2197,7 @@ new Vue({
 								<div v-if="pantalla2.pacientesPrediccion > 0" class="radio-button-container">
 								 	  <input class="radio-button" type="radio" @change="seleccionarRadioButton" name="radioButton2" id="radioButton2">
 									  <label class="radio-button-label" for="radioButton2">
-									    Subir mi csv de población a la base de datos
+									    Subir nuevos datos de población a la base de datos
 									  </label>
 								</div>
 								
