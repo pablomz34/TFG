@@ -2128,7 +2128,7 @@ new Vue({
 				<div class="col-md-4 mb-5">
 					<div class="row justify-content-center">
 						<div id="card1" class="fases-card" @click="selectCardPantalla1('card1')">
-							<i class="fases-card-i fa-solid fa-database"></i>
+							<i class="fases-card-i fa-solid fa-gears"></i>
 							<p class="fases-card-p text-center mb-0">Procesamiento secuencial y automatizado</p>
 						</div>
 					</div>
@@ -2137,7 +2137,7 @@ new Vue({
 				<div class="col-md-4 mb-5">
 					<div class="row justify-content-center">
 						<div id="card2" class="fases-card" @click="selectCardPantalla1('card2')">
-							<i class="fases-card-i fa-solid fa-wrench"></i>
+							<i class="fases-card-i fa-solid fa-user-gear"></i>
 							<p class="fases-card-p text-center mb-0">Procesamiento no secuencial y manual</p>
 						</div>
 					</div>
