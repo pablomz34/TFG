@@ -474,12 +474,25 @@ public class FasesController {
 		File file;
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
+		
+		byte[] csvBytes;
 
 		if (multipartFile == null && idPrediccionPoblacion != null) {
 
 			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null, indices);
 
 			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
+			
+			csvBytes = inputStream.readAllBytes();
+			
+			InputStream input = new ByteArrayInputStream(csvBytes);
+
+			headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));
+
+			input = new ByteArrayInputStream(csvBytes);
+
+			pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
+			
 
 		} else if (multipartFile != null && idPrediccionPoblacion == null) {
 
@@ -488,19 +501,12 @@ public class FasesController {
 			multipartFile.transferTo(file);
 
 			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
+			
+			csvBytes = inputStream.readAllBytes();
 
 		} else {
 			return new ResponseEntity<>("La llamada a getSubPopulations salió mal", HttpStatus.BAD_REQUEST);
 		}
-
-		byte[] csvBytes = inputStream.readAllBytes();
-		InputStream input = new ByteArrayInputStream(csvBytes);
-
-		headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));
-
-		input = new ByteArrayInputStream(csvBytes);
-
-		pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
 
 		httpClient.close();
 
