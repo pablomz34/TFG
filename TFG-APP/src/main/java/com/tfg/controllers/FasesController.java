@@ -310,6 +310,21 @@ public class FasesController {
 		return tempFile;
 
 	}
+	
+	
+	@PostMapping(value="/validarArchivoPantalla2", consumes="multipart/form-data")
+	public ResponseEntity<?> validarArchivoPantalla2(@RequestPart(name = "file") MultipartFile multipartFile) {
+		
+		String error = this.validarInputFile(multipartFile);
+		
+		if(!error.isEmpty()) {
+			return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+		}
+		else {
+			return new ResponseEntity("", HttpStatus.OK);
+		}
+	
+	}
 
 	@GetMapping("/getAlgoritmosAgglomerativeAndKmodes")
 	public List<AlgoritmosClustering> getAlgoritmosAgglomerativeAndKmodes() {
@@ -588,9 +603,9 @@ public class FasesController {
 			String errorDescripcionVacía = "";
 
 			if (crearPrediccion) {
-				errorDescripcionVacía = "Por favor, escriba un nombre para la predicción";
+				errorDescripcionVacía = "Por favor, escriba una descripción para la predicción";
 			} else {
-				errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
+				errorDescripcionVacía = "Por favor, escoja una predicción válida";
 			}
 			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
 		}
@@ -610,7 +625,7 @@ public class FasesController {
 
 				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 			} else {
-				return new ResponseEntity<>("El nombre de esa prediccion ya está cogido", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<>("Ya existe una predicción con esa descripción", HttpStatus.BAD_REQUEST);
 			}
 		} else {
 			if (prediccion != null) {
@@ -905,7 +920,7 @@ public class FasesController {
 	private String validarInputFile(MultipartFile multipartFile) {
 		String contentType = multipartFile.getContentType();
 		if (!contentType.equals("text/csv")) {
-			return "El tipo de archivo no es válido, seleccion un archivo con extensión .csv";
+			return "El tipo de archivo no es válido, seleccione un archivo con extensión .csv";
 		}
 		return "";
 	}

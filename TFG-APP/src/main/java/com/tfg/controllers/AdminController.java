@@ -82,7 +82,7 @@ public class AdminController {
 	public ResponseEntity<?> crearAlgoritmo(@RequestParam("nombreAlgoritmo") String nombreAlgoritmo) {
 
 		if (nombreAlgoritmo.equals("") || nombreAlgoritmo.isEmpty()) {
-			return new ResponseEntity("El nombre del algoritmo no puede ser vacío", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity("Por favor, escriba un nombre para el algoritmo", HttpStatus.BAD_REQUEST);
 		}
 
 		if (algoritmosClusteringService.findAlgoritmoByNombreAlgoritmo(nombreAlgoritmo) != null) {
@@ -114,7 +114,7 @@ public class AdminController {
 			algoritmosClusteringService.borrarAlgoritmo(algoritmo.getId());
 			return new ResponseEntity("El algoritmo se ha borrado correctamente", HttpStatus.OK);
 		} else {
-			return new ResponseEntity("El algoritmo seleccionado no existe, por tanto no puede ser eliminado",
+			return new ResponseEntity("El algoritmo seleccionado no existe",
 					HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -155,7 +155,7 @@ public class AdminController {
 			prediccionesService.borrarPrediccion(prediccion.getId());
 			return new ResponseEntity("La prediccion se ha borrado correctamente", HttpStatus.OK);
 		} else {
-			return new ResponseEntity("La predicción seleccionada no existe, por tanto no puede ser eliminada",
+			return new ResponseEntity("La predicción seleccionada no existe",
 					HttpStatus.BAD_REQUEST);
 		}
 	}

@@ -1587,9 +1587,33 @@ new Vue({
 		archivoSeleccionado() {
 
 			const THIZ = this;
+			
+			const formData = new FormData();
+			
+			formData.append('file', this.$refs.csvUploadPoblacion.files[0]);
+			
+			fetch(window.location.origin + "/admin/fases/validarArchivoPantalla2", {
+				method: "POST",
+				body: formData
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.pantalla2.errorMessage = errorMessage;
+						THIZ.pantalla2.showContinueButton = false;
+						THIZ.pantalla2.csvUploadPoblacion = '';
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(res => {
+					
+					THIZ.pantalla2.errorMessage = '';
+					THIZ.pantalla2.csvUploadPoblacion = this.$refs.csvUploadPoblacion.files[0];
+					THIZ.pantalla2.showContinueButton = true;
 
-			THIZ.pantalla2.csvUploadPoblacion = this.$refs.csvUploadPoblacion.files[0];
-			THIZ.pantalla2.showContinueButton = true;
+				})
+				.catch(error => console.error(error));	
 
 		},
 		seleccionarPrediccionAndPoblacionInfo() {

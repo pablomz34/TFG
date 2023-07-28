@@ -200,7 +200,7 @@ public class MedicoController {
 		if (prediccion != null) {
 			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>("Por favor, escoja una predicción válida", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
 		}
 
 	}
