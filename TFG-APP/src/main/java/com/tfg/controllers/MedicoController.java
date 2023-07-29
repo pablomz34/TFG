@@ -147,7 +147,7 @@ public class MedicoController {
 			String jsonFeatureValue = (String) json.get(featureName);
 
 			if (jsonFeatureValue == null || jsonFeatureValue.isEmpty()) {
-				return "El campo " + featureName + " no puede estar vacío";
+				return "Por favor, rellene el campo " + featureName;
 			}
 
 			Set<String> allFeatureValuesKeys = featureValues.stream().flatMap(hashMap -> hashMap.keySet().stream())
@@ -189,7 +189,7 @@ public class MedicoController {
 
 		if (descripcionPrediccion == null || descripcionPrediccion.isEmpty()) {
 			String errorDescripcionVacía = "";
-			errorDescripcionVacía = "Por favor, escoja una de las predicciones de la lista";
+			errorDescripcionVacía = "Por favor, seleccione una predicción";
 			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
 		}
 
@@ -200,7 +200,7 @@ public class MedicoController {
 		if (prediccion != null) {
 			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("La predicción seleccionada no es válida", HttpStatus.BAD_REQUEST);
 		}
 
 	}

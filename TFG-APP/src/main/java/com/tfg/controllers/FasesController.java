@@ -462,15 +462,16 @@ public class FasesController {
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
 
 		List<Map<String, Object>> algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
-
-		String error = this.validarInputNumber((String) algoritmos.get(0).get("nClusters"), 2, 20);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-		}
-
-		error = this.validarInputNumber((String) algoritmos.get(1).get("nClusters"), 2, 20);
-		if (!error.isEmpty()) {
-			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		
+		String error = "";
+		
+		for(int i=0; i<algoritmos.size(); i++) {
+			
+			error = this.validarNClustersAlgoritmo((String) algoritmos.get(i).get("nClusters"), 2, 20, (String) algoritmos.get(i).get("nombreAlgoritmo"));
+			
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}
 		}
 
 		// Verificar el tipo de contenido del archivo
@@ -902,7 +903,7 @@ public class FasesController {
 	private String validarInputNumber(String numClusters, Integer minClusters, Integer maxClusters) {
 
 		if (numClusters == null || numClusters.isEmpty()) {
-			return "Por favor, escoja un número de cluster";
+			return "Por favor, escoja un número de clusters";
 
 		}
 		try {
@@ -916,6 +917,25 @@ public class FasesController {
 		}
 		return "";
 	}
+	
+	private String validarNClustersAlgoritmo(String numClusters, Integer minClusters, Integer maxClusters, String nombreAlgoritmo) {
+
+		if (numClusters == null || numClusters.isEmpty()) {
+			return "Por favor, escoja un número de clusters para el algoritmo " + nombreAlgoritmo;
+
+		}
+		try {
+			Integer n = Integer.parseInt(numClusters);
+			if (n < minClusters || n > maxClusters) {
+				return "El número de clusters del algoritmo " + nombreAlgoritmo + " no está dentro del rango permitido";
+			}
+		} catch (NumberFormatException e) {
+			return "El número de clusters del algoritmo " + nombreAlgoritmo + " no es válido";
+
+		}
+		return "";
+	}
+	
 
 	private String validarInputFile(MultipartFile multipartFile) {
 		String contentType = multipartFile.getContentType();
