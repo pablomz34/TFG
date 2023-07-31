@@ -1572,6 +1572,7 @@ new Vue({
 
 			THIZ.pantalla2.showContinueButton = false;
 			THIZ.pantalla2.csvUploadPoblacion = '';
+			THIZ.pantalla2.errorMessage = '';
 
 			let radios = document.querySelectorAll('input[type="radio"]');
 
@@ -1648,7 +1649,8 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = errorMessage;
+						
+						THIZ.pantalla2.errorMessage = errorMessage;
 
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -2148,7 +2150,7 @@ new Vue({
 					.then(pacientes => {
 
 						THIZ.pantalla2.pacientesPrediccion = Number(pacientes);
-
+						
 					})
 					.catch(error => console.error(error));
 			}

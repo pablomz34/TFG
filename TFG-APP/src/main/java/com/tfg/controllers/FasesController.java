@@ -107,7 +107,7 @@ public class FasesController {
 	public ResponseEntity<?> getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
 
 		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Selecciones una descripción que no sea vacía", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
@@ -379,10 +379,29 @@ public class FasesController {
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
+		if (descripcion == null || descripcion.isEmpty()) {
+			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
+		}
+		
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
-		if (multipartFile != null) {
-
+		if (prediccion == null) {
+			return new ResponseEntity<>("La prediccion seleccionada no existe", HttpStatus.BAD_REQUEST );
+		}
+		
+		if(prediccion.getPacientes().size() == 0 && multipartFile == null) {
+			return new ResponseEntity<>("Es necesario subir un archivo con la información de la población", HttpStatus.BAD_REQUEST );
+		}
+		
+		if(multipartFile != null) {
+			
+			String multipartFileError = this.validarInputFile(multipartFile);
+			
+			if(!multipartFileError.isEmpty()) {
+				return new ResponseEntity<>(multipartFileError, HttpStatus.BAD_REQUEST);
+				
+			}
+			
 			if (prediccion.getHeadersPacientes() != null) {
 				headersPacientesService.borrarHeadersPoblacion(prediccion.getId());
 			}
@@ -395,6 +414,7 @@ public class FasesController {
 			headersPacientesService.guardarHeadersPoblacion(multipartFile, prediccion.getId());
 
 			pacientesService.guardarPoblacionInicial(multipartFile, prediccion.getId());
+		
 		}
 
 		return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
@@ -465,9 +485,10 @@ public class FasesController {
 
 		try {
 			algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
-			
-			if(algoritmos.isEmpty()) {
-				return new ResponseEntity<>("Por favor, los algoritmos kmodes y agglomerative son obligatorios", HttpStatus.BAD_REQUEST);
+
+			if (algoritmos.isEmpty()) {
+				return new ResponseEntity<>("Por favor, los algoritmos kmodes y agglomerative son obligatorios",
+						HttpStatus.BAD_REQUEST);
 			}
 
 			String error = "";
