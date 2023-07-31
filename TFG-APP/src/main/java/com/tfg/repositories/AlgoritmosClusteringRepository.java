@@ -19,7 +19,7 @@ public interface AlgoritmosClusteringRepository extends JpaRepository<Algoritmos
 	public List<AlgoritmosClustering> findByNombreAlgoritmoContaining(String nombreAlgoritmo);
 
 	@Query("SELECT aC FROM AlgoritmosClustering aC WHERE aC.nombreAlgoritmo IN (:agglomerative, :kmodes)")
-    public List<AlgoritmosClustering> findAlgoritmosAgglomerativeAndKmodes(String agglomerative, String kmodes);
+    public List<AlgoritmosClustering> findAlgoritmosObligatorios(String agglomerative, String kmodes);
 
 	/*@Query("SELECT aC FROM AlgoritmosClustering aC WHERE aC IN "
 	        + "(SELECT a FROM AlgoritmosClustering a WHERE a.nombreAlgoritmo LIKE %:nombreAlgoritmo% "

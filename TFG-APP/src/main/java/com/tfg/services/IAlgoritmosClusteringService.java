@@ -22,7 +22,7 @@ public interface IAlgoritmosClusteringService {
 	
 	public List<AlgoritmosClustering> findAllAlgoritmos();
 	
-	public List<AlgoritmosClustering> findAlgoritmosAgglomerativeAndKmodes();
+	public List<AlgoritmosClustering> findAlgoritmosObligatorios();
 	
 	public List<AlgoritmosClustering> findAlgoritmosCoincidentesAndNoSeleccionados(String nombreAlgoritmo, String algoritmosSeleccionadosString, String algoritmosPreSeleccionadosString) throws JsonMappingException, JsonProcessingException;
 }

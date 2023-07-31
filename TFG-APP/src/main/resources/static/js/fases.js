@@ -143,22 +143,7 @@ Vue.component('fase2', {
 	},
 	mounted() {
 
-		const THIZ = this;
-
-		let agglomerative_dict = {};
-
-		agglomerative_dict["nombreAlgoritmo"] = "agglomerative";
-		agglomerative_dict["nClusters"] = '';
-
-		THIZ.algoritmosSeleccionados.push(agglomerative_dict);
-
-		let kmodes_dict = {};
-
-		kmodes_dict["nombreAlgoritmo"] = "kmodes";
-		kmodes_dict["nClusters"] = '';
-
-		THIZ.algoritmosSeleccionados.push(kmodes_dict);
-
+		this.getAlgoritmosObligatorios();
 	},
 
 	methods: {
@@ -196,6 +181,7 @@ Vue.component('fase2', {
 						const errorMessage = await res.text();
 						THIZ.error = errorMessage;
 						THIZ.mostrarCargando = false;
+						this.getAlgoritmosObligatorios();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 
@@ -221,6 +207,35 @@ Vue.component('fase2', {
 				})
 				.catch(error => console.error(error));
 		},
+
+		getAlgoritmosObligatorios() {
+			
+			const THIZ = this;
+			
+			THIZ.algoritmosSeleccionados = [];
+			
+			fetch(window.location.origin + "/admin/fases/getAlgoritmosObligatorios", {
+				method: "GET"
+			})
+				.then(res => res.json())
+				.then(res => {
+
+					for (let i = 0; i < res.length; i++) {
+
+						let algoritmoObligatorio = {};
+
+						algoritmoObligatorio["nombreAlgoritmo"] = res[i].nombreAlgoritmo;
+
+						algoritmoObligatorio["nClusters"] = '';
+
+						THIZ.algoritmosSeleccionados.push(algoritmoObligatorio);
+
+					}
+
+				})
+				.catch(error => console.error(error));
+		},
+
 		cambiarFase() {
 			this.$emit('cambiarFase');
 		},
@@ -1587,11 +1602,11 @@ new Vue({
 		archivoSeleccionado() {
 
 			const THIZ = this;
-			
+
 			const formData = new FormData();
-			
+
 			formData.append('file', this.$refs.csvUploadPoblacion.files[0]);
-			
+
 			fetch(window.location.origin + "/admin/fases/validarArchivoPantalla2", {
 				method: "POST",
 				body: formData
@@ -1607,13 +1622,13 @@ new Vue({
 					return res.text();
 				})
 				.then(res => {
-					
+
 					THIZ.pantalla2.errorMessage = '';
 					THIZ.pantalla2.csvUploadPoblacion = this.$refs.csvUploadPoblacion.files[0];
 					THIZ.pantalla2.showContinueButton = true;
 
 				})
-				.catch(error => console.error(error));	
+				.catch(error => console.error(error));
 
 		},
 		seleccionarPrediccionAndPoblacionInfo() {
@@ -1736,7 +1751,7 @@ new Vue({
 			THIZ.pantalla2.showContinueButton = false;
 
 			THIZ.pantalla2.uploadPoblacionInfo = false;
-			
+
 			THIZ.pantalla2.errorMessage = '';
 
 			this.resetearPantalla3();

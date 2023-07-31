@@ -104,9 +104,9 @@ public class AlgoritmosClusteringService implements IAlgoritmosClusteringService
 	}
 
 	@Override
-	public List<AlgoritmosClustering> findAlgoritmosAgglomerativeAndKmodes() {
+	public List<AlgoritmosClustering> findAlgoritmosObligatorios() {
 
-		return repos.findAlgoritmosAgglomerativeAndKmodes("agglomerative", "kmodes");
+		return repos.findAlgoritmosObligatorios("agglomerative", "kmodes");
 	}
 
 	@Override

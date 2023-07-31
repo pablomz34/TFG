@@ -105,20 +105,19 @@ public class FasesController {
 
 	@GetMapping("/getPacientesPrediccion")
 	public ResponseEntity<?> getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
-			
-		if(descripcion == null || descripcion.isEmpty()) {
+
+		if (descripcion == null || descripcion.isEmpty()) {
 			return new ResponseEntity("Selecciones una descripción que no sea vacía", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
-		
-		if(p == null) {
+
+		if (p == null) {
 			return new ResponseEntity("No existe ninguna predicción con esa descripción", HttpStatus.BAD_REQUEST);
-		}
-		else {
+		} else {
 			return new ResponseEntity(p.getPacientes().size(), HttpStatus.OK);
 		}
-		
+
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -252,7 +251,7 @@ public class FasesController {
 					poblacionData += headersVariablesClinicas.get(i);
 					poblacionData += i == (indices.get(indices.size() - 1)) ? "\n" : ",";
 				}
-				
+
 			}
 
 			for (int i = 0; i < poblacion.size(); i++) {
@@ -265,7 +264,7 @@ public class FasesController {
 						poblacionData += variablesClinicas.get(j);
 						poblacionData += j == (indices.get(indices.size() - 1)) ? "\n" : ",";
 					}
-					
+
 				}
 			}
 
@@ -310,42 +309,42 @@ public class FasesController {
 		return tempFile;
 
 	}
-	
-	
-	@PostMapping(value="/validarArchivoPantalla2", consumes="multipart/form-data")
+
+	@PostMapping(value = "/validarArchivoPantalla2", consumes = "multipart/form-data")
 	public ResponseEntity<?> validarArchivoPantalla2(@RequestPart(name = "file") MultipartFile multipartFile) {
-		
+
 		String error = this.validarInputFile(multipartFile);
-		
-		if(!error.isEmpty()) {
+
+		if (!error.isEmpty()) {
 			return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
-		}
-		else {
+		} else {
 			return new ResponseEntity("", HttpStatus.OK);
 		}
-	
+
 	}
 
-	@GetMapping("/getAlgoritmosAgglomerativeAndKmodes")
-	public List<AlgoritmosClustering> getAlgoritmosAgglomerativeAndKmodes() {
-		return algoritmosClusteringService.findAlgoritmosAgglomerativeAndKmodes();
+	@GetMapping("/getAlgoritmosObligatorios")
+	public List<AlgoritmosClustering> getAlgoritmosObligatorios() {
+		return algoritmosClusteringService.findAlgoritmosObligatorios();
 	}
-	
+
 	@PostMapping("/buscarAlgoritmosCoincidentes")
-	public ResponseEntity<?> buscarAlgoritmosCoincidentes(
-			@RequestParam("nombreAlgoritmo") String nombreAlgoritmo,
+	public ResponseEntity<?> buscarAlgoritmosCoincidentes(@RequestParam("nombreAlgoritmo") String nombreAlgoritmo,
 			@RequestParam("algoritmosSeleccionados") String algoritmosSeleccionados,
-			@RequestParam("algoritmosPreSeleccionados") String algoritmosPreSeleccionados) throws JsonMappingException, JsonProcessingException{
-		
+			@RequestParam("algoritmosPreSeleccionados") String algoritmosPreSeleccionados)
+			throws JsonMappingException, JsonProcessingException {
+
 		List<AlgoritmosClustering> algoritmosCoincidentes = new ArrayList<AlgoritmosClustering>();
-		
+
 		if (!nombreAlgoritmo.equals("") && nombreAlgoritmo != null) {
-			
-			algoritmosCoincidentes = algoritmosClusteringService.findAlgoritmosCoincidentesAndNoSeleccionados(nombreAlgoritmo, algoritmosSeleccionados, algoritmosPreSeleccionados);
+
+			algoritmosCoincidentes = algoritmosClusteringService.findAlgoritmosCoincidentesAndNoSeleccionados(
+					nombreAlgoritmo, algoritmosSeleccionados, algoritmosPreSeleccionados);
 		}
-		
+
 		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
 	}
+
 	@PostMapping("/buscarVariablesClinicasCoincidentes")
 	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(
 			@RequestParam("nombreVariableClinica") String nombreVariableClinica,
@@ -368,9 +367,10 @@ public class FasesController {
 
 		return headersPacientesService.findMaxNumVariablesClinicas(idPrediccionPoblacion);
 	}
-	
+
 	@GetMapping("/getAllVariablesClinicas")
-	public List<HashMap<String, Object>> getAllVariablesClinicas(@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion){
+	public List<HashMap<String, Object>> getAllVariablesClinicas(
+			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
 		return headersPacientesService.findAllVariablesClinicas(idPrediccionPoblacion);
 	}
 
@@ -456,80 +456,92 @@ public class FasesController {
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") String algoritmosJsonString,
+	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") @Nullable String algoritmosJsonString,
 			@RequestParam(name = "idPrediccionPoblacion", required = false) @Nullable String idPrediccionPoblacion,
 			@RequestParam(name = "indices", required = false) @Nullable List<Integer> indices,
 			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile) throws IOException {
 
-		List<Map<String, Object>> algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
-		
-		String error = "";
-		
-		for(int i=0; i<algoritmos.size(); i++) {
+		List<Map<String, Object>> algoritmos;
+
+		try {
+			algoritmos = new ObjectMapper().readValue(algoritmosJsonString, List.class);
 			
-			error = this.validarNClustersAlgoritmo((String) algoritmos.get(i).get("nClusters"), 2, 20, (String) algoritmos.get(i).get("nombreAlgoritmo"));
-			
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			if(algoritmos.isEmpty()) {
+				return new ResponseEntity<>("Por favor, los algoritmos kmodes y agglomerative son obligatorios", HttpStatus.BAD_REQUEST);
 			}
-		}
 
-		// Verificar el tipo de contenido del archivo
-		if (multipartFile != null) {
-			error = this.validarInputFile(multipartFile);
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			String error = "";
+
+			for (int i = 0; i < algoritmos.size(); i++) {
+
+				error = this.validarNClustersAlgoritmo((String) algoritmos.get(i).get("nClusters"), 2, 20,
+						(String) algoritmos.get(i).get("nombreAlgoritmo"));
+
+				if (!error.isEmpty()) {
+					return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+				}
 			}
+
+			// Verificar el tipo de contenido del archivo
+			if (multipartFile != null) {
+				error = this.validarInputFile(multipartFile);
+				if (!error.isEmpty()) {
+					return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+				}
+			}
+
+			String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
+					+ algoritmos.get(0).get("nClusters") + "&n_kmodes=" + algoritmos.get(1).get("nClusters");
+
+			InputStream inputStream;
+
+			File file;
+
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+
+			byte[] csvBytes;
+
+			if (multipartFile == null && idPrediccionPoblacion != null) {
+
+				file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null, indices);
+
+				inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
+
+				csvBytes = inputStream.readAllBytes();
+
+				InputStream input = new ByteArrayInputStream(csvBytes);
+
+				headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));
+
+				input = new ByteArrayInputStream(csvBytes);
+
+				pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
+
+			} else if (multipartFile != null && idPrediccionPoblacion == null) {
+
+				file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+
+				multipartFile.transferTo(file);
+
+				inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
+
+				csvBytes = inputStream.readAllBytes();
+
+			} else {
+				return new ResponseEntity<>("La llamada a getSubPopulations salió mal", HttpStatus.BAD_REQUEST);
+			}
+
+			httpClient.close();
+
+			file.delete();
+
+			// Devuelve la respuesta con el archivo adjunto.
+			return new ResponseEntity<>(csvBytes, HttpStatus.OK);
+		} catch (JsonProcessingException e) {
+
+			return new ResponseEntity<>("Formato de algoritmos inválido", HttpStatus.BAD_REQUEST);
 		}
 
-		String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
-				+ algoritmos.get(0).get("nClusters") + "&n_kmodes=" + algoritmos.get(1).get("nClusters");
-
-		InputStream inputStream;
-
-		File file;
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		
-		byte[] csvBytes;
-
-		if (multipartFile == null && idPrediccionPoblacion != null) {
-
-			file = llamadaBBDDPoblacion(idPrediccionPoblacion, "fase2", null, indices);
-
-			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
-			
-			csvBytes = inputStream.readAllBytes();
-			
-			InputStream input = new ByteArrayInputStream(csvBytes);
-
-			headersPacientesService.addAlgoritmosHeadersPoblacion(input, Long.parseLong(idPrediccionPoblacion));
-
-			input = new ByteArrayInputStream(csvBytes);
-
-			pacientesService.addAlgoritmosPoblacion(input, Long.parseLong(idPrediccionPoblacion));
-			
-
-		} else if (multipartFile != null && idPrediccionPoblacion == null) {
-
-			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
-
-			multipartFile.transferTo(file);
-
-			inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
-			
-			csvBytes = inputStream.readAllBytes();
-
-		} else {
-			return new ResponseEntity<>("La llamada a getSubPopulations salió mal", HttpStatus.BAD_REQUEST);
-		}
-
-		httpClient.close();
-
-		file.delete();
-
-		// Devuelve la respuesta con el archivo adjunto.
-		return new ResponseEntity<>(csvBytes, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
@@ -917,8 +929,9 @@ public class FasesController {
 		}
 		return "";
 	}
-	
-	private String validarNClustersAlgoritmo(String numClusters, Integer minClusters, Integer maxClusters, String nombreAlgoritmo) {
+
+	private String validarNClustersAlgoritmo(String numClusters, Integer minClusters, Integer maxClusters,
+			String nombreAlgoritmo) {
 
 		if (numClusters == null || numClusters.isEmpty()) {
 			return "Por favor, escoja un número de clusters para el algoritmo " + nombreAlgoritmo;
@@ -935,7 +948,6 @@ public class FasesController {
 		}
 		return "";
 	}
-	
 
 	private String validarInputFile(MultipartFile multipartFile) {
 		String contentType = multipartFile.getContentType();
