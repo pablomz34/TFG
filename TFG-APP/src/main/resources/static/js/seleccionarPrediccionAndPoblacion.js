@@ -78,6 +78,8 @@ new Vue({
 			if (THIZ.csvUploadPoblacion !== '') {
 				formData.append("file", THIZ.csvUploadPoblacion);
 			}
+			
+			THIZ.errorMessage = '';
 
 			fetch(window.location.origin + "/admin/procesamientoSecuencial/actualizarInformacionPrediccionAndPacientes?descripcion=" + this.prediccionSeleccionada, {
 				method: "POST",
@@ -139,20 +141,24 @@ new Vue({
 	},
 	template: `
 		<div class="container-fluid pt-2">
+		
+			<div class="row justify-content-center mt-3">
+				<div v-if="errorMessage != ''" class="col-md-5">
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						{{errorMessage}}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				</div>
+			</div>		
 			
-			<div class="row justify-content-around" style="margin-top: 65px;">
+			<div class="row justify-content-around" style="margin-top: 50px;">
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">
 			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 			                <h2 class="text-center text-white">Seleccionar predicción</h2>
 			            </div>
 			            <div class="card-body">
-			            	
-							<div v-if="errorMessage != ''" class="alert alert-danger">
-								{{errorMessage}}
-							</div>
-								
-			                <!--<form id="selectPrediccionForm" @submit.prevent="seleccionarPrediccionAndPoblacion"></form> -->
+										        
 		                	<div v-if="predicciones.length == 0">
 		                		<h4 class="text-center">No hay predicciones creadas</h4>
 		                		<h4 class="text-center"><a :href="'predicciones'">Crea una aquí</a></h4>

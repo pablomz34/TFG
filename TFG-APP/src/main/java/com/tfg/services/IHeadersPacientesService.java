@@ -19,12 +19,15 @@ public interface IHeadersPacientesService {
 	
 	public HeadersPacientes findHeadersPacientesByPrediccionId(Long idPrediccion);
 	
-	public List<HashMap<String, Object>> findVariablesClinicasCoincidentes(String nombreVariableClinica, String idPrediccionPoblacion, String variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException;
+	public List<String> findVariablesClinicasCoincidentes(String nombreVariableClinica, String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException;
 	
 	public void borrarHeadersPoblacion(Long idPrediccion);
 	
 	public int findMaxNumVariablesClinicas(String idPrediccionPoblacion);
 	
-	public List<HashMap<String, Object>> findAllVariablesClinicas(String idPrediccionPoblacion);
+	public List<String> findAllVariablesClinicas(String idPrediccionPoblacion);
 	
+	public Boolean validarVariablesSeleccionadas(String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas);
+	
+	public List<Integer> findIndicesVariablesClinicas(String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas);
 }

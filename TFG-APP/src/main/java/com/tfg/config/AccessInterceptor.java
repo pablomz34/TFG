@@ -18,6 +18,8 @@ public class AccessInterceptor implements HandlerInterceptor {
 	
 	public AccessInterceptor() {
 		
+		this.rutasSecuenciales.add("/admin/seleccionarModoDeProcesamiento");
+		
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion");
 		
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/seleccionarVariablesClinicas");

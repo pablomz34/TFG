@@ -2,6 +2,7 @@ package com.tfg.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.tfg.entities.Predicciones;
 import com.tfg.services.IAlgoritmosClusteringService;
 import com.tfg.services.IHeadersPacientesService;
@@ -40,9 +44,9 @@ public class ProcesamientoSecuencialController {
 
 	@Autowired
 	private HttpSession session;
-	
+
 	private List<String> rutasSecuenciales = new ArrayList<String>();
-	
+
 	@Autowired
 	private IUsuariosService usuariosService;
 
@@ -66,36 +70,61 @@ public class ProcesamientoSecuencialController {
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
-	
-	
+
 	public ProcesamientoSecuencialController() {
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion");
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/seleccionarVariablesClinicas");
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase1");
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase2");
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase3");
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase4");
-		
+
 		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase5");
 	}
 
 	@GetMapping("/seleccionarPrediccionAndPoblacion")
-	public String seleccionarPrediccionAndPoblacion(@ModelAttribute("sessionAttributeError") String sessionAttributeError, Model model) {
-		
+	public String seleccionarPrediccionAndPoblacion(
+			@ModelAttribute("sessionAttributeError") String sessionAttributeError, Model model) {
+
 		model.addAttribute("sessionAttributeError", sessionAttributeError);
-		
+
 		return "seleccionarPrediccionAndPoblacion";
 	}
-	
+
 	@GetMapping("/seleccionarVariablesClinicas")
 	public String seleccionarVariablesClinicas() {
 		return "seleccionarVariablesClinicas";
+	}
+	
+	@GetMapping("/fase1")
+	public String fase1() {
+		return "procesamientoSecuencialFase1";
+	}
+	
+	@GetMapping("/fase2")
+	public String fase2() {
+		return "procesamientoSecuencialFase2";
+	}
+	
+	@GetMapping("/fase3")
+	public String fase3() {
+		return "procesamientoSecuencialFase3";
+	}
+	
+	@GetMapping("/fase4")
+	public String fase4() {
+		return "procesamientoSecuencialFase4";
+	}
+	
+	@GetMapping("/fase5")
+	public String fase5() {
+		return "procesamientoSecuencialFase5";
 	}
 
 	@GetMapping("/getPacientesPrediccion")
@@ -158,30 +187,97 @@ public class ProcesamientoSecuencialController {
 			pacientesService.guardarPoblacionInicial(multipartFile, prediccion.getId());
 
 		}
-		
+
 		session.setAttribute("idPrediccionProcesamientoSecuencial", prediccion.getId().toString());
-		
+
 		this.actualizarRutaSecuencialSession(this.rutasSecuenciales.get(0));
-		
+
 		return new ResponseEntity<>(this.rutasSecuenciales.get(1), HttpStatus.OK);
 	}
 
-	private void actualizarRutaSecuencialSession(String ruta) {
-		
-		session.setAttribute(ruta + "_passed", true);
-		
-	}
-	
-	
 	@GetMapping("/getMaximoVariablesClinicas")
 	public ResponseEntity<?> getMaximoVariablesClinicas() {
-				
-		String idPrediccionProcesamientoSecuencial = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
 
-		int maxVariablesClinicas = headersPacientesService.findMaxNumVariablesClinicas(idPrediccionProcesamientoSecuencial);
-		
+		String idPrediccionProcesamientoSecuencial = (String) session
+				.getAttribute("idPrediccionProcesamientoSecuencial");
+
+		int maxVariablesClinicas = headersPacientesService
+				.findMaxNumVariablesClinicas(idPrediccionProcesamientoSecuencial);
+
 		return new ResponseEntity<>(maxVariablesClinicas, HttpStatus.OK);
 	}
+
+	@PostMapping(value = "/buscarVariablesClinicasCoincidentes", consumes = "application/json")
+	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(
+			@RequestParam("nombreVariableClinica") String nombreVariableClinica,
+			@RequestBody List<String> variablesClinicasSeleccionadas)
+			throws JsonMappingException, JsonProcessingException {
+
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+
+		List<String> variablesClinicasCoincidentes = new ArrayList<String>();
+
+		if (!nombreVariableClinica.isEmpty() && nombreVariableClinica != null) {
+			variablesClinicasCoincidentes = headersPacientesService.findVariablesClinicasCoincidentes(
+					nombreVariableClinica, idPrediccion, variablesClinicasSeleccionadas);
+		}
+
+		return new ResponseEntity(variablesClinicasCoincidentes, HttpStatus.OK);
+	}
+
+	@GetMapping("/getAllVariablesClinicas")
+	public ResponseEntity<?> getAllVariablesClinicas() {
+
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+
+		List<String> allVariablesClinicas = headersPacientesService.findAllVariablesClinicas(idPrediccion);
+
+		return new ResponseEntity<>(allVariablesClinicas, HttpStatus.OK);
+	}
+
+	@PostMapping(value = "/procesarVariablesClinicasSeleccionadas", consumes = "application/json")
+	public ResponseEntity<?> procesarVariablesClinicasSeleccionadas(@RequestBody List<String> variablesSeleccionadas) {
+
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+
+		String error = this.validarVariablesSeleccionadas(idPrediccion, variablesSeleccionadas);
+
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+
+		List<Integer> indicesVariablesSeleccionadas = headersPacientesService.findIndicesVariablesClinicas(idPrediccion,
+				variablesSeleccionadas);
+
+		session.setAttribute("indicesVariablesSeleccionadas", indicesVariablesSeleccionadas);
+
+		this.actualizarRutaSecuencialSession(this.rutasSecuenciales.get(1));
+		
+		return new ResponseEntity<>(this.rutasSecuenciales.get(2), HttpStatus.OK);
+	}
+
+	
+	private void actualizarRutaSecuencialSession(String ruta) {
+
+		session.setAttribute(ruta + "_passed", true);
+
+	}
+	
+	private String validarVariablesSeleccionadas(String idPrediccion, List<String> variablesSeleccionadas) {
+
+		if (variablesSeleccionadas.size() == 0) {
+
+			return "Por favor, seleccione las variables clínicas que desee utilizar";
+		}
+
+		if (!headersPacientesService.validarVariablesSeleccionadas(idPrediccion, variablesSeleccionadas)) {
+			return "Las variables seleccionadas no son válidas";
+		}
+
+		return "";
+	}
+
+	
 
 	private String validarInputNumber(String numClusters, Integer minClusters, Integer maxClusters) {
 

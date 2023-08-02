@@ -5,7 +5,7 @@ new Vue({
 			maxVariablesClinicas: '',
 			searchedVariableClinica: '',
 			variablesClinicasSeleccionadas: [],
-			variablesClinicasPreseleccionadas: [],
+			variablesClinicasPreSeleccionadas: [],
 			variablesClinicasCoincidentes: [],
 			seleccionarVariablesClinicasModal: '',
 			showSeleccionarVariableButton: false,
@@ -112,9 +112,7 @@ new Vue({
 
 				let variableClinicaCoincidente = this.variablesClinicasCoincidentes[i];
 
-				let foundVariableClinica = this.variablesClinicasSeleccionadas.find(function(obj) {
-					return obj.indice === variableClinicaCoincidente.indice && obj.nombreVariable === variableClinicaCoincidente.nombreVariable;
-				});
+				let foundVariableClinica = this.variablesClinicasSeleccionadas.find((variable) => variable === variableClinicaCoincidente);
 
 				if (!foundVariableClinica) {
 
@@ -126,13 +124,13 @@ new Vue({
 
 					seleccionarVariablesComponentRectangle.setAttribute("class", "seleccionar-variables-component-rectangle");
 
-					seleccionarVariableComponent.innerHTML = this.variablesClinicasCoincidentes[i].nombreVariable;
+					seleccionarVariableComponent.innerHTML = this.variablesClinicasCoincidentes[i];
 
 					seleccionarVariableComponent.addEventListener('click', function(event) {
 
 						let nombreVariable = event.target.textContent;
 
-						let indexVariable = THIZ.variablesClinicasCoincidentes.findIndex(variable => variable.nombreVariable === nombreVariable);
+						let indexVariable = THIZ.variablesClinicasCoincidentes.findIndex((variable) => variable === nombreVariable);
 
 						if (indexVariable != -1) {
 
@@ -172,7 +170,7 @@ new Vue({
 
 							preseleccionarVariableComponentI.setAttribute("class", "fa-solid fa-circle-check seleccionar-variables-component-i");
 
-							preseleccionarVariableComponent.innerHTML = THIZ.variablesClinicasCoincidentes[indexVariable].nombreVariable;
+							preseleccionarVariableComponent.innerHTML = THIZ.variablesClinicasCoincidentes[indexVariable];
 
 							preseleccionarVariableComponent.append(preseleccionarVariableComponentRectangle);
 
@@ -204,16 +202,12 @@ new Vue({
 
 		buscarVariablesClinicasCoincidentes() {
 
-			const variablesClinicasSeleccionadasJson = JSON.stringify(this.variablesClinicasSeleccionadas);
-
-			const formData = new FormData();
-
-			formData.append('variablesClinicasSeleccionadas', variablesClinicasSeleccionadasJson);
-
-			fetch(window.location.origin + "/admin/fases/buscarVariablesClinicasCoincidentes?nombreVariableClinica=" + this.searchedVariableClinica +
-				"&idPrediccionPoblacion=" + this.idPrediccionPoblacion, {
+			fetch(window.location.origin + "/admin/procesamientoSecuencial/buscarVariablesClinicasCoincidentes?nombreVariableClinica=" + this.searchedVariableClinica, {
 				method: "POST",
-				body: formData
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(this.variablesClinicasSeleccionadas)
 			})
 				.then(res => res.json())
 				.then(res => {
@@ -239,9 +233,7 @@ new Vue({
 
 								let variableClinicaCoincidente = this.variablesClinicasCoincidentes[i];
 
-								let variablePreseleccionada = this.variablesClinicasPreSeleccionadas.find(function(obj) {
-									return obj.indice === variableClinicaCoincidente.indice && obj.nombreVariable === variableClinicaCoincidente.nombreVariable;
-								});
+								let variablePreseleccionada = this.variablesClinicasPreSeleccionadas.find((variable) => variable === variableClinicaCoincidente);
 
 								if (variablePreseleccionada) {
 									this.variablesClinicasCoincidentes.splice(i, 1);
@@ -285,15 +277,38 @@ new Vue({
 		seleccionarVariablesClinicas() {
 
 			const THIZ = this;
+		
+			THIZ.errorMessage = '';
 
-			this.variablesClinicasSeleccionadas.forEach(function(elemento) {
-				THIZ.indicesVariablesClinicasSeleccionadas.push(elemento.indice);
-			});
+			fetch(window.location.origin + "/admin/procesamientoSecuencial/procesarVariablesClinicasSeleccionadas", {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(this.variablesClinicasSeleccionadas)
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+
+						THIZ.errorMessage = errorMessage;
+
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(nextUrl => {
+
+					window.location.href = nextUrl;
+
+				})
+				.catch(error => console.error(error));
+			
 
 		},
 		selectAllVariablesClinicas() {
 
-			fetch(window.location.origin + "/admin/fases/getAllVariablesClinicas?idPrediccionPoblacion=" + this.idPrediccionPoblacion, {
+			fetch(window.location.origin + "/admin/procesamientoSecuencial/getAllVariablesClinicas", {
 				method: "GET"
 			})
 				.then(res => res.json())
@@ -301,9 +316,9 @@ new Vue({
 
 					const THIZ = this;
 
-					THIZ.pantalla3.variablesClinicasSeleccionadas = [];
+					THIZ.variablesClinicasSeleccionadas = [];
 
-					THIZ.pantalla3.variablesClinicasSeleccionadas = res;
+					THIZ.variablesClinicasSeleccionadas = res;
 
 				})
 				.catch(error => console.error(error));
@@ -313,20 +328,31 @@ new Vue({
 
 			const THIZ = this;
 
-			this.variablesClinicasSeleccionadas.splice(index, 1);
+			THIZ.variablesClinicasSeleccionadas.splice(index, 1);
 
 		}
 	},
 	template: `
 		<div class="container-fluid pt-2">
 		
-			<div class="row justify-content-around" style="margin-top: 65px;">
+			<div class="row justify-content-center mt-3">
+				<div v-if="errorMessage != ''" class="col-md-5">
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						{{errorMessage}}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+				</div>
+			</div>
+		
+			<div class="row justify-content-around" style="margin-top: 50px;">
+			
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">
 			            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 			                <h2 class="text-center text-white">Seleccionar variables clínicas</h2>
 			            </div>
 			            <div class="card-body">
+			            
 			            	<div class="row justify-content-around">
 			            		<div v-if="maxVariablesClinicas != variablesClinicasSeleccionadas.length" class="col m-2">
 					                <button class="btn btn-custom-color fs-5 w-100" @click="showModalSeleccionarVariablesClinicas">
@@ -342,7 +368,7 @@ new Vue({
 									<label class="variables-seleccionadas-label">Variables Seleccionadas </label>
 								
 									<div v-for="(variable, index) in variablesClinicasSeleccionadas" class="variables-seleccionadas-component">
-										<div class="variables-seleccionadas-component-text">{{variable.nombreVariable}}</div>
+										<div class="variables-seleccionadas-component-text">{{variable}}</div>
 										<i @click="eliminarVariableSeleccionada(index)" class="fa-solid fa-xmark variables-seleccionadas-component-i"></i>
 									</div>
 								

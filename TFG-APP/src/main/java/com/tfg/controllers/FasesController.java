@@ -345,7 +345,7 @@ public class FasesController {
 		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
 	}
 
-	@PostMapping("/buscarVariablesClinicasCoincidentes")
+	/*@PostMapping("/buscarVariablesClinicasCoincidentes")
 	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(
 			@RequestParam("nombreVariableClinica") String nombreVariableClinica,
 			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion,
@@ -360,7 +360,7 @@ public class FasesController {
 		}
 
 		return new ResponseEntity(variablesClinicas, HttpStatus.OK);
-	}
+	}*/
 
 	@GetMapping("/getMaximoVariablesClinicas")
 	public int getMaximoVariablesClinicas(@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
@@ -368,11 +368,11 @@ public class FasesController {
 		return headersPacientesService.findMaxNumVariablesClinicas(idPrediccionPoblacion);
 	}
 
-	@GetMapping("/getAllVariablesClinicas")
+	/*@GetMapping("/getAllVariablesClinicas")
 	public List<HashMap<String, Object>> getAllVariablesClinicas(
 			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
 		return headersPacientesService.findAllVariablesClinicas(idPrediccionPoblacion);
-	}
+	}*/
 
 	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
 	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
