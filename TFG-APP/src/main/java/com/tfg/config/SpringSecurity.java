@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
@@ -22,7 +24,7 @@ import com.tfg.handlers.LoginSuccessHandler;
 import com.tfg.repositories.UsuariosRepository;
 @Configuration
 @EnableWebSecurity
-public class SpringSecurity implements CommandLineRunner {
+public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -78,6 +80,19 @@ public class SpringSecurity implements CommandLineRunner {
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder())
                 ;
+    }
+    
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AccessInterceptor())
+                .addPathPatterns("/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion",
+                		"/admin/procesamientoSecuencial/seleccionarVariablesClinicas",
+                		"/admin/procesamientoSecuencial/fase1",
+                		"/admin/procesamientoSecuencial/fase2",
+                		"/admin/procesamientoSecuencial/fase3",
+                		"/admin/procesamientoSecuencial/fase4",
+                		"/admin/procesamientoSecuencial/fase5");
     }
 
 

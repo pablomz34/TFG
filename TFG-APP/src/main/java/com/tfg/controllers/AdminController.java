@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.AlgoritmosClustering;
@@ -53,6 +54,71 @@ public class AdminController {
 	public String fases() {
 		return "fases";
 	}
+	
+	@GetMapping("/seleccionarModoDeProcesamiento")
+	public String seleccionarModoDeProcesamiento() {
+		return "seleccionarModoDeProcesamiento";
+	}
+	
+	@PostMapping("/redigirAProcesamiento")
+	public ResponseEntity<String> redigirAProcesamiento(@RequestParam("modoProcesamiento") String modoProcesamiento){
+		
+		String error = this.validarModoProcesamiento(modoProcesamiento);
+		
+		if(!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+		
+		int numProcesamiento = Integer.parseInt(modoProcesamiento);
+		
+		
+		String domain = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+		
+		String redirectUrl = "";
+		
+		if(numProcesamiento == 0) {
+			redirectUrl = domain + "/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion";
+		}
+		else {
+			redirectUrl = domain + "/admin/procesamientoNoSecuencial/fases";
+		}
+		
+		return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
+	}
+	
+
+	private String validarModoProcesamiento(String modoProcesamiento) {
+		
+		
+		if(modoProcesamiento == null || modoProcesamiento.isEmpty()) {
+			return "Por favor, seleccione un método de procesamiento";
+		}
+		
+		int numProcesamiento = -1;
+		
+		try {
+			numProcesamiento = Integer.parseInt(modoProcesamiento);
+			
+		}catch(NumberFormatException e) {
+			return "Formato de url inválido";
+		}
+		
+		
+		if(numProcesamiento < 0 || numProcesamiento > 1) {
+			return "Modo de procesamiento inválido";
+		}
+					
+		return "";
+	}
+	
+	
+	@GetMapping("/getAllPredicciones")
+	public ResponseEntity<?> getAllPredicciones() {
+		List<String> predicciones = prediccionesService.getDescripciones();
+
+		return new ResponseEntity<>(predicciones, HttpStatus.OK);
+	}
+	
 
 	@GetMapping("/medicosRegistrados")
 	public String users(Model model) {
@@ -63,8 +129,6 @@ public class AdminController {
 
 	@GetMapping("/predicciones")
 	public String predicciones(Model model) {
-		List<Predicciones> predicciones = prediccionesService.getAll();
-		model.addAttribute("predicciones", predicciones);
 		return "predicciones";
 	}
 

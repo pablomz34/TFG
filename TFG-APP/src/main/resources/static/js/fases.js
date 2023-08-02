@@ -2194,9 +2194,8 @@ new Vue({
 		<div v-if="pantalla2.showPantalla" class="container pt-2">
 		
 			
-			<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>	
-			
-			
+			<<button type="button" @click="goBack" class="back-button"><i class="fa-solid fa-arrow-left back-button-i"></i> Atrás</button>
+					
 			<div class="row justify-content-around" style="margin-top: 65px;">
 				<div class="col-md-6">
 					<div class="card rounded-4 p-0 shadow">

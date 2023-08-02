@@ -47,7 +47,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		}
 	
 		if(rolesNames.contains("ROLE_ADMIN")) {
-			response.sendRedirect("admin/fases");
+			response.sendRedirect("admin/seleccionarModoDeProcesamiento");
 		}
 		else if(rolesNames.contains("ROLE_MEDICO")){
 			response.sendRedirect("medico");
