@@ -109,49 +109,43 @@ public class HeadersPacientesService implements IHeadersPacientesService {
 	
 	
 	
-	private List<String> calcularVariablesClinicasFiltradas(String idPrediccionPoblacion, String variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException{
+	private List<String> calcularVariablesClinicasFiltradas(String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException{
 		
-		String allVariablesClinicas = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
+		String allVariablesClinicasString = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
 		
-		List<String> splitAllVariablesClinicas = Arrays.asList(allVariablesClinicas.split(","));
+		List<String> allVariablesClinicas = Arrays.asList(allVariablesClinicasString.split(","));
 		
-		List<Map<String, Object>> listVariablesClinicasSeleccionadas = new ObjectMapper().readValue(variablesClinicasSeleccionadas, List.class);
-
-		List<String> nombreVariables = listVariablesClinicasSeleccionadas.stream()
-                .map(diccionario -> (String) diccionario.get("nombreVariable"))
-                .collect(Collectors.toList());
+		//List<String> variablesClinicasSeleccionadas = new ObjectMapper().readValue(variablesClinicasSeleccionadasString, List.class);
 		
-		List<String> retVariablesClinicas = new ArrayList<String>();
+		List<String> variablesClinicasFiltradas = new ArrayList<String>();
 		
-		for(int i=0; i < splitAllVariablesClinicas.size(); i++) {
+		for(int i=0; i < allVariablesClinicas.size(); i++) {
 			
-			if(!nombreVariables.contains(splitAllVariablesClinicas.get(i))) {
-				retVariablesClinicas.add(splitAllVariablesClinicas.get(i));
+			String variableClinica = allVariablesClinicas.get(i);
+			
+			if(variablesClinicasSeleccionadas.indexOf(variableClinica) == -1) {
+				variablesClinicasFiltradas.add(variableClinica);
 			}	
 		}
 		
-		return retVariablesClinicas;		
+		return variablesClinicasFiltradas;		
 	}
 
 	@Override
-	public List<HashMap<String, Object>> findVariablesClinicasCoincidentes(String nombreVariableClinica,
-			String idPrediccionPoblacion, String variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException {
+	public List<String> findVariablesClinicasCoincidentes(String nombreVariableClinica,
+			String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas) throws JsonMappingException, JsonProcessingException {
 		
 		List<String> variablesClinicasFiltradas = this.calcularVariablesClinicasFiltradas(idPrediccionPoblacion, variablesClinicasSeleccionadas);
 		
-		List<HashMap<String, Object>> variablesClinicasCoincidentes = new ArrayList<HashMap<String, Object>>();
+		List<String> variablesClinicasCoincidentes = new ArrayList<String>();
 		
 		for(int i=0; i<variablesClinicasFiltradas.size(); i++) {
 			
-			if(variablesClinicasFiltradas.get(i).contains(nombreVariableClinica)) {
+			String variableClinica = variablesClinicasFiltradas.get(i);
+			
+			if(variableClinica.contains(nombreVariableClinica)) {
 				
-				HashMap<String, Object> variable = new HashMap<String, Object>();
-				
-				variable.put("nombreVariable", variablesClinicasFiltradas.get(i));
-				
-				variable.put("indice", i);
-				
-				variablesClinicasCoincidentes.add(variable);
+				variablesClinicasCoincidentes.add(variableClinica);
 			}
 			
 		}		
@@ -168,26 +162,58 @@ public class HeadersPacientesService implements IHeadersPacientesService {
 	}
 
 	@Override
-	public List<HashMap<String, Object>> findAllVariablesClinicas(String idPrediccionPoblacion) {
+	public List<String> findAllVariablesClinicas(String idPrediccionPoblacion) {
 		
-		String allVariablesClinicas = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
+		String allVariablesClinicasString = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
 		
-		List<String> splitAllVariablesClinicas = Arrays.asList(allVariablesClinicas.split(","));
+		List<String> allVariablesClinicas = Arrays.asList(allVariablesClinicasString.split(","));
 		
-		List<HashMap<String, Object>> ret = new ArrayList<HashMap<String, Object>>();
+		return allVariablesClinicas;
+	}
+
+	@Override
+	public Boolean validarVariablesSeleccionadas(String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas) {
 		
-		for(int i=0; i < splitAllVariablesClinicas.size();i++) {
-			HashMap<String, Object> variableClinica = new HashMap<String, Object>();
+		Boolean isValid = true;
+		
+		String allVariablesClinicasString = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
+		
+		List<String> allVariablesClinicas = Arrays.asList(allVariablesClinicasString.split(","));
+				
+		for(int i=0; isValid && i < variablesClinicasSeleccionadas.size();i++ ) {
 			
-			variableClinica.put("nombreVariable", splitAllVariablesClinicas.get(i));
+			for(int j=i+1; isValid && j < variablesClinicasSeleccionadas.size(); j++) {
+				
+				if(variablesClinicasSeleccionadas.get(i).equals(variablesClinicasSeleccionadas.get(j))) {
+					isValid = false;
+				}
+			}
 			
-			variableClinica.put("indice", i);
-			
-			ret.add(variableClinica);
-			
+			if(allVariablesClinicas.indexOf(variablesClinicasSeleccionadas.get(i)) == -1) {
+				isValid = false;
+			}		
+	
+		}		
+		
+		return isValid;
+	}
+
+	@Override
+	public List<Integer> findIndicesVariablesClinicas(String idPrediccionPoblacion, List<String> variablesClinicasSeleccionadas) {
+		
+		List<Integer> indicesVariablesSeleccionadas = new ArrayList<Integer>();
+		
+		String allVariablesClinicasString = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
+		
+		List<String> allVariablesClinicas = Arrays.asList(allVariablesClinicasString.split(","));
+		
+		for(int i=0; i<variablesClinicasSeleccionadas.size(); i++) {
+					
+			indicesVariablesSeleccionadas.add(allVariablesClinicas.
+					indexOf(variablesClinicasSeleccionadas.get(i)));
 		}
 		
-		return ret;
+		return indicesVariablesSeleccionadas;
 	}
 
 }

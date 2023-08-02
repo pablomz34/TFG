@@ -86,7 +86,8 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AccessInterceptor())
-                .addPathPatterns("/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion",
+                .addPathPatterns("/admin/seleccionarModoDeProcesamiento",
+                		"/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion",
                 		"/admin/procesamientoSecuencial/seleccionarVariablesClinicas",
                 		"/admin/procesamientoSecuencial/fase1",
                 		"/admin/procesamientoSecuencial/fase2",

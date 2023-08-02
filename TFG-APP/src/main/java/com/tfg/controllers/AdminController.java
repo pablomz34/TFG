@@ -23,9 +23,14 @@ import com.tfg.services.IAlgoritmosClusteringService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IUsuariosService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+	
+	@Autowired
+	private HttpSession session;
 
 	@Autowired
 	private IUsuariosService usuariosService;
@@ -71,16 +76,16 @@ public class AdminController {
 		
 		int numProcesamiento = Integer.parseInt(modoProcesamiento);
 		
-		
-		String domain = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-		
 		String redirectUrl = "";
 		
 		if(numProcesamiento == 0) {
-			redirectUrl = domain + "/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion";
+			
+			redirectUrl = "/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion";
+		
+			session.setAttribute("/admin/seleccionarModoDeProcesamiento" + "_passed", true);
 		}
 		else {
-			redirectUrl = domain + "/admin/procesamientoNoSecuencial/fases";
+			redirectUrl = "/admin/procesamientoNoSecuencial/fases";
 		}
 		
 		return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
