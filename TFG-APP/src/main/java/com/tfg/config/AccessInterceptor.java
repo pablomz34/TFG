@@ -1,47 +1,36 @@
 package com.tfg.config;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+
+@Component
 public class AccessInterceptor implements HandlerInterceptor {
 	
-	private List<String> rutasSecuenciales = new ArrayList<String>();
-	
-	public AccessInterceptor() {
-		
-		this.rutasSecuenciales.add("/admin/seleccionarModoDeProcesamiento");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/seleccionarVariablesClinicas");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase1");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase2");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase3");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase4");
-		
-		this.rutasSecuenciales.add("/admin/procesamientoSecuencial/fase5");
-		
-	}
+	@Value("${myapp.rutasSecuenciales}")
+	private List<String> rutasSecuenciales;
 	
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // Aquí realizamos la lógica para verificar si el usuario ha accedido previamente a la ruta requerida.
         // Por ejemplo, podrías comprobar si existe una sesión o si el usuario ha realizado algún paso necesario.
         // Si la condición no se cumple, puedes redirigir al usuario a otra página o mostrar un mensaje de error.
-		
+			
 		HttpSession session = request.getSession();
 		
         String currentPath = request.getRequestURI();
@@ -49,6 +38,16 @@ public class AccessInterceptor implements HandlerInterceptor {
         String previousPath = this.getPreviousPath(currentPath);
               
         if(previousPath != null) {
+        	
+        	if(this.rutasSecuenciales.indexOf(previousPath) > 2) {
+        		
+        		Boolean fasePreviaExecuted = (Boolean) session.getAttribute(previousPath + "_executed");
+        		
+        		if(fasePreviaExecuted == null || !fasePreviaExecuted) {
+        			response.sendRedirect(previousPath);
+        			return false;
+        		}
+        	}
         	
         	Boolean sessionPreviousPathHasPassed = (Boolean) session.getAttribute(previousPath + "_passed");
         	

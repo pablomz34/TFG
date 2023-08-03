@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.tfg.config.AccessInterceptor;
 import com.tfg.dto.UsuariosDto;
 import com.tfg.entities.AlgoritmosClustering;
 import com.tfg.entities.Predicciones;
@@ -28,7 +29,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-	
+
 	@Autowired
 	private HttpSession session;
 
@@ -50,80 +51,117 @@ public class AdminController {
 	@Value("${spring.datasource.password}")
 	private String bbddPassword;
 
+	@Value("${myapp.rutasSecuenciales}")
+	private List<String> rutasSecuenciales;
+
 	@GetMapping()
 	public String adminIndex() {
 		return "index";
 	}
-	
+
 	@GetMapping("/fases")
 	public String fases() {
 		return "fases";
 	}
-	
+
 	@GetMapping("/seleccionarModoDeProcesamiento")
 	public String seleccionarModoDeProcesamiento() {
+
+		List<String> atributosExtra = new ArrayList<String>();
+
+		atributosExtra.add("idPrediccionProcesamientoSecuencial");
+
+		atributosExtra.add("indicesVariablesSeleccionadas");
+
+		atributosExtra.add("algoritmoOptimo");
+
+		this.borrarVariablesSesion(0, atributosExtra);
+
 		return "seleccionarModoDeProcesamiento";
 	}
-	
+
+	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
+		for (int i = 0; i < atributosExtra.size(); i++) {
+
+			String nombreAtributo = atributosExtra.get(i);
+
+			if (session.getAttribute(nombreAtributo) != null) {
+				session.removeAttribute(nombreAtributo);
+			}
+
+		}
+
+		for (int i = indiceRuta; i < this.rutasSecuenciales.size(); i++) {
+
+			String rutaSecuencial = this.rutasSecuenciales.get(i);
+
+			if (i >= 3) {
+				if (session.getAttribute(rutaSecuencial + "_executed") != null) {
+					session.removeAttribute(rutaSecuencial + "_executed");
+				}
+			}
+
+			if (session.getAttribute(rutaSecuencial + "_passed") != null) {
+				session.removeAttribute(rutaSecuencial + "_passed");
+			}
+
+		}
+
+	}
+
 	@PostMapping("/redigirAProcesamiento")
-	public ResponseEntity<String> redigirAProcesamiento(@RequestParam("modoProcesamiento") String modoProcesamiento){
-		
+	public ResponseEntity<String> redigirAProcesamiento(@RequestParam("modoProcesamiento") String modoProcesamiento) {
+
 		String error = this.validarModoProcesamiento(modoProcesamiento);
-		
-		if(!error.isEmpty()) {
+
+		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		int numProcesamiento = Integer.parseInt(modoProcesamiento);
-		
+
 		String redirectUrl = "";
-		
-		if(numProcesamiento == 0) {
-			
-			redirectUrl = "/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion";
-		
-			session.setAttribute("/admin/seleccionarModoDeProcesamiento" + "_passed", true);
-		}
-		else {
+
+		if (numProcesamiento == 0) {
+
+			redirectUrl = this.rutasSecuenciales.get(1);
+
+			session.setAttribute(this.rutasSecuenciales.get(0) + "_passed", true);
+		} else {
 			redirectUrl = "/admin/procesamientoNoSecuencial/fases";
 		}
-		
+
 		return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
 	}
-	
 
 	private String validarModoProcesamiento(String modoProcesamiento) {
-		
-		
-		if(modoProcesamiento == null || modoProcesamiento.isEmpty()) {
+
+		if (modoProcesamiento == null || modoProcesamiento.isEmpty()) {
 			return "Por favor, seleccione un método de procesamiento";
 		}
-		
+
 		int numProcesamiento = -1;
-		
+
 		try {
 			numProcesamiento = Integer.parseInt(modoProcesamiento);
-			
-		}catch(NumberFormatException e) {
+
+		} catch (NumberFormatException e) {
 			return "Formato de url inválido";
 		}
-		
-		
-		if(numProcesamiento < 0 || numProcesamiento > 1) {
+
+		if (numProcesamiento < 0 || numProcesamiento > 1) {
 			return "Modo de procesamiento inválido";
 		}
-					
+
 		return "";
 	}
-	
-	
+
 	@GetMapping("/getAllPredicciones")
 	public ResponseEntity<?> getAllPredicciones() {
 		List<String> predicciones = prediccionesService.getDescripciones();
 
 		return new ResponseEntity<>(predicciones, HttpStatus.OK);
 	}
-	
 
 	@GetMapping("/medicosRegistrados")
 	public String users(Model model) {
@@ -141,7 +179,7 @@ public class AdminController {
 	public String algoritmos(Model model) {
 		return "algoritmos";
 	}
-	
+
 	@GetMapping("/exportarBBDD")
 	public String exportar() {
 		return "exportarBBDD";
@@ -165,15 +203,15 @@ public class AdminController {
 
 	@PostMapping("/buscarAlgoritmosCoincidentes")
 	public ResponseEntity<?> buscarAlgoritmosCoincidentes(@RequestParam("nombreAlgoritmo") String nombreAlgoritmo) {
-		
+
 		List<AlgoritmosClustering> algoritmos = new ArrayList<AlgoritmosClustering>();
-		
+
 		if (!nombreAlgoritmo.equals("") && !nombreAlgoritmo.isEmpty()) {
 			algoritmos = algoritmosClusteringService.findAlgoritmosCoincidentes(nombreAlgoritmo);
 		}
 		return new ResponseEntity(algoritmos, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/borrarAlgoritmo")
 	public ResponseEntity<?> borrarAlgoritmo(@RequestParam("idAlgoritmo") String idAlgoritmo) {
 
@@ -183,8 +221,7 @@ public class AdminController {
 			algoritmosClusteringService.borrarAlgoritmo(algoritmo.getId());
 			return new ResponseEntity("El algoritmo se ha borrado correctamente", HttpStatus.OK);
 		} else {
-			return new ResponseEntity("El algoritmo seleccionado no existe",
-					HttpStatus.BAD_REQUEST);
+			return new ResponseEntity("El algoritmo seleccionado no existe", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -224,8 +261,7 @@ public class AdminController {
 			prediccionesService.borrarPrediccion(prediccion.getId());
 			return new ResponseEntity("La prediccion se ha borrado correctamente", HttpStatus.OK);
 		} else {
-			return new ResponseEntity("La predicción seleccionada no existe",
-					HttpStatus.BAD_REQUEST);
+			return new ResponseEntity("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
 		}
 	}
 

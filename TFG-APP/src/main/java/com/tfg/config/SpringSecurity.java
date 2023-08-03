@@ -1,6 +1,7 @@
 package com.tfg.config;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,7 @@ import com.tfg.entities.Roles;
 import com.tfg.entities.Usuarios;
 import com.tfg.handlers.LoginSuccessHandler;
 import com.tfg.repositories.UsuariosRepository;
+
 @Configuration
 @EnableWebSecurity
 public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
@@ -36,6 +38,9 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
     private String adminPassword;
 
     @Autowired
+    private AccessInterceptor accessInterceptor;
+    
+    @Autowired
     private UsuariosRepository userRep;
     
     @Autowired
@@ -44,6 +49,19 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
     @Bean
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(this.accessInterceptor)
+                .addPathPatterns("/admin/seleccionarModoDeProcesamiento",
+                		"/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion",
+                		"/admin/procesamientoSecuencial/seleccionarVariablesClinicas",
+                		"/admin/procesamientoSecuencial/fase1",
+                		"/admin/procesamientoSecuencial/fase2",
+                		"/admin/procesamientoSecuencial/fase3",
+                		"/admin/procesamientoSecuencial/fase4",
+                		"/admin/procesamientoSecuencial/fase5");
     }
 
     @Bean
@@ -82,20 +100,6 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
                 ;
     }
     
-    
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AccessInterceptor())
-                .addPathPatterns("/admin/seleccionarModoDeProcesamiento",
-                		"/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion",
-                		"/admin/procesamientoSecuencial/seleccionarVariablesClinicas",
-                		"/admin/procesamientoSecuencial/fase1",
-                		"/admin/procesamientoSecuencial/fase2",
-                		"/admin/procesamientoSecuencial/fase3",
-                		"/admin/procesamientoSecuencial/fase4",
-                		"/admin/procesamientoSecuencial/fase5");
-    }
-
 
 	@Override
 	public void run(String... args) throws Exception {
