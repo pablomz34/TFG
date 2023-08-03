@@ -1,16 +1,13 @@
 package com.tfg.controllers;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +32,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
@@ -44,18 +40,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.tfg.entities.AlgoritmosClustering;
-import com.tfg.entities.HeadersPacientes;
 import com.tfg.entities.Imagenes;
-import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
 import com.tfg.services.IAlgoritmosClusteringService;
-import com.tfg.services.IHeadersPacientesService;
 import com.tfg.services.IImagenesService;
-import com.tfg.services.IPacientesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
-import com.tfg.services.IUsuariosService;
 
 import jakarta.annotation.Nullable;
 
@@ -67,9 +58,6 @@ public class ProcesamientoNoSecuencialController {
 	static final String UrlMock = "http://localhost:8090/";
 
 	@Autowired
-	private IUsuariosService usuariosService;
-
-	@Autowired
 	private IImagenesService imagenesService;
 
 	@Autowired
@@ -77,12 +65,6 @@ public class ProcesamientoNoSecuencialController {
 
 	@Autowired
 	private IPrediccionesService prediccionesService;
-
-	@Autowired
-	private IPacientesService pacientesService;
-
-	@Autowired
-	private IHeadersPacientesService headersPacientesService;
 
 	@Autowired
 	private IAlgoritmosClusteringService algoritmosClusteringService;
@@ -93,13 +75,6 @@ public class ProcesamientoNoSecuencialController {
 	@GetMapping("/fases")
 	public String fases() {
 		return "fasesNoSecuencial";
-	}
-
-	@GetMapping("/getPredicciones")
-	public List<String> getPredicciones() {
-		List<String> descripciones = prediccionesService.getDescripciones();
-
-		return descripciones;
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -114,6 +89,13 @@ public class ProcesamientoNoSecuencialController {
 		}
 
 		return ResponseEntity.status(status).body(mensaje);
+	}
+
+	@GetMapping("/getPredicciones")
+	public List<String> getPredicciones() {
+		List<String> descripciones = prediccionesService.getDescripciones();
+
+		return descripciones;
 	}
 
 	private InputStream llamadaServidorNgrok(String url, File file, CloseableHttpClient httpClient) throws IOException {
@@ -145,36 +127,6 @@ public class ProcesamientoNoSecuencialController {
 		return response.getEntity().getContent();
 	}
 
-	@PostMapping(value = "/validarArchivoPantalla2", consumes = "multipart/form-data")
-	public ResponseEntity<?> validarArchivoPantalla2(@RequestPart(name = "file") MultipartFile multipartFile) {
-
-		String error = this.validarInputFile(multipartFile);
-
-		if (!error.isEmpty()) {
-			return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
-		} else {
-			return new ResponseEntity("", HttpStatus.OK);
-		}
-
-	}
-
-	@GetMapping("/getPacientesPrediccion")
-	public ResponseEntity<?> getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
-
-		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
-		}
-
-		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
-
-		if (p == null) {
-			return new ResponseEntity("No existe ninguna predicción con esa descripción", HttpStatus.BAD_REQUEST);
-		} else {
-			return new ResponseEntity(p.getPacientes().size(), HttpStatus.OK);
-		}
-
-	}
-
 	@GetMapping("/getAlgoritmosObligatorios")
 	public List<AlgoritmosClustering> getAlgoritmosObligatorios() {
 		return algoritmosClusteringService.findAlgoritmosObligatorios();
@@ -194,89 +146,12 @@ public class ProcesamientoNoSecuencialController {
 					nombreAlgoritmo, algoritmosSeleccionados, algoritmosPreSeleccionados);
 		}
 
-		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
-	}
-
-	@PostMapping("/buscarVariablesClinicasCoincidentes")
-	public ResponseEntity<?> buscarVariablesClinicasCoincidentes(
-			@RequestParam("nombreVariableClinica") String nombreVariableClinica,
-			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion,
-			@RequestParam("variablesClinicasSeleccionadas") String variablesClinicasSeleccionadas)
-			throws JsonMappingException, JsonProcessingException {
-
-		List<HashMap<String, Object>> variablesClinicas = new ArrayList<HashMap<String, Object>>();
-
-		if (!nombreVariableClinica.equals("") && nombreVariableClinica != null) {
-			variablesClinicas = headersPacientesService.findVariablesClinicasCoincidentes(nombreVariableClinica,
-					idPrediccionPoblacion, variablesClinicasSeleccionadas);
-		}
-
-		return new ResponseEntity(variablesClinicas, HttpStatus.OK);
-	}
-
-	@GetMapping("/getMaximoVariablesClinicas")
-	public int getMaximoVariablesClinicas(@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
-
-		return headersPacientesService.findMaxNumVariablesClinicas(idPrediccionPoblacion);
-	}
-
-	@GetMapping("/getAllVariablesClinicas")
-	public List<HashMap<String, Object>> getAllVariablesClinicas(
-			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion) {
-		return headersPacientesService.findAllVariablesClinicas(idPrediccionPoblacion);
-	}
-
-	@PostMapping(value = "/guardarInformacionPacientes", consumes = "multipart/form-data")
-	public ResponseEntity<?> guardarInformacionPacientes(@RequestParam("descripcion") String descripcion,
-			@RequestPart(name = "file", required = true) @Nullable MultipartFile multipartFile)
-			throws IllegalStateException, IOException {
-
-		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
-		}
-
-		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
-
-		if (prediccion == null) {
-			return new ResponseEntity<>("La prediccion seleccionada no existe", HttpStatus.BAD_REQUEST);
-		}
-
-		if (prediccion.getPacientes().size() == 0 && multipartFile == null) {
-			return new ResponseEntity<>("Es necesario subir un archivo con la información de la población",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		if (multipartFile != null) {
-
-			String multipartFileError = this.validarInputFile(multipartFile);
-
-			if (!multipartFileError.isEmpty()) {
-				return new ResponseEntity<>(multipartFileError, HttpStatus.BAD_REQUEST);
-
-			}
-
-			if (prediccion.getHeadersPacientes() != null) {
-				headersPacientesService.borrarHeadersPoblacion(prediccion.getId());
-			}
-
-			if (prediccion.getPacientes().size() > 0) {
-				pacientesService.borrarPoblacion(prediccion.getId());
-
-			}
-
-			headersPacientesService.guardarHeadersPoblacion(multipartFile, prediccion.getId());
-
-			pacientesService.guardarPoblacionInicial(multipartFile, prediccion.getId());
-
-		}
-
-		return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+		return new ResponseEntity<>(algoritmosCoincidentes, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/getOptimalNClusters", consumes = "multipart/form-data")
 	public ResponseEntity<?> getOptimalNClusters(@RequestParam("max_clusters") String max_clusters,
-			@RequestPart(name = "file", required = false) MultipartFile multipartFile)
-			throws IllegalStateException, IOException {
+			@RequestPart(name = "file") MultipartFile multipartFile) throws IllegalStateException, IOException {
 
 		String error = this.validarInputNumber(max_clusters, 2, 20);
 		if (!error.isEmpty()) {
@@ -322,7 +197,7 @@ public class ProcesamientoNoSecuencialController {
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
 	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") @Nullable String algoritmosJsonString,
-			@RequestPart(name = "file", required = true) MultipartFile multipartFile) throws IOException {
+			@RequestPart(name = "file") MultipartFile multipartFile) throws IOException {
 
 		List<Map<String, Object>> algoritmos;
 
@@ -393,8 +268,7 @@ public class ProcesamientoNoSecuencialController {
 	}
 
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
-	public ResponseEntity<?> getVarianceMetrics(
-			@RequestPart(name = "file", required = true) MultipartFile multipartFile)
+	public ResponseEntity<?> getVarianceMetrics(@RequestPart(name = "file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
 		if (multipartFile != null) {
@@ -519,8 +393,8 @@ public class ProcesamientoNoSecuencialController {
 
 	@PostMapping(value = "/createPopulationAndCurves", consumes = "multipart/form-data")
 	public ResponseEntity<?> createPopulationProfile(
-			@RequestParam(name = "idPrediccionPoblacion") String idPrediccionPoblacion,
-			@RequestPart(name = "file", required = true) MultipartFile multipartFile)
+			@RequestParam("idPrediccionPoblacion") String idPrediccionPoblacion,
+			@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException, ClassNotFoundException {
 
 		idPrediccionPoblacion = StringEscapeUtils.escapeJava(idPrediccionPoblacion);
@@ -615,8 +489,7 @@ public class ProcesamientoNoSecuencialController {
 	}
 
 	@PostMapping(value = "/getModelPerformance", consumes = "multipart/form-data")
-	public ResponseEntity<?> getModelPerformance(
-			@RequestPart(name = "file", required = false) @Nullable MultipartFile multipartFile)
+	public ResponseEntity<?> getModelPerformance(@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
 		if (multipartFile != null) {
