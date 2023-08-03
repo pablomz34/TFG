@@ -3,6 +3,7 @@ package com.tfg.controllers;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,7 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -42,10 +45,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.tfg.entities.AlgoritmosClustering;
 import com.tfg.entities.HeadersPacientes;
+import com.tfg.entities.Imagenes;
 import com.tfg.entities.Pacientes;
 import com.tfg.entities.Predicciones;
+import com.tfg.entities.Profiles;
 import com.tfg.services.IAlgoritmosClusteringService;
 import com.tfg.services.IHeadersPacientesService;
 import com.tfg.services.IImagenesService;
@@ -546,14 +552,13 @@ public class ProcesamientoSecuencialController {
 
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 	}
-	
-	
+
 	@GetMapping("/getAlgoritmosObligatorios")
 	public ResponseEntity<?> getAlgoritmosObligatorios() {
-		
+
 		List<AlgoritmosClustering> algoritmosObligatorios = algoritmosClusteringService.findAlgoritmosObligatorios();
-		
-		return new ResponseEntity<>(algoritmosObligatorios, HttpStatus.OK) ;
+
+		return new ResponseEntity<>(algoritmosObligatorios, HttpStatus.OK);
 	}
 
 	@PostMapping("/buscarAlgoritmosCoincidentes")
@@ -572,11 +577,9 @@ public class ProcesamientoSecuencialController {
 
 		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
 	}
-	
 
 	@PostMapping(value = "/getSubPopulations", consumes = "application/json")
-	public ResponseEntity<?> getSubPopulations(@RequestBody List<Map<String, Object>> algoritmos)
-			throws IOException {
+	public ResponseEntity<?> getSubPopulations(@RequestBody List<Map<String, Object>> algoritmos) throws IOException {
 
 		if (algoritmos.size() == 0) {
 			return new ResponseEntity<>("Por favor, los algoritmos kmodes y agglomerative son obligatorios",
@@ -622,27 +625,25 @@ public class ProcesamientoSecuencialController {
 		httpClient.close();
 
 		file.delete();
-		
+
 		session.setAttribute(this.rutasSecuenciales.get(4) + "_executed", true);
 
 		// Devuelve la respuesta con el archivo adjunto.
 		return new ResponseEntity<>(csvBytes, HttpStatus.OK);
 	}
-	
-	
+
 	@PostMapping("/getVarianceMetrics")
-	public ResponseEntity<?> getVarianceMetrics()
-			throws IllegalStateException, IOException {
+	public ResponseEntity<?> getVarianceMetrics() throws IllegalStateException, IOException {
 
 		String urlVarianceMetrics = UrlMock + "clustering/getVarianceMetrics";
 
-		CloseableHttpClient httpClient = HttpClients.createDefault();	
-		
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
 
 		File file = llamadaBBDDPoblacion(idPrediccion, "fase3", null, null);
 
-		InputStream	inputStream = llamadaServidorNgrok(urlVarianceMetrics, file, httpClient);
+		InputStream inputStream = llamadaServidorNgrok(urlVarianceMetrics, file, httpClient);
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
@@ -659,30 +660,29 @@ public class ProcesamientoSecuencialController {
 		httpClient.close();
 
 		file.delete();
-		
+
 		String algoritmoOptimo = this.calcularAlgoritmoOptimo(map);
-		
+
 		session.setAttribute("algoritmoOptimo", algoritmoOptimo);
-		
+
 		session.setAttribute(this.rutasSecuenciales.get(5) + "_executed", true);
-		
+
 		HashMap<String, Object> ret = new HashMap<String, Object>();
-		
+
 		ret.put("algoritmoOptimo", algoritmoOptimo);
 
 		ret.put("lista", map);
-		
+
 		return new ResponseEntity<>(ret, HttpStatus.OK);
 
 	}
-	
 
 	private String calcularAlgoritmoOptimo(List<Map<String, Object>> map) {
-		
+
 		Double minimoWc = (Double) map.get(1).get("total_wc");
 
 		Double maximoBc = (Double) map.get(1).get("total_bc");
-		
+
 		String nombreAlgoritmo = (String) map.get(1).get("metric");
 
 		for (int i = 2; i < map.size(); i++) {
@@ -694,8 +694,231 @@ public class ProcesamientoSecuencialController {
 			}
 
 		}
-		
+
 		return nombreAlgoritmo;
+	}
+	
+	
+	@GetMapping("/getAlgoritmoOptimo")
+	public ResponseEntity<?> getAlgoritmoOptimo(){
+		
+		String algoritmoOptimo = (String) session.getAttribute("algoritmoOptimo");
+		
+		if(algoritmoOptimo == null) {
+			return new ResponseEntity<>("Para obtener el algoritmo óptimo tiene que ejecutar la fase 3 previamente", HttpStatus.BAD_REQUEST);
+		}
+		else {
+			return new ResponseEntity<>(algoritmoOptimo, HttpStatus.OK);
+		}
+	}
+
+	@PostMapping("/createPopulationAndCurves")
+	public ResponseEntity<?> createPopulationAndCurves()
+			throws IllegalStateException, IOException, ClassNotFoundException {
+
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+
+		List<Integer> indicesVariablesSeleccionadas = (List<Integer>) session
+				.getAttribute("indicesVariablesSeleccionadas");
+		
+		String algoritmoOptimo = (String) session.getAttribute("algoritmoOptimo");
+			
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
+	
+		File file = llamadaBBDDPoblacion(idPrediccion, "fase4", algoritmoOptimo, indicesVariablesSeleccionadas);
+		
+		this.guardarFeatures(file, "survivalAndProfiling/createPopulationProfile", -1, idPrediccion);
+
+		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
+			this.guardarFeatures(file,
+					"survivalAndProfiling/createClusterProfile?cluster_number=" + Integer.toString(i), i,
+					idPrediccion);
+		}
+
+		String rutaPrediccion = rutaImagenesClusters + File.separator + "prediccion" + idPrediccion;
+
+		this.guardarImagenes(file, "survivalAndProfiling/createAllSurvivalCurves",
+				rutaPrediccion + File.separator + "allClusters.png",
+				"/clustersImages/prediccion" + idPrediccion + "/allClusters.png", -1, idPrediccion);
+		for (int i = 0; i < prediccion.getMaxClusters(); i++) {
+			this.guardarImagenes(file,
+					"survivalAndProfiling/createClusterSurvivalCurve?cluster_number=" + Integer.toString(i),
+					rutaPrediccion + File.separator + "cluster" + Integer.toString(i) + ".png",
+					"/clustersImages/prediccion" + idPrediccion + "/cluster" + Integer.toString(i) + ".png", i,
+					idPrediccion);
+		}
+
+		file.delete();
+		
+		session.setAttribute(this.rutasSecuenciales.get(6) + "_executed", true);
+
+		return new ResponseEntity<>(prediccion.getMaxClusters(), HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getRutaCluster")
+	public ResponseEntity<?> getRutaCluster(@RequestParam("clusterNumber") String clusterNumber) throws IllegalStateException, IOException {
+
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+		
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
+
+		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+
+		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber),
+				Long.parseLong(idPrediccion));
+		
+		
+
+		if (imagen != null) {
+			return new ResponseEntity<>(imagen.getRuta(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("No hay imagen asignada para ese cluster", HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@GetMapping("/getClusterProfile")
+	public ResponseEntity<?> getClusterProfile(@RequestParam("clusterNumber") String clusterNumber) throws IllegalStateException, IOException {
+
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+		
+		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
+
+		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+
+		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber),
+				Long.parseLong(idPrediccion));
+
+		if (profile != null) {
+			HashMap<String, Object> map = null;
+			map = new ObjectMapper().readValue(profile.getFeatures(), HashMap.class);
+
+			return new ResponseEntity<>(map, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("No hay perfil de población asignado a ese cluster", HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	@PostMapping("/getModelPerformance")
+	public ResponseEntity<?> getModelPerformance()
+			throws IllegalStateException, IOException {
+		
+		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
+
+		List<Integer> indicesVariablesSeleccionadas = (List<Integer>) session
+				.getAttribute("indicesVariablesSeleccionadas");
+		
+		String algoritmoOptimo = (String) session.getAttribute("algoritmoOptimo");
+		
+		String urlModelPerformance = UrlMock + "survivalAndProfiling/getModelPerformance";
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		File file = llamadaBBDDPoblacion(idPrediccion, "fase5", algoritmoOptimo, indicesVariablesSeleccionadas);
+
+		InputStream inputStream = llamadaServidorNgrok(urlModelPerformance, file, httpClient);
+
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+		String line;
+		StringBuilder stringBuilder = new StringBuilder();
+		while ((line = bufferedReader.readLine()) != null) {
+			stringBuilder.append(line);
+		}
+		String jsonString = stringBuilder.toString();
+
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+
+		httpClient.close();
+
+		file.delete();
+		
+		session.setAttribute(this.rutasSecuenciales.get(7) + "_executed", true);
+
+		return new ResponseEntity<>(map, HttpStatus.OK);
+
+	}
+	
+	
+	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD,
+			Integer numCluster, String idPrediccionPoblacion) throws IOException {
+
+		String urlImagenCluster = UrlMock + url;
+
+		InputStream inputStream = null;
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		inputStream = llamadaServidorNgrok(urlImagenCluster, file, httpClient);
+
+		byte[] imageBytes = inputStream.readAllBytes();
+
+		FileOutputStream imgOutFile = new FileOutputStream(rutaImagenServidor);
+		imgOutFile.write(imageBytes);
+		imgOutFile.close();
+
+		httpClient.close();
+
+		imagenesService.guardarImagen(numCluster, rutaImagenBDD, Long.parseLong(idPrediccionPoblacion));
+
+	}
+
+	private void guardarFeatures(File file, String url, Integer numCluster, String idPrediccionPoblacion)
+			throws ClientProtocolException, IOException {
+
+		String urlPerfilCluster = UrlMock + url;
+
+		InputStream inputStream = null;
+
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		inputStream = llamadaServidorNgrok(urlPerfilCluster, file, httpClient);
+
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+		String line;
+		StringBuilder stringBuilder = new StringBuilder();
+		while ((line = bufferedReader.readLine()) != null) {
+			stringBuilder.append(line);
+		}
+		String jsonString = stringBuilder.toString();
+
+		HashMap<String, Object> map = null;
+		map = new ObjectMapper().readValue(jsonString, HashMap.class);
+
+		if (numCluster == -1) {
+			this.calculateMaxClusters(map, Long.parseLong(idPrediccionPoblacion));
+		}
+
+		Gson gson = new Gson();
+		String featuresString = gson.toJson(map);
+
+		httpClient.close();
+
+		profilesService.guardarProfile(numCluster, featuresString, Long.parseLong(idPrediccionPoblacion));
+
+	}
+
+	private void calculateMaxClusters(HashMap<String, Object> map, Long idPrediccion) {
+
+		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
+
+		HashMap<String, Object> algorithmMap = features.get(0);
+
+		List<HashMap<String, Object>> algorithmArray = (List<HashMap<String, Object>>) algorithmMap
+				.get("agglomerative");
+
+		Integer maxClusters = algorithmArray.size();
+
+		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
+
 	}
 
 	@PostMapping("/siguienteFase")
@@ -703,19 +926,18 @@ public class ProcesamientoSecuencialController {
 
 		int indice = 3;
 
-		while (indice < this.rutasSecuenciales.size()) {
+		while (indice < this.rutasSecuenciales.size()-1) {
 
 			Boolean hasExecuted = (Boolean) session.getAttribute(this.rutasSecuenciales.get(indice) + "_executed");
 
 			Boolean hasPassed = (Boolean) session.getAttribute(this.rutasSecuenciales.get(indice) + "_passed");
-
+		
 			if (hasExecuted == null && hasPassed == null) {
 				return new ResponseEntity<>("Por favor, ejecute la fase antes de pasar a la siguiente",
 						HttpStatus.BAD_REQUEST);
 			} else if (hasExecuted && hasPassed == null) {
 				this.actualizarRutaSecuencialSession(this.rutasSecuenciales.get(indice));
 				return new ResponseEntity<>(this.rutasSecuenciales.get(indice + 1), HttpStatus.OK);
-
 			} else if (hasExecuted && hasPassed) {
 				indice++;
 			}
@@ -724,21 +946,33 @@ public class ProcesamientoSecuencialController {
 
 		return new ResponseEntity<>("Esta es la última fase", HttpStatus.BAD_REQUEST);
 	}
+	
+	@PostMapping("/terminarProceso")
+	public ResponseEntity<?> terminarProcesoSecuencial(){
+		
+		Boolean hasExecuted = (Boolean) session.getAttribute(this.rutasSecuenciales.get(7) + "_executed");
 
-	private int getNextFase() {
-
-		for (int i = 3; i < this.rutasSecuenciales.size(); i++) {
-
-			Boolean hasExecuted = (Boolean) session.getAttribute(this.rutasSecuenciales.get(i) + "_executed");
-
-			if (hasExecuted == null) {
-				return i;
-			}
-
+		
+		if(hasExecuted == null) {
+			return new ResponseEntity<>("Por favor, ejecute la fase antes de terminar el proceso",
+					HttpStatus.BAD_REQUEST);
 		}
+		else {
+			
+			List<String> atributosExtra = new ArrayList<String>();
 
-		return -1;
+			atributosExtra.add("idPrediccionProcesamientoSecuencial");
+
+			atributosExtra.add("indicesVariablesSeleccionadas");
+
+			atributosExtra.add("algoritmoOptimo");
+
+			this.borrarVariablesSesion(0, atributosExtra);
+			
+			return new ResponseEntity<>(this.rutasSecuenciales.get(0), HttpStatus.OK);
+		}
 	}
+	
 
 	private void actualizarRutaSecuencialSession(String ruta) {
 
