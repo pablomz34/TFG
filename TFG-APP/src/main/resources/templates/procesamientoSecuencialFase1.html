@@ -7,10 +7,36 @@
 <body>
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
+	
+	<div class="container-fluid pt-2 position-relative">
+		<div class="container pt-2" style="margin-top: 65px;">
+			<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist"
+				style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
+				<li class="nav-item pt-2" role="presentation">
+					<label class="btn btn-custom-color w-100 text-white fw-bold fs-5">Nº Óptimo de Clusters</label>
+				</li>
+				<li class="nav-item pt-2" role="presentation">
+					<label class="btn btn-custom-light-color w-100 text-white fw-bold fs-5">Subpoblaciones</label>
+				</li>
+				<li class="nav-item pt-2" role="presentation">
+					<label class="btn btn-custom-light-color w-100 text-white fw-bold fs-5">Métricas de varianza</label>
+				</li>
+				<li class="nav-item pt-2" role="presentation">
+					<label class="btn btn-custom-light-color w-100 text-white fw-bold fs-5">Gráficas y estadísticas
+						de
+						población</button>
+				</li>
+				<li class="nav-item pt-2" role="presentation">
+					<label class="btn btn-custom-light-color w-100 text-white fw-bold fs-5">Rendimiento del
+						modelo</label>
+				</li>
+			</ul>
+		</div>
+	</div>
 
 	<div id="procesamientoSecuencialFase1"></div>
 
-	<script type="text/javascript" src="/js/procesamientoSecuencialFase1.js"></script>	
+	<script type="text/javascript" src="/js/procesamientoSecuencialFase1.js"></script>
 
 </body>
 

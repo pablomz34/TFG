@@ -129,8 +129,8 @@ Vue.component('fase2', {
 			algoritmosSeleccionados: []
 		}
 	},
-	mounted() {
-
+	
+	created() {
 		this.getAlgoritmosObligatorios();
 	},
 
@@ -1365,7 +1365,7 @@ Vue.component('graphic', {
 });
 
 new Vue({
-	el: "#fasesNoSecuencial",
+	el: "#procesamientoNoSecuencial",
 	data: function() {
 		return {
 			idPrediccionPoblacion: '',

@@ -74,7 +74,7 @@ public class ProcesamientoNoSecuencialController {
 
 	@GetMapping("/fases")
 	public String fases() {
-		return "fasesNoSecuencial";
+		return "procesamientoNoSecuencial";
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -89,13 +89,6 @@ public class ProcesamientoNoSecuencialController {
 		}
 
 		return ResponseEntity.status(status).body(mensaje);
-	}
-
-	@GetMapping("/getPredicciones")
-	public List<String> getPredicciones() {
-		List<String> descripciones = prediccionesService.getDescripciones();
-
-		return descripciones;
 	}
 
 	private InputStream llamadaServidorNgrok(String url, File file, CloseableHttpClient httpClient) throws IOException {
@@ -128,8 +121,8 @@ public class ProcesamientoNoSecuencialController {
 	}
 
 	@GetMapping("/getAlgoritmosObligatorios")
-	public List<AlgoritmosClustering> getAlgoritmosObligatorios() {
-		return algoritmosClusteringService.findAlgoritmosObligatorios();
+	public ResponseEntity<?> getAlgoritmosObligatorios() {
+		return new ResponseEntity<>(algoritmosClusteringService.findAlgoritmosObligatorios(), HttpStatus.OK);
 	}
 
 	@PostMapping("/buscarAlgoritmosCoincidentes")
