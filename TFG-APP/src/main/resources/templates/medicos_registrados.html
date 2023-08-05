@@ -7,22 +7,26 @@
 <body class="bg-light-subtle">
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
-	
+
 	<style>
-	 		.table-responsive::-webkit-scrollbar {
-			  width: 10px; /* ancho de la barra de desplazamiento */
-			  background-color: rgb(65,105,225); /* color de fondo de la barra */
-			  border-radius: 5px;
-			}
-			
-			.table-responsive::-webkit-scrollbar-thumb {
-			  background-color: rgb(123, 151, 234); /* color del "pulgador" de la barra */
-			  border-radius: 5px; /* redondear las esquinas del "pulgador" */
-			}
-			
-			.table-responsive::-webkit-scrollbar-thumb:hover {
-			  background: rgb(162, 182, 240);
-			}
+		.table-responsive::-webkit-scrollbar {
+			width: 10px;
+			/* ancho de la barra de desplazamiento */
+			background-color: rgb(65, 105, 225);
+			/* color de fondo de la barra */
+			border-radius: 5px;
+		}
+
+		.table-responsive::-webkit-scrollbar-thumb {
+			background-color: rgb(123, 151, 234);
+			/* color del "pulgador" de la barra */
+			border-radius: 5px;
+			/* redondear las esquinas del "pulgador" */
+		}
+
+		.table-responsive::-webkit-scrollbar-thumb:hover {
+			background: rgb(162, 182, 240);
+		}
 	</style>
 
 	<div class="container">
@@ -34,37 +38,38 @@
 				</h2>
 			</div>
 
-			<div id="utils">
-				<div class="table-responsive shadow-lg p-0"
-					style="max-height: 500px !important; overflow-y: auto !important;">
-					<table id="medicosRegistradosTable" class="table table-custom-color table-striped-columns table-hover m-0">
-						<thead class="table-custom-color-table-head">
-							<tr>
-								<th class="fs-5 text-white text-center">Nombre <button @click="howToOrderColumn('nombre')"
-										class="btn btn-unstyled p-0"><i id="icononombre"
-											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
-								<th class="fs-5 text-white text-center">Apellidos <button @click="howToOrderColumn('apellidos')"
-										class="btn btn-unstyled p-0"><i id="iconoapellidos"
-											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
-								<th class="fs-5 text-white text-center">Correo <button @click="howToOrderColumn('correo')"
-										class="btn btn-unstyled p-0"><i id="iconocorreo"
-											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
-								<th class="fs-5 text-white text-center">Dni <button @click="howToOrderColumn('dni')"
-										class="btn btn-unstyled p-0"><i id="iconodni"
-											class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="medico : ${medicos}">
-								<td class="fw-semibold text-light" th:text="${medico.nombre}"></td>
-								<td class="fw-semibold text-light" th:text="${medico.apellidos}"></td>
-								<td class="fw-semibold text-light" th:text="${medico.correo}"></td>
-								<td class="fw-semibold text-light" th:text="${medico.dni}"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+
+			<div class="table-responsive shadow-lg p-0"
+				style="max-height: 500px !important; overflow-y: auto !important;">
+				<table id="medicosRegistradosTable"
+					class="table table-custom-color table-striped-columns table-hover m-0">
+					<thead class="table-custom-color-table-head">
+						<tr>
+							<th class="fs-5 text-white text-center">Nombre <button @click="howToOrderColumn('nombre')"
+									class="btn btn-unstyled p-0"><i id="icononombre"
+										class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+							<th class="fs-5 text-white text-center">Apellidos <button
+									@click="howToOrderColumn('apellidos')" class="btn btn-unstyled p-0"><i
+										id="iconoapellidos" class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+							<th class="fs-5 text-white text-center">Correo <button @click="howToOrderColumn('correo')"
+									class="btn btn-unstyled p-0"><i id="iconocorreo"
+										class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+							<th class="fs-5 text-white text-center">Dni <button @click="howToOrderColumn('dni')"
+									class="btn btn-unstyled p-0"><i id="iconodni"
+										class="fa-solid fa-arrow-up-z-a fs-5"></i></button></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="medico : ${medicos}">
+							<td class="fw-semibold text-light" th:text="${medico.nombre}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.apellidos}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.correo}"></td>
+							<td class="fw-semibold text-light" th:text="${medico.dni}"></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
+
 
 		</div>
 
