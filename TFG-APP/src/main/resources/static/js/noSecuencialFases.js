@@ -24,7 +24,7 @@ Vue.component('fase1', {
 
 
 			THIZ.error = '';
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getOptimalNClusters", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getOptimalNClusters", {
 				method: "POST",
 				body: formData
 			})
@@ -152,7 +152,7 @@ Vue.component('fase2', {
 			formData.append('file', this.$refs.csvFile.files[0]);
 
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getSubPopulations", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getSubPopulations", {
 				method: "POST",
 				headers: {
 					"Accept": "text/csv"
@@ -197,7 +197,7 @@ Vue.component('fase2', {
 
 			THIZ.algoritmosSeleccionados = [];
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getAlgoritmosObligatorios", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getAlgoritmosObligatorios", {
 				method: "GET"
 			})
 				.then(res => res.json())
@@ -368,7 +368,7 @@ Vue.component('fase2', {
 
 			formData.append('algoritmosPreSeleccionados', algoritmosPreSeleccionadosJson);
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
 				method: "POST",
 				body: formData
 			})
@@ -536,7 +536,7 @@ Vue.component('fase3', {
 			formData.append('file', this.$refs.csvFile.files[0]);
 
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getVarianceMetrics", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getVarianceMetrics", {
 				method: "POST",
 				body: formData
 			})
@@ -689,7 +689,7 @@ Vue.component('fase4', {
 
 		getDescripciones: function() {
 			const THIZ = this;
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getDescripcionesPredicciones", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getDescripcionesPredicciones", {
 				method: "GET",
 			})
 				.then(async res => {
@@ -717,7 +717,7 @@ Vue.component('fase4', {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
 			THIZ.error0 = '';
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/createOrUpdatePrediction?crearPrediccion=" + this.crear +
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/createOrUpdatePrediction?crearPrediccion=" + this.crear +
 				"&descripcion=" + this.descripcionSeleccionada, {
 				method: "POST",
 			})
@@ -756,7 +756,7 @@ Vue.component('fase4', {
 
 
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/createPopulationAndCurves", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/createPopulationAndCurves", {
 				method: "POST",
 				body: formData
 			})
@@ -798,7 +798,7 @@ Vue.component('fase4', {
 			}
 
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + prediccionIdUrl, {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + prediccionIdUrl, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -832,7 +832,7 @@ Vue.component('fase4', {
 
 
 
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + prediccionIdUrl, {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + prediccionIdUrl, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -1123,7 +1123,7 @@ Vue.component('fase5', {
 
 			formData.append('file', this.$refs.csvFile.files[0]);
 			
-			fetch(window.location.origin + "/admin/procesamientoNoSecuencial/getModelPerformance", {
+			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getModelPerformance", {
 				method: "POST",
 				body: formData
 			})
@@ -1365,7 +1365,7 @@ Vue.component('graphic', {
 });
 
 new Vue({
-	el: "#procesamientoNoSecuencial",
+	el: "#noSecuencialFases",
 	data: function() {
 		return {
 			idPrediccionPoblacion: '',

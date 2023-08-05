@@ -1,6 +1,6 @@
 
 new Vue({
-	el: "#procesamientoSecuencialFase1",
+	el: "#secuencialFase1",
 	data: function() {
 		return {
 			maxClusters: '',
@@ -20,7 +20,7 @@ new Vue({
 
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getOptimalNClusters?maxClusters=" + this.maxClusters, {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getOptimalNClusters?maxClusters=" + this.maxClusters, {
 				method: "POST"
 			})
 				.then(async res => {
@@ -51,7 +51,7 @@ new Vue({
 			
 			const THIZ = this;
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/siguienteFase", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {
 				method: "POST"
 			})
 				.then(async res => {

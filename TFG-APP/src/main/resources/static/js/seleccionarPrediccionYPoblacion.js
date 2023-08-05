@@ -1,5 +1,5 @@
 new Vue({
-	el: "#seleccionarPrediccionAndPoblacion",
+	el: "#seleccionarPrediccionYPoblacion",
 	data: function() {
 		return {
 			predicciones: [],
@@ -81,7 +81,7 @@ new Vue({
 			
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/actualizarInformacionPrediccionAndPacientes?descripcion=" + this.prediccionSeleccionada, {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/actualizarInformacionPrediccionAndPacientes?descripcion=" + this.prediccionSeleccionada, {
 				method: "POST",
 				body: formData
 			})
@@ -119,7 +119,7 @@ new Vue({
 
 			if (newValue.length > 0) {
 
-				fetch(window.location.origin + "/admin/procesamientoSecuencial/getPacientesPrediccion?descripcion=" + newValue, {
+				fetch(window.location.origin + "/admin/procesamientos/secuencial/getPacientesPrediccion?descripcion=" + newValue, {
 					method: "GET"
 				})
 					.then(async res => {

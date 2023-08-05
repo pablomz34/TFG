@@ -1,5 +1,5 @@
 new Vue({
-	el: "#seleccionarModoDeProcesamiento",
+	el: "#procesamientos",
 	data: function() {
 		return {
 			selectedIdCard: '',

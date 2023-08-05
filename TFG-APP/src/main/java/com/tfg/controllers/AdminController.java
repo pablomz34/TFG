@@ -31,9 +31,6 @@ import jakarta.servlet.http.HttpSession;
 public class AdminController {
 
 	@Autowired
-	private HttpSession session;
-
-	@Autowired
 	private IUsuariosService usuariosService;
 
 	@Autowired
@@ -50,22 +47,15 @@ public class AdminController {
 
 	@Value("${spring.datasource.password}")
 	private String bbddPassword;
+	
+	@Autowired
+	private HttpSession session;
 
 	@Value("${myapp.rutasSecuenciales}")
 	private List<String> rutasSecuenciales;
-
-	@GetMapping()
-	public String adminIndex() {
-		return "index";
-	}
-
-	@GetMapping("/fases")
-	public String fases() {
-		return "fases";
-	}
-
-	@GetMapping("/seleccionarModoDeProcesamiento")
-	public String seleccionarModoDeProcesamiento() {
+	
+	@GetMapping("/procesamientos")
+	public String procesamientos() {
 
 		List<String> atributosExtra = new ArrayList<String>();
 
@@ -77,9 +67,10 @@ public class AdminController {
 
 		this.borrarVariablesSesion(0, atributosExtra);
 
-		return "seleccionarModoDeProcesamiento";
+		return "procesamientos";
 	}
-
+	
+	
 	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
 		for (int i = 0; i < atributosExtra.size(); i++) {
 
@@ -108,6 +99,7 @@ public class AdminController {
 		}
 
 	}
+	
 
 	@PostMapping("/redigirAProcesamiento")
 	public ResponseEntity<String> redigirAProcesamiento(@RequestParam("modoProcesamiento") String modoProcesamiento) {
@@ -128,7 +120,7 @@ public class AdminController {
 
 			session.setAttribute(this.rutasSecuenciales.get(0) + "_passed", true);
 		} else {
-			redirectUrl = "/admin/procesamientoNoSecuencial/fases";
+			redirectUrl = "/admin/procesamientos/noSecuencial/fases";
 		}
 
 		return new ResponseEntity<>(redirectUrl, HttpStatus.OK);
@@ -154,6 +146,17 @@ public class AdminController {
 		}
 
 		return "";
+	}
+	
+
+	@GetMapping()
+	public String adminIndex() {
+		return "index";
+	}
+
+	@GetMapping("/fases")
+	public String fases() {
+		return "fases";
 	}
 
 	@GetMapping("/getAllPredicciones")

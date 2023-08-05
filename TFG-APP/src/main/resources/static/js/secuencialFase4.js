@@ -163,7 +163,7 @@ Vue.component('graphic', {
 });
 
 new Vue({
-	el: "#procesamientoSecuencialFase4",
+	el: "#secuencialFase4",
 	data: function() {
 		return {
 			algoritmoOptimo: '',
@@ -196,7 +196,7 @@ new Vue({
 		
 		 const THIZ = this;
 		
-		fetch(window.location.origin + "/admin/procesamientoSecuencial/getAlgoritmoOptimo", {
+		fetch(window.location.origin + "/admin/procesamientos/secuencial/getAlgoritmoOptimo", {
 			method: "GET"
 		})
 			.then(async res => {
@@ -236,7 +236,7 @@ new Vue({
 
 			THIZ.mostrarCargando = true;
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/createPopulationAndCurves", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/createPopulationAndCurves", {
 				method: "POST"
 			})
 				.then(async res => {
@@ -269,7 +269,7 @@ new Vue({
 
 			THIZ.error2 = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves, {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -297,7 +297,7 @@ new Vue({
 			THIZ.error3 = '';
 			THIZ.perfilCargado = false;
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile, {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile, {
 				method: "GET",
 			})
 				.then(async res => {
@@ -331,7 +331,7 @@ new Vue({
 			THIZ.error2 = '';
 			THIZ.error3 = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/siguienteFase", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {
 				method: "POST"
 			})
 				.then(async res => {

@@ -1,6 +1,6 @@
 
 new Vue({
-	el: "#procesamientoSecuencialFase5",
+	el: "#secuencialFase5",
 	data: function() {
 		return {
 			datosCargados: false,
@@ -16,7 +16,7 @@ new Vue({
 		
 		 const THIZ = this;
 		
-		fetch(window.location.origin + "/admin/procesamientoSecuencial/getAlgoritmoOptimo", {
+		fetch(window.location.origin + "/admin/procesamientos/secuencial/getAlgoritmoOptimo", {
 			method: "GET"
 		})
 			.then(async res => {
@@ -52,7 +52,7 @@ new Vue({
 			
 			THIZ.mostrarCargando = true;
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getModelPerformance", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getModelPerformance", {
 				method: "POST"
 			})
 				.then(async res => {
@@ -79,7 +79,7 @@ new Vue({
 			THIZ.errorMessage = '';
 			
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/terminarProceso", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/terminarProceso", {
 				method: "POST"
 			})
 				.then(async res => {

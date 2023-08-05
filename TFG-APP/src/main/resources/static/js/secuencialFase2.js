@@ -1,6 +1,6 @@
 
 new Vue({
-	el: "#procesamientoSecuencialFase2",
+	el: "#secuencialFase2",
 	data: function() {
 		return {
 			mostrarCargando: false,
@@ -26,7 +26,7 @@ new Vue({
 
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getSubPopulations", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getSubPopulations", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -73,7 +73,7 @@ new Vue({
 
 			THIZ.algoritmosSeleccionados = [];
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getAlgoritmosObligatorios", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getAlgoritmosObligatorios", {
 				method: "GET"
 			})
 				.then(res => res.json())
@@ -241,7 +241,7 @@ new Vue({
 
 			formData.append('algoritmosPreSeleccionados', algoritmosPreSeleccionadosJson);
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
 				method: "POST",
 				body: formData
 			})
@@ -292,7 +292,7 @@ new Vue({
 			
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/siguienteFase", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {
 				method: "POST"
 			})
 				.then(async res => {

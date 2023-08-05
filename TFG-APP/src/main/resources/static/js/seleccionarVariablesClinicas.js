@@ -14,7 +14,7 @@ new Vue({
 	},
 
 	mounted() {
-		fetch(window.location.origin + "/admin/procesamientoSecuencial/getMaximoVariablesClinicas", {
+		fetch(window.location.origin + "/admin/procesamientos/secuencial/getMaximoVariablesClinicas", {
 			method: "GET",
 		})
 			.then(res => res.text())
@@ -202,7 +202,7 @@ new Vue({
 
 		buscarVariablesClinicasCoincidentes() {
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/buscarVariablesClinicasCoincidentes?nombreVariableClinica=" + this.searchedVariableClinica, {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/buscarVariablesClinicasCoincidentes?nombreVariableClinica=" + this.searchedVariableClinica, {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json'
@@ -280,7 +280,7 @@ new Vue({
 		
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/procesarVariablesClinicasSeleccionadas", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/procesarVariablesClinicasSeleccionadas", {
 				method: "POST",
 				headers: {
 					'Content-Type': 'application/json'
@@ -308,7 +308,7 @@ new Vue({
 		},
 		selectAllVariablesClinicas() {
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getAllVariablesClinicas", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getAllVariablesClinicas", {
 				method: "GET"
 			})
 				.then(res => res.json())

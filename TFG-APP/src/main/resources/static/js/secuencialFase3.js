@@ -1,6 +1,6 @@
 
 new Vue({
-	el: "#procesamientoSecuencialFase3",
+	el: "#secuencialFase3",
 	data: function() {
 		return {
 			lista: [],
@@ -18,7 +18,7 @@ new Vue({
 			const THIZ = this;
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/getVarianceMetrics", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/getVarianceMetrics", {
 				method: "POST"
 			})
 				.then(async res => {
@@ -48,7 +48,7 @@ new Vue({
 
 			THIZ.errorMessage = '';
 
-			fetch(window.location.origin + "/admin/procesamientoSecuencial/siguienteFase", {
+			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {
 				method: "POST"
 			})
 				.then(async res => {

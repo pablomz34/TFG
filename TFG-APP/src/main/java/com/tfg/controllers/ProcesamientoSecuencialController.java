@@ -66,26 +66,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/admin/procesamientoSecuencial")
-public class ProcesamientoSecuencialController {
-
-	static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
-	static final String UrlMock = "http://localhost:8090/";
+@RequestMapping("/admin/procesamientos/secuencial")
+public class ProcesamientoSecuencialController extends ProcesamientosController {
 
 	@Autowired
 	private HttpSession session;
-
-	@Autowired
-	private IUsuariosService usuariosService;
-
-	@Autowired
-	private IImagenesService imagenesService;
-
-	@Autowired
-	private IProfilesService profilesService;
-
-	@Autowired
-	private IPrediccionesService prediccionesService;
 
 	@Autowired
 	private IPacientesService pacientesService;
@@ -93,8 +78,6 @@ public class ProcesamientoSecuencialController {
 	@Autowired
 	private IHeadersPacientesService headersPacientesService;
 
-	@Autowired
-	private IAlgoritmosClusteringService algoritmosClusteringService;
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	private String rutaImagenesClusters;
@@ -102,8 +85,8 @@ public class ProcesamientoSecuencialController {
 	@Value("${myapp.rutasSecuenciales}")
 	private List<String> rutasSecuenciales;
 
-	@GetMapping("/seleccionarPrediccionAndPoblacion")
-	public String seleccionarPrediccionAndPoblacion() {
+	@GetMapping("/seleccionarPrediccionYPoblacion")
+	public String seleccionarPrediccionYPoblacion() {
 
 		List<String> atributosExtra = new ArrayList<String>();
 
@@ -115,7 +98,7 @@ public class ProcesamientoSecuencialController {
 
 		this.borrarVariablesSesion(1, atributosExtra);
 
-		return "seleccionarPrediccionAndPoblacion";
+		return "seleccionarPrediccionYPoblacion";
 	}
 
 	@GetMapping("/seleccionarVariablesClinicas")
@@ -141,7 +124,7 @@ public class ProcesamientoSecuencialController {
 
 		this.borrarVariablesSesion(3, atributosExtra);
 
-		return "procesamientoSecuencialFase1";
+		return "secuencialFase1";
 	}
 
 	@GetMapping("/fase2")
@@ -153,7 +136,7 @@ public class ProcesamientoSecuencialController {
 
 		this.borrarVariablesSesion(4, atributosExtra);
 
-		return "procesamientoSecuencialFase2";
+		return "secuencialFase2";
 	}
 
 	@GetMapping("/fase3")
@@ -165,7 +148,7 @@ public class ProcesamientoSecuencialController {
 
 		this.borrarVariablesSesion(5, atributosExtra);
 
-		return "procesamientoSecuencialFase3";
+		return "secuencialFase3";
 	}
 
 	@GetMapping("/fase4")
@@ -173,7 +156,7 @@ public class ProcesamientoSecuencialController {
 
 		this.borrarVariablesSesion(6, new ArrayList<String>());
 
-		return "procesamientoSecuencialFase4";
+		return "secuencialFase4";
 	}
 
 	@GetMapping("/fase5")
@@ -181,7 +164,7 @@ public class ProcesamientoSecuencialController {
 
 		this.borrarVariablesSesion(7, new ArrayList<String>());
 
-		return "procesamientoSecuencialFase5";
+		return "secuencialFase5";
 	}
 
 	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
@@ -212,35 +195,6 @@ public class ProcesamientoSecuencialController {
 
 		}
 
-	}
-
-	private InputStream llamadaServidorNgrok(String url, File file, CloseableHttpClient httpClient) throws IOException {
-
-		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(url);
-
-		// Crear un objeto MultipartEntityBuilder para construir el cuerpo de la
-		// petición
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-
-		// Agregar el archivo al cuerpo de la petición
-
-		builder.addBinaryBody("file", // Nombre del parámetro en el servidor
-				file, // Archivo a enviar
-				ContentType.APPLICATION_OCTET_STREAM, // Tipo de contenido del archivo
-				file.getName() // Nombre del archivo en el cuerpo de la petición
-		);
-
-		// Construir el cuerpo de la petición
-		HttpEntity multipart = builder.build();
-
-		// Establecer el cuerpo de la petición en el objeto HttpPost
-		httpPost.setEntity(multipart);
-
-		// Ejecutar la petición y obtener la respuesta
-		CloseableHttpResponse response = httpClient.execute(httpPost);
-
-		return response.getEntity().getContent();
 	}
 
 	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase, String algoritmoOptimo,
@@ -553,31 +507,6 @@ public class ProcesamientoSecuencialController {
 		return new ResponseEntity<>(imageBytes, HttpStatus.OK);
 	}
 
-	@GetMapping("/getAlgoritmosObligatorios")
-	public ResponseEntity<?> getAlgoritmosObligatorios() {
-
-		List<AlgoritmosClustering> algoritmosObligatorios = algoritmosClusteringService.findAlgoritmosObligatorios();
-
-		return new ResponseEntity<>(algoritmosObligatorios, HttpStatus.OK);
-	}
-
-	@PostMapping("/buscarAlgoritmosCoincidentes")
-	public ResponseEntity<?> buscarAlgoritmosCoincidentes(@RequestParam("nombreAlgoritmo") String nombreAlgoritmo,
-			@RequestParam("algoritmosSeleccionados") String algoritmosSeleccionados,
-			@RequestParam("algoritmosPreSeleccionados") String algoritmosPreSeleccionados)
-			throws JsonMappingException, JsonProcessingException {
-
-		List<AlgoritmosClustering> algoritmosCoincidentes = new ArrayList<AlgoritmosClustering>();
-
-		if (!nombreAlgoritmo.equals("") && nombreAlgoritmo != null) {
-
-			algoritmosCoincidentes = algoritmosClusteringService.findAlgoritmosCoincidentesAndNoSeleccionados(
-					nombreAlgoritmo, algoritmosSeleccionados, algoritmosPreSeleccionados);
-		}
-
-		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
-	}
-
 	@PostMapping(value = "/getSubPopulations", consumes = "application/json")
 	public ResponseEntity<?> getSubPopulations(@RequestBody List<Map<String, Object>> algoritmos) throws IOException {
 
@@ -847,79 +776,6 @@ public class ProcesamientoSecuencialController {
 
 	}
 	
-	
-	private void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD,
-			Integer numCluster, String idPrediccionPoblacion) throws IOException {
-
-		String urlImagenCluster = UrlMock + url;
-
-		InputStream inputStream = null;
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		inputStream = llamadaServidorNgrok(urlImagenCluster, file, httpClient);
-
-		byte[] imageBytes = inputStream.readAllBytes();
-
-		FileOutputStream imgOutFile = new FileOutputStream(rutaImagenServidor);
-		imgOutFile.write(imageBytes);
-		imgOutFile.close();
-
-		httpClient.close();
-
-		imagenesService.guardarImagen(numCluster, rutaImagenBDD, Long.parseLong(idPrediccionPoblacion));
-
-	}
-
-	private void guardarFeatures(File file, String url, Integer numCluster, String idPrediccionPoblacion)
-			throws ClientProtocolException, IOException {
-
-		String urlPerfilCluster = UrlMock + url;
-
-		InputStream inputStream = null;
-
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-
-		inputStream = llamadaServidorNgrok(urlPerfilCluster, file, httpClient);
-
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-		String line;
-		StringBuilder stringBuilder = new StringBuilder();
-		while ((line = bufferedReader.readLine()) != null) {
-			stringBuilder.append(line);
-		}
-		String jsonString = stringBuilder.toString();
-
-		HashMap<String, Object> map = null;
-		map = new ObjectMapper().readValue(jsonString, HashMap.class);
-
-		if (numCluster == -1) {
-			this.calculateMaxClusters(map, Long.parseLong(idPrediccionPoblacion));
-		}
-
-		Gson gson = new Gson();
-		String featuresString = gson.toJson(map);
-
-		httpClient.close();
-
-		profilesService.guardarProfile(numCluster, featuresString, Long.parseLong(idPrediccionPoblacion));
-
-	}
-
-	private void calculateMaxClusters(HashMap<String, Object> map, Long idPrediccion) {
-
-		List<HashMap<String, Object>> features = (List<HashMap<String, Object>>) map.get("features");
-
-		HashMap<String, Object> algorithmMap = features.get(0);
-
-		List<HashMap<String, Object>> algorithmArray = (List<HashMap<String, Object>>) algorithmMap
-				.get("agglomerative");
-
-		Integer maxClusters = algorithmArray.size();
-
-		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
-
-	}
 
 	@PostMapping("/siguienteFase")
 	public ResponseEntity<?> siguienteFase() {
@@ -994,49 +850,5 @@ public class ProcesamientoSecuencialController {
 		return "";
 	}
 
-	private String validarInputNumber(String numClusters, Integer minClusters, Integer maxClusters) {
-
-		if (numClusters == null || numClusters.isEmpty()) {
-			return "Por favor, escoja un número de clusters";
-
-		}
-		try {
-			Integer n = Integer.parseInt(numClusters);
-			if (n < minClusters || n > maxClusters) {
-				return "El valor no está dentro del rango permitido";
-			}
-		} catch (NumberFormatException e) {
-			return "El valor introducido no es válido";
-
-		}
-		return "";
-	}
-
-	private String validarNClustersAlgoritmo(String numClusters, Integer minClusters, Integer maxClusters,
-			String nombreAlgoritmo) {
-
-		if (numClusters == null || numClusters.isEmpty()) {
-			return "Por favor, escoja un número de clusters para el algoritmo " + nombreAlgoritmo;
-
-		}
-		try {
-			Integer n = Integer.parseInt(numClusters);
-			if (n < minClusters || n > maxClusters) {
-				return "El número de clusters del algoritmo " + nombreAlgoritmo + " no está dentro del rango permitido";
-			}
-		} catch (NumberFormatException e) {
-			return "El número de clusters del algoritmo " + nombreAlgoritmo + " no es válido";
-
-		}
-		return "";
-	}
-
-	private String validarInputFile(MultipartFile multipartFile) {
-		String contentType = multipartFile.getContentType();
-		if (!contentType.equals("text/csv")) {
-			return "El tipo de archivo no es válido, seleccione un archivo con extensión .csv";
-		}
-		return "";
-	}
 
 }

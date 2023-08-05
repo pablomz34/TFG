@@ -40,6 +40,9 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
     @Autowired
     private AccessInterceptor accessInterceptor;
     
+    @Value("${myapp.rutasSecuenciales}")
+	private List<String> rutasSecuenciales;
+    
     @Autowired
     private UsuariosRepository userRep;
     
@@ -53,15 +56,9 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
     
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+    	
         registry.addInterceptor(this.accessInterceptor)
-                .addPathPatterns("/admin/seleccionarModoDeProcesamiento",
-                		"/admin/procesamientoSecuencial/seleccionarPrediccionAndPoblacion",
-                		"/admin/procesamientoSecuencial/seleccionarVariablesClinicas",
-                		"/admin/procesamientoSecuencial/fase1",
-                		"/admin/procesamientoSecuencial/fase2",
-                		"/admin/procesamientoSecuencial/fase3",
-                		"/admin/procesamientoSecuencial/fase4",
-                		"/admin/procesamientoSecuencial/fase5");
+                .addPathPatterns(this.rutasSecuenciales);
     }
 
     @Bean
