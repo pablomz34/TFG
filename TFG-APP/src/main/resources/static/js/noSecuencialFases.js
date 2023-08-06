@@ -118,6 +118,8 @@ Vue.component('fase2', {
 	mixins: [mixinFase2],
 	data: function() {
 		return {
+			rutaAlgoritmosObligatorios: '/admin/procesamientos/noSecuencial/getAlgoritmosObligatorios',
+			rutaAlgoritmosCoincidentes: '/admin/procesamientos/noSecuencial/buscarAlgoritmosCoincidentes?nombreAlgoritmo=',
 			nClustersAglomerativo: '',
 			nClustersKModes: '',
 			csvFile: ''
@@ -168,53 +170,6 @@ Vue.component('fase2', {
 					link.click();
 					document.body.removeChild(link);
 					THIZ.mostrarCargando = false;
-				})
-				.catch(error => console.error(error));
-		},
-
-		getAlgoritmosObligatorios() {
-			const THIZ = this;
-			THIZ.algoritmosSeleccionados = [];
-			
-			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getAlgoritmosObligatorios", {
-				method: "GET"
-			})
-				.then(res => res.json())
-				.then(res => {
-					for (let i = 0; i < res.length; i++) {
-						let algoritmoObligatorio = {};
-						algoritmoObligatorio["nombreAlgoritmo"] = res[i].nombreAlgoritmo;
-						algoritmoObligatorio["nClusters"] = '';
-						THIZ.algoritmosSeleccionados.push(algoritmoObligatorio);
-					}
-				})
-				.catch(error => console.error(error));
-		},
-		
-		buscarAlgoritmosCoincidentes() {
-			const formData = new FormData();
-			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
-			formData.append('algoritmosSeleccionados', algoritmosSeleccionadosJson);
-			const algoritmosPreSeleccionadosJson = JSON.stringify(this.algoritmosPreSeleccionados);
-			formData.append('algoritmosPreSeleccionados', algoritmosPreSeleccionadosJson);
-
-			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/buscarAlgoritmosCoincidentes?nombreAlgoritmo=" + this.searchedAlgoritmo, {
-				method: "POST",
-				body: formData
-			})
-				.then(res => res.json())
-				.then(res => {
-
-					const THIZ = this;
-					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
-					this.resetearModalBodyRow(algoritmosCoincidentesRow);
-					if (res.length > 0) {
-						THIZ.algoritmosCoincidentes = res;
-						this.crearAlgoritmosCoincidentesRowComponents(algoritmosCoincidentesRow, res);
-					}
-					else {
-						this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
-					}
 				})
 				.catch(error => console.error(error));
 		}
@@ -908,7 +863,7 @@ new Vue({
 	},
 
 	methods: {
-		cambiarFase(fase) {
+		cambiarFase(fase, event) {
 			const THIZ = this;
 			switch (fase) {
 				case 1:
@@ -927,6 +882,8 @@ new Vue({
 					THIZ.faseSeleccionada = fase;
 					break;
 			}
+			
+			this.getColorFaseSeleccionada(event);
 		},
 
 		createNoResultComponent(modalBodyRow, message) {
@@ -957,25 +914,25 @@ new Vue({
 	template: `
 	<div class="container-fluid pt-2 position-relative">		
 		<div v-if="showPantalla" class="container pt-2"> 	    	    	    
-	    	<div class="row" style="margin-top: 65px;">	    
+	    	<div class="row mt-4">	    
 			    <div class="col-12 mb-3">
 					<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
 				</div>				
 				<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada; cambiarFase(1)" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(1, $event)" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada; cambiarFase(2)" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" selected>Subpoblaciones</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(2, $event)" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" selected>Subpoblaciones</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada; cambiarFase(3)" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(3, $event)" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada; cambiarFase(4)" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(4, $event)" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
 				  </li>
 				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="getColorFaseSeleccionada; cambiarFase(5)" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
+				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(5, $event)" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
 				  </li>
 				</ul>
 				<div class="tab-content" id="pills-tabContent">

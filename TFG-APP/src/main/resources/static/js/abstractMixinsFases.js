@@ -14,6 +14,8 @@ export const mixinFase1 = {
 export const mixinFase2 = {
 	data: function() {
 		return {
+			rutaAlgoritmosObligatorios: '',
+			rutaAlgoritmosCoincidentes: '',
 			mostrarCargando: false,
 			searchedAlgoritmo: '',
 			modalAddAlgoritmos: '',
@@ -179,6 +181,71 @@ export const mixinFase2 = {
 			const THIZ = this;
 
 			THIZ.algoritmosSeleccionados.splice(index, 1);
+		},
+		getAlgoritmosObligatorios() {
+
+			const THIZ = this;
+
+			THIZ.algoritmosSeleccionados = [];
+
+			fetch(window.location.origin + this.rutaAlgoritmosObligatorios, {
+				method: "GET"
+			})
+				.then(res => res.json())
+				.then(res => {
+
+					for (let i = 0; i < res.length; i++) {
+
+						let algoritmoObligatorio = {};
+
+						algoritmoObligatorio["nombreAlgoritmo"] = res[i].nombreAlgoritmo;
+
+						algoritmoObligatorio["nClusters"] = '';
+
+						THIZ.algoritmosSeleccionados.push(algoritmoObligatorio);
+
+					}
+
+				})
+				.catch(error => console.error(error));
+		},
+		buscarAlgoritmosCoincidentes() {
+
+			const formData = new FormData();
+
+			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
+
+			formData.append('algoritmosSeleccionados', algoritmosSeleccionadosJson);
+
+			const algoritmosPreSeleccionadosJson = JSON.stringify(this.algoritmosPreSeleccionados);
+
+			formData.append('algoritmosPreSeleccionados', algoritmosPreSeleccionadosJson);
+
+			fetch(window.location.origin + this.rutaAlgoritmosCoincidentes + this.searchedAlgoritmo, {
+				method: "POST",
+				body: formData
+			})
+				.then(res => res.json())
+				.then(res => {
+
+					const THIZ = this;
+
+					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
+
+					this.resetearModalBodyRow(algoritmosCoincidentesRow);
+
+					if (res.length > 0) {
+
+						THIZ.algoritmosCoincidentes = res;
+
+						this.crearAlgoritmosCoincidentesRowComponents(algoritmosCoincidentesRow, res);
+					}
+					else {
+						this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
+					}
+
+				})
+				.catch(error => console.error(error));
 		}
 	}
 };
