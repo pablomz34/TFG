@@ -1,20 +1,15 @@
 
+import { mixinFase2 } from './abstractMixinsFases.js';
+
 new Vue({
 	el: "#secuencialFase2",
+	mixins: [mixinFase2],
 	data: function() {
 		return {
-			mostrarCargando: false,
-			searchedAlgoritmo: '',
-			modalAddAlgoritmos: '',
-			algoritmosCoincidentes: [],
-			algoritmosPreSeleccionados: [],
-			algoritmosSeleccionados: [],
-			continueButton: false,
-			errorMessage: '',
+			continueButton: false
 		}
 	},
-	mounted() {
-
+	created() {
 		this.getAlgoritmosObligatorios();
 	},
 	methods: {
@@ -94,141 +89,6 @@ new Vue({
 				})
 				.catch(error => console.error(error));
 		},
-		showModalAddAlgoritmos() {
-
-			const THIZ = this;
-
-			this.resetearModalAddAlgoritmos();
-
-			if (this.modalAddAlgoritmos.length === 0) {
-
-				let modal = new bootstrap.Modal(document.getElementById('addAlgoritmosModal'));
-
-				THIZ.modalAddAlgoritmos = modal;
-			}
-
-			this.modalAddAlgoritmos.show();
-
-		},
-		hideModalAddAlgoritmos() {
-
-			this.modalAddAlgoritmos.hide();
-		},
-		resetearModalAddAlgoritmos() {
-
-			const THIZ = this;
-
-			THIZ.searchedAlgoritmo = '';
-
-			let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
-
-			this.resetearModalBodyRow(algoritmosCoincidentesRow);
-
-			let algortimosPreSeleccionadosRow = document.getElementById("algortimosPreSeleccionadosRow");
-
-			this.resetearModalBodyRow(algortimosPreSeleccionadosRow);
-
-			THIZ.algoritmosCoincidentes = [];
-
-			THIZ.algoritmosPreSeleccionados = [];
-
-			this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
-
-		},
-		crearLabelComponent(row, message) {
-
-			let label = document.createElement("div");
-
-			label.setAttribute("class", "results-search-label");
-
-			label.innerHTML = message;
-
-			row.append(label);
-		},
-		createNoResultComponent(row, message) {
-
-			this.crearLabelComponent(row, "Coincidencias");
-
-			let noResultsComponent = document.createElement("div");
-
-			noResultsComponent.setAttribute("class", "noResults-component");
-
-			noResultsComponent.innerHTML = message;
-
-			row.append(noResultsComponent);
-		},
-		resetearModalBodyRow(row) {
-
-			while (row.firstChild) {
-				row.removeChild(row.firstChild);
-			}
-
-		},
-		crearAlgoritmosCoincidentesRowComponents(row) {
-
-			const THIZ = this;
-
-			this.crearLabelComponent(row, "Coincidencias");
-
-			for (let i = 0; i < this.algoritmosCoincidentes.length; i++) {
-
-				let algoritmoContainer = document.createElement('div');
-
-				algoritmoContainer.setAttribute("class", "add-algoritmos-container");
-
-				algoritmoContainer.addEventListener('click', function(event) {
-
-					let algoritmosPreSeleccionadosRow = document.getElementById('algortimosPreSeleccionadosRow');
-
-					if (THIZ.algoritmosPreSeleccionados.length === 0) {
-
-						let label = document.createElement("div");
-
-						label.setAttribute("class", "results-search-label");
-
-						label.innerHTML = "Preseleccionados";
-
-						algoritmosPreSeleccionadosRow.append(label);
-					}
-
-					let algoritmoComponent = document.createElement("div");
-
-					let algoritmoComponentIcon = document.createElement("i");
-
-					algoritmoComponent.setAttribute("class", "add-algoritmos-container");
-
-					algoritmoComponent.setAttribute("style", "box-shadow: 3px 3px 6px 2px rgb(39, 90, 224); border: 3px solid rgb(39, 90, 224); color: rgb(39, 90, 224);")
-
-					algoritmoComponent.classList.add('seleccionado');
-
-					algoritmoComponent.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
-
-					algoritmoComponentIcon.setAttribute("class", "fa-solid fa-circle-check add-algoritmos-container-i");
-
-					algoritmoComponent.append(algoritmoComponentIcon);
-
-					algoritmosPreSeleccionadosRow.append(algoritmoComponent);
-
-					THIZ.algoritmosPreSeleccionados.push(THIZ.algoritmosCoincidentes[i]);
-
-					event.target.remove();
-
-					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
-
-					if (algoritmosCoincidentesRow.children.length === 1) {
-
-						if (algoritmosCoincidentesRow.querySelectorAll(".results-search-label").length === 1) {
-							algoritmosCoincidentesRow.removeChild(algoritmosCoincidentesRow.firstChild);
-						}
-					}
-				});
-
-				algoritmoContainer.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
-
-				row.append(algoritmoContainer);
-			}
-
-		},
 		buscarAlgoritmosCoincidentes() {
 
 			const formData = new FormData();
@@ -266,25 +126,6 @@ new Vue({
 
 				})
 				.catch(error => console.error(error));
-		},
-		addAlgoritmos() {
-
-			const THIZ = this;
-
-			this.algoritmosPreSeleccionados.forEach(function(algoritmo) {
-				THIZ.algoritmosSeleccionados.push(algoritmo);
-			})
-
-			THIZ.algoritmosPreSeleccionados = [];
-
-			THIZ.modalAddAlgoritmos.hide();
-
-		},
-		deseleccionarAlgoritmo(index) {
-
-			const THIZ = this;
-
-			THIZ.algoritmosSeleccionados.splice(index, 1);
 		},
 		siguienteFase() {
 

@@ -1,14 +1,13 @@
 
+import {mixinFase5} from './abstractMixinsFases.js';
+
 new Vue({
 	el: "#secuencialFase5",
+	mixins: [mixinFase5],
 	data: function() {
 		return {
-			datosCargados: false,
-			auc: '',
-			mostrarCargando: false,
 			terminarProcesoButton: false,
-			algoritmoOptimo: '',
-			errorMessage: '',
+			algoritmoOptimo: ''
 		}
 	},
 	

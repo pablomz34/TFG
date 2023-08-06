@@ -1,15 +1,13 @@
 
+import {mixinFase3} from './abstractMixinsFases.js';
+
 new Vue({
 	el: "#secuencialFase3",
+	mixins: [mixinFase3],
 	data: function() {
 		return {
-			lista: [],
-			headers: [{ header: "Metric", pos: 0 }, { header: "Tss_value", pos: 1 }, { header: "Total_wc", pos: 2 }, { header: "Total_bc", pos: 3 }],
-			datosCargados: false,
-			mostrarCargando: false,
 			algoritmoOptimo: '',
-			continueButton: false,
-			errorMessage: ''
+			continueButton: false
 		}
 	},
 
@@ -33,7 +31,7 @@ new Vue({
 				})
 				.then(data => {
 
-					for (i = 0, j = 1; j < data.lista.length; i++, j++) THIZ.lista[i] = data.lista[j]			
+					for (let i = 0, j = 1; j < data.lista.length; i++, j++) THIZ.lista[i] = data.lista[j]			
 
 					THIZ.algoritmoOptimo = data.algoritmoOptimo;
 					THIZ.datosCargados = true;

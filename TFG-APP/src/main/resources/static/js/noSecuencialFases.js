@@ -1,12 +1,19 @@
+
+import {mixinFase1} from './abstractMixinsFases.js';
+
+import {mixinFase2} from './abstractMixinsFases.js';
+
+import {mixinFase3} from './abstractMixinsFases.js';
+
+import {mixinFase4} from './abstractMixinsFases.js';
+
+import {mixinFase5} from './abstractMixinsFases.js';
+
 Vue.component('fase1', {
+	mixins: [mixinFase1],
 	data: function() {
 		return {
-			nClusters: '',
-			csvFile: '',
-			imagenCreada: false,
-			imagenUrl: '',
-			error: '',
-			mostrarCargando: false,
+			csvFile: ''
 		}
 	},
 	
@@ -15,9 +22,9 @@ Vue.component('fase1', {
 			const THIZ = this;
 			const formData = new FormData();
 			THIZ.mostrarCargando = true;
-			formData.append('max_clusters', this.nClusters);
+			formData.append('max_clusters', this.maxClusters);
 			formData.append('file', this.$refs.csvFile.files[0]);
-			THIZ.error = '';
+			THIZ.errorMessage = '';
 			
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getOptimalNClusters", {
 				method: "POST",
@@ -26,7 +33,7 @@ Vue.component('fase1', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = errorMessage;
+						THIZ.errorMessage = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -52,10 +59,18 @@ Vue.component('fase1', {
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
+	    
+	    <div class="row justify-content-center mt-3">
+			<div v-if="errorMessage != ''" class="col-md-5">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+	    
+	    
 	    <div class="row col-md-6 offset-md-3">
-	        <div v-if="error != ''" class="alert alert-danger">
-	            {{this.error}}
-	        </div>
 	        <div class="card rounded-4 p-0 mb-2 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Nº Óptimo de Clusters</h2>
@@ -64,8 +79,8 @@ Vue.component('fase1', {
 	                <form @submit.prevent="getOptimalNClusters">
 	                    <div class="form-group mb-3">
                     		<div class="input-container">
-		                        <label class="input-container-label fw-bold" for="nClusters">Nº de clusters</label>
-		                        <input type="number" min="2" max="20" class="input-container-input pe-1" v-model="nClusters" id="nClusters" required />
+		                        <label class="input-container-label fw-bold" for="maxClusters">Nº de clusters</label>
+		                        <input type="number" min="2" max="20" class="input-container-input pe-1" v-model="maxClusters" id="maxClusters" required />
 	                    	</div>
 	                    </div>
 	                    <div class="form-group mb-3">
@@ -89,7 +104,7 @@ Vue.component('fase1', {
 	        <div v-if="imagenCreada" class="card col-10 rounded-4 p-0 shadow">
 	            <div class="card-body">
 					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
-	                <a v-bind:href="imagenUrl" download="nClustersImagen.png">
+	                <a v-bind:href="imagenUrl" download="maxClustersImagen.png">
 	                    <img id="imagenFase1" v-bind:src="imagenUrl" style="max-width: 100%;"/>
 	                </a>
 	            </div>
@@ -100,18 +115,12 @@ Vue.component('fase1', {
 });
 
 Vue.component('fase2', {
+	mixins: [mixinFase2],
 	data: function() {
 		return {
 			nClustersAglomerativo: '',
 			nClustersKModes: '',
-			csvFile: '',
-			error: '',
-			mostrarCargando: false,
-			searchedAlgoritmo: '',
-			modalAddAlgoritmos: '',
-			algoritmosCoincidentes: [],
-			algoritmosPreSeleccionados: [],
-			algoritmosSeleccionados: []
+			csvFile: ''
 		}
 	},
 	
@@ -123,7 +132,7 @@ Vue.component('fase2', {
 		getSubPopulations: function() {
 			const THIZ = this;			
 			THIZ.mostrarCargando = true;		
-			THIZ.error = '';
+			THIZ.errorMessage = '';
 			const formData = new FormData();
 			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
 			formData.append('algoritmos', algoritmosSeleccionadosJson);
@@ -140,7 +149,7 @@ Vue.component('fase2', {
 					// Verificar si la respuesta es OK
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = errorMessage;
+						THIZ.errorMessage = errorMessage;
 						THIZ.mostrarCargando = false;
 						this.getAlgoritmosObligatorios();
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
@@ -181,94 +190,6 @@ Vue.component('fase2', {
 				})
 				.catch(error => console.error(error));
 		},
-
-		showModalAddAlgoritmos() {
-			const THIZ = this;
-			this.resetearModalAddAlgoritmos();
-			if (this.modalAddAlgoritmos.length === 0) {
-				let modal = new bootstrap.Modal(document.getElementById('addAlgoritmosModal'));
-				THIZ.modalAddAlgoritmos = modal;
-			}
-			this.modalAddAlgoritmos.show();
-		},
-		
-		hideModalAddAlgoritmos() {
-			this.modalAddAlgoritmos.hide();
-		},
-		
-		resetearModalAddAlgoritmos() {
-			const THIZ = this;
-			THIZ.searchedAlgoritmo = '';
-			let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
-			this.resetearModalBodyRow(algoritmosCoincidentesRow);
-			let algortimosPreSeleccionadosRow = document.getElementById("algortimosPreSeleccionadosRow");
-			this.resetearModalBodyRow(algortimosPreSeleccionadosRow);
-			THIZ.algoritmosCoincidentes = [];
-			THIZ.algoritmosPreSeleccionados = [];
-			this.createNoResultComponent(algoritmosCoincidentesRow, "¡No hay ninguna coincidencia!");
-		},
-		
-		crearLabelComponent(row, message) {
-			let label = document.createElement("div");
-			label.setAttribute("class", "results-search-label");
-			label.innerHTML = message;
-			row.append(label);
-		},
-		
-		createNoResultComponent(row, message) {
-			this.crearLabelComponent(row, "Coincidencias");
-			let noResultsComponent = document.createElement("div");
-			noResultsComponent.setAttribute("class", "noResults-component");
-			noResultsComponent.innerHTML = message;
-			row.append(noResultsComponent);
-		},
-		
-		resetearModalBodyRow(row) {
-			while (row.firstChild) {
-				row.removeChild(row.firstChild);
-			}
-		},
-		
-		crearAlgoritmosCoincidentesRowComponents(row) {
-			const THIZ = this;
-			this.crearLabelComponent(row, "Coincidencias");
-			for (let i = 0; i < this.algoritmosCoincidentes.length; i++) {
-				let algoritmoContainer = document.createElement('div');
-				algoritmoContainer.setAttribute("class", "add-algoritmos-container");
-				algoritmoContainer.addEventListener('click', function(event) {
-					let algoritmosPreSeleccionadosRow = document.getElementById('algortimosPreSeleccionadosRow');
-					if (THIZ.algoritmosPreSeleccionados.length === 0) {
-						let label = document.createElement("div");
-						label.setAttribute("class", "results-search-label");
-						label.innerHTML = "Preseleccionados";
-						algoritmosPreSeleccionadosRow.append(label);
-					}
-					
-					let algoritmoComponent = document.createElement("div");
-					let algoritmoComponentIcon = document.createElement("i");
-					algoritmoComponent.setAttribute("class", "add-algoritmos-container");
-					algoritmoComponent.setAttribute("style", "box-shadow: 3px 3px 6px 2px rgb(39, 90, 224); border: 3px solid rgb(39, 90, 224); color: rgb(39, 90, 224);")
-					algoritmoComponent.classList.add('seleccionado');
-					algoritmoComponent.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
-					algoritmoComponentIcon.setAttribute("class", "fa-solid fa-circle-check add-algoritmos-container-i");
-					algoritmoComponent.append(algoritmoComponentIcon);
-					algoritmosPreSeleccionadosRow.append(algoritmoComponent);
-					THIZ.algoritmosPreSeleccionados.push(THIZ.algoritmosCoincidentes[i]);
-					event.target.remove();
-					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
-
-					if (algoritmosCoincidentesRow.children.length === 1) {
-						if (algoritmosCoincidentesRow.querySelectorAll(".results-search-label").length === 1) {
-							algoritmosCoincidentesRow.removeChild(algoritmosCoincidentesRow.firstChild);
-						}
-					}
-				});
-
-				algoritmoContainer.innerHTML = THIZ.algoritmosCoincidentes[i].nombreAlgoritmo;
-
-				row.append(algoritmoContainer);
-			}
-		},
 		
 		buscarAlgoritmosCoincidentes() {
 			const formData = new FormData();
@@ -296,21 +217,6 @@ Vue.component('fase2', {
 					}
 				})
 				.catch(error => console.error(error));
-		},
-		
-		addAlgoritmos() {
-			const THIZ = this;
-			this.algoritmosPreSeleccionados.forEach(function(algoritmo) {
-				THIZ.algoritmosSeleccionados.push(algoritmo);
-			})
-			THIZ.algoritmosPreSeleccionados = [];
-			THIZ.modalAddAlgoritmos.hide();
-
-		},
-		
-		deseleccionarAlgoritmo(index) {
-			const THIZ = this;
-			THIZ.algoritmosSeleccionados.splice(index, 1);
 		}
 	},
 
@@ -321,10 +227,17 @@ Vue.component('fase2', {
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>	
+	    
+	    <div class="row justify-content-center mt-3">
+			<div v-if="errorMessage != ''" class="col-md-5">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+	    
 	    <div class="row col-md-6 offset-md-3">
-	        <div v-if="error != ''" class="alert alert-danger">
-	            {{this.error}}
-	        </div>
 	        <div class="card rounded-4 p-0 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Subpoblaciones</h2>
@@ -392,20 +305,11 @@ Vue.component('fase2', {
 });
 
 Vue.component('fase3', {
-	data: function() {
-		return {
-			lista: [],
-			headers: [{ header: "Metric", pos: 0 }, { header: "Tss_value", pos: 1 }, { header: "Total_wc", pos: 2 }, { header: "Total_bc", pos: 3 }],
-			datosCargados: false,
-			error: '',
-			mostrarCargando: false,
-		}
-	},
-
+	mixins: [mixinFase3],
 	methods: {
 		getVarianceMetrics: function() {
 			const THIZ = this;
-			THIZ.error = '';
+			THIZ.errorMessage = '';
 			const formData = new FormData();
 			THIZ.mostrarCargando = true;
 			formData.append('file', this.$refs.csvFile.files[0]);
@@ -417,7 +321,7 @@ Vue.component('fase3', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = errorMessage;
+						THIZ.errorMessage = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -425,7 +329,7 @@ Vue.component('fase3', {
 
 				})
 				.then(data => {
-					for (i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j];
+					for (let i = 0, j = 1; j < data.length; i++, j++) THIZ.lista[i] = data[j];
 					THIZ.datosCargados = true;
 					THIZ.mostrarCargando = false;
 				})
@@ -440,10 +344,17 @@ Vue.component('fase3', {
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>	
+	    
+	    <div class="row justify-content-center mt-3">
+			<div v-if="errorMessage != ''" class="col-md-5">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+	    
 	    <div class="col-md-6 offset-md-3">
-	        <div v-if="error != ''" class="alert alert-danger">
-	            {{this.error}}
-	        </div>
 	        <div class="card rounded-4 p-0 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Métricas de Varianza</h2>
@@ -491,6 +402,7 @@ Vue.component('fase3', {
 });
 
 Vue.component('fase4', {
+	mixins: [mixinFase4],
 	data: function() {
 		return {
 			crear: true,
@@ -498,29 +410,8 @@ Vue.component('fase4', {
 			descripciones: [],
 			continuar: false,
 			csvFile: '',
-			curvasAndPerfilesCreados: false,
 			idPrediccion: '',
-			nClusters: '',
-			clusterSeleccionadoCurves: '',
-			clusterSeleccionadoProfile: '',
-			curvasUrl: '',
-			nombreDescargaCurvas: '',
-			curvasCargadas: false,
-			perfilCargado: false,
-			datasetStatistics: [
-				{ nombre: 'Id Prediction', valor: '' },
-				{ nombre: 'Number of variables', valor: '' },
-				{ nombre: 'Number of observations', valor: '' },
-				{ nombre: 'Target median', valor: '' },
-				{ nombre: 'Target third quantile', valor: '' },
-			],
-			variableSeleccionada: '',
-			variables: [],
-			error0: '',
-			error1: '',
-			error2: '',
-			error3: '',
-			mostrarCargando: false,
+			errorMessage0: ''
 		}
 	},
 
@@ -535,12 +426,6 @@ Vue.component('fase4', {
 		}
 	},
 
-	computed: {
-		nClustersRange() {
-			return Array.from({ length: this.nClusters }, (_, index) => index);
-		}
-	},
-
 	methods: {
 		getDescripciones: function() {
 			const THIZ = this;
@@ -551,14 +436,14 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error1 = errorMessage;
+						THIZ.errorMessage1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
 					return res.json();
 				})
 				.then(data => {
-					for (i = 0; i < data.length; i++) {
+					for (let i = 0; i < data.length; i++) {
 						THIZ.descripciones.push(data[i]);
 					}
 					THIZ.mostrarCargando = false;
@@ -569,7 +454,7 @@ Vue.component('fase4', {
 		seleccionarPrediccion: function() {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
-			THIZ.error0 = '';
+			THIZ.errorMessage0 = '';
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/createOrUpdatePrediction?crearPrediccion=" + this.crear +
 				"&descripcion=" + this.descripcionSeleccionada, {
 				method: "POST",
@@ -577,7 +462,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error0 = errorMessage;
+						THIZ.errorMessage0 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -596,7 +481,7 @@ Vue.component('fase4', {
 			const THIZ = this;
 			THIZ.curvasCargadas = false;
 			THIZ.perfilCargado = false;
-			THIZ.error1 = '';
+			THIZ.errorMessage1 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
 			THIZ.mostrarCargando = true;
@@ -610,7 +495,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error1 = errorMessage;
+						THIZ.errorMessage1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -628,7 +513,7 @@ Vue.component('fase4', {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
 			THIZ.curvasCargadas = false;
-			THIZ.error2 = '';
+			THIZ.errorMessage2 = '';
 	
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
 				method: "GET",
@@ -636,7 +521,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error2 = errorMessage;
+						THIZ.errorMessage2 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -654,7 +539,7 @@ Vue.component('fase4', {
 		mostrarClusterProfile: function() {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
-			THIZ.error3 = '';
+			THIZ.errorMessage3 = '';
 			THIZ.perfilCargado = false;
 
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
@@ -663,7 +548,7 @@ Vue.component('fase4', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error3 = errorMessage;
+						THIZ.errorMessage3 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -700,11 +585,16 @@ Vue.component('fase4', {
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>	    
-	    <div class="row justify-content-around">
-	        <div v-if="error0 != ''" class="col-7 alert alert-danger">
-	            {{this.error0}}
-	        </div>	 
-	    </div>	    
+	    
+	    <div class="row justify-content-center mt-3">
+			<div v-if="errorMessage0 != ''" class="col-md-5">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage0}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>  
+	    
 	    <div class="row justify-content-around">
 			<div class="card col-7 rounded-4 p-0 mb-3 shadow">
 				<div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
@@ -766,11 +656,16 @@ Vue.component('fase4', {
 		<div v-if="continuar" class="row justify-content-around mb-2">
 			<h4 class="text-center text-black">Predicción: {{this.descripcionSeleccionada}}</h4>
 	    </div>	    
-	    <div class="row justify-content-around">
-	        <div v-if="error1 != ''" class="col-7 alert alert-danger">
-	            {{this.error1}}
-	        </div>	 
-	    </div>	
+	    
+	    <div class="row justify-content-center mt-3">
+			<div v-if="errorMessage1 != ''" class="col-md-5">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage1}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>	
+	    
 	    <div v-if="continuar" class="row justify-content-around">
 	        <div class="card col-7 rounded-4 p-0 mb-3 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
@@ -796,14 +691,19 @@ Vue.component('fase4', {
 	        </div>
 	    </div>	     
 	    <div class="row justify-content-around">
-	        <div v-if="error2 != ''" class="col-5 alert alert-danger">
-	            {{this.error2}}
-	        </div>	
-	        <div v-if="error2 == ''" class="col-5"></div>        
-	        <div v-if="error3 == ''" class="col-5"></div>         
-	        <div v-if="error3 != ''" class="col-5 alert alert-danger">
-	            {{this.error3}}
-	        </div>	
+	        <div v-if="errorMessage2 != ''" class="col-5 alert alert-danger alert-dismissible fade show" role="alert">
+				{{errorMessage2}}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			
+	        <div v-if="errorMessage2 == ''" class="col-5"></div>
+	        
+	        <div v-if="errorMessage3 == ''" class="col-5"></div>
+	        
+			<div v-if="errorMessage3 != ''" class="col-5 alert alert-danger alert-dismissible fade show" role="alert">
+				{{errorMessage3}}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
 	    </div>    
 	    <div class="row justify-content-around">
 	        <div v-if="curvasAndPerfilesCreados" class="card col-5 rounded-4 p-0 mb-2 shadow">
@@ -900,13 +800,10 @@ Vue.component('fase4', {
 
 
 Vue.component('fase5', {
+	mixins: [mixinFase5],
 	data: function() {
 		return {
-			csvFile: '',
-			datosCargados: false,
-			auc: '',
-			error: '',
-			mostrarCargando: false,
+			csvFile: ''
 		}
 	},
 
@@ -915,7 +812,7 @@ Vue.component('fase5', {
 			const THIZ = this;
 			const formData = new FormData();			
 			THIZ.datosCargados = false;
-			THIZ.error = '';
+			THIZ.errorMessage = '';
 			THIZ.mostrarCargando = true;
 			formData.append('file', this.$refs.csvFile.files[0]);
 			
@@ -926,7 +823,7 @@ Vue.component('fase5', {
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error = errorMessage;
+						THIZ.errorMessage = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -948,10 +845,17 @@ Vue.component('fase5', {
 	            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 	        </div>
 	    </span>
+	    
+	    <div class="row justify-content-center mt-3">
+			<div v-if="errorMessage != ''" class="col-md-5">
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			</div>
+		</div>
+	        
 	    <div class="row col-md-6 offset-md-3 text-center">
-	        <div v-if="error != ''" class="alert alert-danger">
-	            {{this.error}}
-	        </div>
 	        <div class="card rounded-4 p-0 mb-2 shadow">
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
 	                <h2 class="text-center text-white">Rendimiento del modelo</h2>

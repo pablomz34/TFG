@@ -1,29 +1,12 @@
+
+import {mixinFase4} from './abstractMixinsFases.js';
+
 new Vue({
 	el: "#secuencialFase4",
+	mixins: [mixinFase4],
 	data: function() {
 		return {
 			algoritmoOptimo: '',
-			curvasAndPerfilesCreados: false,
-			nClusters: '',
-			clusterSeleccionadoCurves: '',
-			clusterSeleccionadoProfile: '',
-			curvasUrl: '',
-			nombreDescargaCurvas: '',
-			curvasCargadas: false,
-			perfilCargado: false,
-			datasetStatistics: [
-				{ nombre: 'Id Prediction', valor: '' },
-				{ nombre: 'Number of variables', valor: '' },
-				{ nombre: 'Number of observations', valor: '' },
-				{ nombre: 'Target median', valor: '' },
-				{ nombre: 'Target third quantile', valor: '' },
-			],
-			variableSeleccionada: '',
-			variables: [],
-			error1: '',
-			error2: '',
-			error3: '',
-			mostrarCargando: false,
 			continueButton: false,
 		}
 	},
@@ -39,7 +22,7 @@ new Vue({
 
 				if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 					const errorMessage = await res.text();
-					THIZ.error1 = errorMessage;
+					THIZ.errorMessage1 = errorMessage;
 					THIZ.mostrarCargando = false;
 					throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 				}
@@ -67,7 +50,7 @@ new Vue({
 
 			THIZ.curvasCargadas = false;
 			THIZ.perfilCargado = false;
-			THIZ.error1 = '';
+			THIZ.errorMessage1 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 
 			THIZ.mostrarCargando = true;
@@ -78,7 +61,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error1 = errorMessage;
+						THIZ.errorMessage1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -103,7 +86,8 @@ new Vue({
 			THIZ.mostrarCargando = true;
 			THIZ.curvasCargadas = false;
 
-			THIZ.error2 = '';
+			
+			THIZ.errorMessage2 = '';
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves, {
 				method: "GET",
@@ -111,7 +95,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error2 = errorMessage;
+						THIZ.errorMessage2 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -129,8 +113,9 @@ new Vue({
 		mostrarClusterProfile: function() {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
-
-			THIZ.error3 = '';
+			
+			THIZ.errorMessage3 = '';
+			
 			THIZ.perfilCargado = false;
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile, {
@@ -139,7 +124,7 @@ new Vue({
 				.then(async res => {
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error3 = errorMessage;
+						THIZ.errorMessage3 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -163,9 +148,9 @@ new Vue({
 		siguienteFase() {
 			const THIZ = this;
 
-			THIZ.error1 = '';
-			THIZ.error2 = '';
-			THIZ.error3 = '';
+			THIZ.errorMessage1 = '';
+			THIZ.errorMessage2 = '';
+			THIZ.errorMessage3 = '';
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {
 				method: "POST"
@@ -174,7 +159,7 @@ new Vue({
 
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
-						THIZ.error1 = errorMessage;
+						THIZ.errorMessage1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
@@ -199,9 +184,9 @@ new Vue({
 		    </span>
 		    
 		    <div class="row justify-content-center mt-3">
-				<div v-if="error1 != ''" class="col-md-5">
+				<div v-if="errorMessage1 != ''" class="col-md-5">
 					<div class="alert alert-danger alert-dismissible fade show" role="alert">
-						{{error1}}
+						{{errorMessage1}}
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				</div>
@@ -234,18 +219,17 @@ new Vue({
 		    
 		    <div class="row justify-content-around">
 		    
-		    	
-				<div v-if="error2 != ''" class="col-5 alert alert-danger alert-dismissible fade show" role="alert">
-					{{error2}}
+				<div v-if="errorMessage2 != ''" class="col-5 alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage2}}
 					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
 				
-		        <div v-if="error2 == ''" class="col-5"></div>
+		        <div v-if="errorMessage2 == ''" class="col-5"></div>
 		        
-		        <div v-if="error3 == ''" class="col-5"></div>
+		        <div v-if="errorMessage3 == ''" class="col-5"></div>
 		        
-				<div v-if="error3 != ''" class="col-5 alert alert-danger alert-dismissible fade show" role="alert">
-					{{error3}}
+				<div v-if="errorMessage3 != ''" class="col-5 alert alert-danger alert-dismissible fade show" role="alert">
+					{{errorMessage3}}
 					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>
 			

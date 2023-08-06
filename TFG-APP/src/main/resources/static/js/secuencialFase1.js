@@ -1,19 +1,18 @@
 
+import {mixinFase1} from './abstractMixinsFases.js';
+
+
 new Vue({
 	el: "#secuencialFase1",
+	mixins: [mixinFase1],
 	data: function() {
 		return {
-			maxClusters: '',
-			imagenCreada: false,
-			imagenUrl: '',
-			errorMessage: '',
-			mostrarCargando: false,
 			continuarButton: false
 		}
 	},
 
 	methods: {
-		getOptimalmaxClusters() {
+		getOptimalNClusters() {
 			const THIZ = this;
 
 			THIZ.mostrarCargando = true;
@@ -101,7 +100,7 @@ new Vue({
 		                <h2 class="text-center text-white">Nº Óptimo de Clusters</h2>
 		            </div>
 		            <div class="card-body">
-		                <form @submit.prevent="getOptimalmaxClusters">
+		                <form @submit.prevent="getOptimalNClusters">
 		                    <div class="form-group mb-3">
 		                		<div class="input-container">
 			                        <label class="input-container-label fw-bold" for="maxClusters">Nº de clusters</label>
