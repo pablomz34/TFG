@@ -863,44 +863,39 @@ new Vue({
 	template: `	
 	<div class="container">
 		<div class="flex-component">
-			<div class="fase-container">
-				<button :class="getColorBorde(1)" @click="cambiarFase(1)" id="fase1" style="border:none">
-					<div :class="getColorBoton(1)">
+			<div class="fase-container" @click="cambiarFase(1)" style="cursor: pointer;">
+				<div :class="getColorBorde(1)" id="fase1" style="border:none;"></div>
+				<div :class="getColorBoton(1)">
 						<span class="text-fase-component">Nº Optimo de clusters</span>
-					</div>
-				</button>
+				</div>
 			</div>
 	
-			<div class="fase-container">
-				<button :class="getColorBorde(2)" @click="cambiarFase(2)" id="fase1" style="border:none">
-					<div :class="getColorBoton(2)">
-						<span class="text-fase-component">Subpopulations</span>
-					</div>
-				</button>
+			<div class="fase-container" @click="cambiarFase(2)" style="cursor: pointer;">
+				<div :class="getColorBorde(2)" id="fase1" style="border:none;"></div>
+				<div :class="getColorBoton(2)">
+					<span class="text-fase-component">Subpopulations</span>
+				</div>			
 			</div>
 	
-			<div class="fase-container">
-				<button :class="getColorBorde(3)" @click="cambiarFase(3)" id="fase1" style="border:none">
-					<div :class="getColorBoton(3)">
-						<span class="text-fase-component">Métricas de varianza</span>
-					</div>
-				</button>
+			<div class="fase-container" @click="cambiarFase(3)" style="cursor: pointer;">
+				<div :class="getColorBorde(3)" id="fase1" style="border:none;"></div>
+				<div :class="getColorBoton(3)">
+					<span class="text-fase-component">Métricas de varianza</span>
+				</div>
 			</div>
 	
-			<div class="fase-container">
-				<button :class="getColorBorde(4)" @click="cambiarFase(4)" id="fase1" style="border:none">
-					<div :class="getColorBoton(4)">
-						<span class="text-fase-component">Estadísticas de población</span>
-					</div>
-				</button>
+			<div class="fase-container" @click="cambiarFase(4)" style="cursor: pointer;">
+				<div :class="getColorBorde(4)" id="fase1" style="border:none;"></div>
+				<div :class="getColorBoton(4)">
+					<span class="text-fase-component">Estadísticas de población</span>
+				</div>			
 			</div>
 	
-			<div class="fase-container">
-				<button :class="getColorBorde(5)" @click="cambiarFase(5)" id="fase1" style="border:none">
-					<div :class="getColorBoton(5)">
-						<span class="text-fase-component">Rendimiento del modelo</span>
-					</div>
-				</button>
+			<div class="fase-container" @click="cambiarFase(5)" style="cursor: pointer;">
+				<div :class="getColorBorde(5)" id="fase1" style="border:none;"></div>
+				<div :class="getColorBoton(5)">
+					<span class="text-fase-component">Rendimiento del modelo</span>
+				</div>			
 			</div>
 		</div>
 		
