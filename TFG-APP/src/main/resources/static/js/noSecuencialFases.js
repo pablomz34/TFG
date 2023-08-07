@@ -805,7 +805,7 @@ new Vue({
 	},
 
 	methods: {
-		cambiarFase(fase, event) {
+		cambiarFase(fase) {
 			const THIZ = this;
 			switch (fase) {
 				case 1:
@@ -824,8 +824,6 @@ new Vue({
 					THIZ.faseSeleccionada = fase;
 					break;
 			}
-
-			this.getColorFaseSeleccionada(event);
 		},
 
 		createNoResultComponent(modalBodyRow, message) {
@@ -843,59 +841,86 @@ new Vue({
 			modalBodyRow.append(seleccionarVariablesClinicasLabel);
 		},
 
-		getColorFaseSeleccionada(event) {
-			let botonesFases = document.querySelectorAll('.btn-custom-light-color');
-			botonesFases.forEach(function(boton) {
-				boton.style.backgroundColor = "rgb(123, 151, 234)";
-			});
-			const boton = event.target;
-			boton.style.backgroundColor = 'rgb(65, 105, 225)';
+		getColorBorde(fase) {
+			if (this.faseSeleccionada == fase) {
+				return "fase-border-component fase-border-component-dark"
+			}
+			else {
+				return "fase-border-component"
+			}
+		},
+		
+		getColorBoton(fase) {
+			if (this.faseSeleccionada == fase) {
+				return "fase-component fase-component-dark"
+			}
+			else {
+				return "fase-component"
+			}
 		},
 	},
 
-	template: `
-	<div class="container-fluid pt-2 position-relative">		
-		<div v-if="showPantalla" class="container pt-2"> 	    	    	    
-	    	<div class="row mt-4">	    
-			    <div class="col-12 mb-3">
-					<h2 class="text-center fw-bold fst-italic text-custom-color fs-1">F<span class="text-custom-light-color">ase</span>s</h2>
-				</div>				
-				<ul class="nav nav-pills justify-content-around" id="pills-tab" role="tablist" style="border: 3px solid #7B9AEA; padding-bottom:8px; padding-left:8px; padding-right:8px; border-radius:9px">
-				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(1, $event)" id="fase1" data-bs-toggle="pill" data-bs-target="#nClusters-content" type="button" role="tab" aria-controls="nClusters-content" aria-selected="true">Nº Óptimo de Clusters</button>
-				  </li>
-				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(2, $event)" id="fase2" data-bs-toggle="pill" data-bs-target="#subPopulations-content" type="button" role="tab" aria-controls="subPopulations-content" aria-selected="false" selected>Subpoblaciones</button>
-				  </li>
-				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(3, $event)" id="fase3" data-bs-toggle="pill" data-bs-target="#varianceMetrics-content" type="button" role="tab" aria-controls="varianceMetrics-content" aria-selected="false">Métricas de varianza</button>
-				  </li>
-				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(4, $event)" id="fase4" data-bs-toggle="pill" data-bs-target="#populationProfilesGraphics-content" type="button" role="tab" aria-controls="populationProfilesGraphics-content" aria-selected="false">Gráficas y estadísticas de población</button>
-				  </li>
-				  <li class="nav-item pt-2" role="presentation">
-				    <button class="btn btn-custom-light-color w-100 text-white fw-bold fs-5" @click="cambiarFase(5, $event)" id="fase5" data-bs-toggle="pill" data-bs-target="#modelPerformance-content" type="button" role="tab" aria-controls="modelPerformance-content" aria-selected="false">Rendimiento del modelo</button>
-				  </li>
-				</ul>
-				<div class="tab-content" id="pills-tabContent">
-				  <div class="tab-pane fade" id="nClusters-content" role="tabpanel" aria-labelledby="fase1" tabindex="0">
-				  	<fase1 v-if="faseSeleccionada==1"/>
-				  </div>
-				  <div class="tab-pane fade" id="subPopulations-content" role="tabpanel" aria-labelledby="fase2" tabindex="0">
-				  	<fase2 v-if="faseSeleccionada==2"/>
-				  </div>
-				  <div class="tab-pane fade" id="varianceMetrics-content" role="tabpanel" aria-labelledby="fase3" tabindex="0">
-				  	<fase3 v-if="faseSeleccionada==3"/>
-				  </div>
-				  <div class="tab-pane fade" id="populationProfilesGraphics-content" role="tabpanel" aria-labelledby="fase4" tabindex="0">
-				  	<fase4 v-if="faseSeleccionada==4"/>
-				  </div>
-				  <div class="tab-pane fade" id="modelPerformance-content" role="tabpanel" aria-labelledby="fase5" tabindex="0">
-				  	<fase5 v-if="faseSeleccionada==5"/>
-				  </div>
-				</div>			
-			</div>			
-		</div>				
+	template: `	
+	<div class="container">
+		<div class="flex-component">
+			<div class="fase-container">
+				<button :class="getColorBorde(1)" @click="cambiarFase(1)" id="fase1" style="border:none">
+					<div :class="getColorBoton(1)">
+						<span class="text-fase-component">Nº Optimo de clusters</span>
+					</div>
+				</button>
+			</div>
+	
+			<div class="fase-container">
+				<button :class="getColorBorde(2)" @click="cambiarFase(2)" id="fase1" style="border:none">
+					<div :class="getColorBoton(2)">
+						<span class="text-fase-component">Subpopulations</span>
+					</div>
+				</button>
+			</div>
+	
+			<div class="fase-container">
+				<button :class="getColorBorde(3)" @click="cambiarFase(3)" id="fase1" style="border:none">
+					<div :class="getColorBoton(3)">
+						<span class="text-fase-component">Métricas de varianza</span>
+					</div>
+				</button>
+			</div>
+	
+			<div class="fase-container">
+				<button :class="getColorBorde(4)" @click="cambiarFase(4)" id="fase1" style="border:none">
+					<div :class="getColorBoton(4)">
+						<span class="text-fase-component">Estadísticas de población</span>
+					</div>
+				</button>
+			</div>
+	
+			<div class="fase-container">
+				<button :class="getColorBorde(5)" @click="cambiarFase(5)" id="fase1" style="border:none">
+					<div :class="getColorBoton(5)">
+						<span class="text-fase-component">Rendimiento del modelo</span>
+					</div>
+				</button>
+			</div>
+		</div>
+		
+		<div class="flex">
+			<div>
+		  		<fase1 v-if="faseSeleccionada==1"/>
+		  	</div>
+		  	<div>
+		  		<fase2 v-if="faseSeleccionada==2"/>
+		  	</div>
+		  	<div>
+		  		<fase3 v-if="faseSeleccionada==3"/>
+		  	</div>
+		  	<div>
+		  		<fase4 v-if="faseSeleccionada==4"/>
+		  	</div>
+		  	<div>
+		  		<fase5 v-if="faseSeleccionada==5"/>
+		  	</div>
+		</div>	
 	</div>
 	`
 })
