@@ -406,12 +406,11 @@ Vue.component('fase4', {
 				.catch(error => console.error(error));
 		},
 
-		seleccionarPrediccion: function() {
+		seleccionarPrediccion: function(ruta) {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
 			THIZ.errorMessage0 = '';
-			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/createOrUpdatePrediction?crearPrediccion=" + this.crear +
-				"&descripcion=" + this.descripcionSeleccionada, {
+			fetch(window.location.origin + ruta + "?descripcion=" + this.descripcionSeleccionada, {
 				method: "POST",
 			})
 				.then(async res => {
@@ -507,7 +506,7 @@ Vue.component('fase4', {
 		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Modificar</p>
 		            </button>            		
 					<div v-if="crear" class="row justify-content-around">
-						<form @submit.prevent="seleccionarPrediccion">
+						<form @submit.prevent="seleccionarPrediccion('/admin/crearPrediccion')">
 							<div class="form-group mb-3">
 								<div class="input-container">
 			                        <label for="descripcionSeleccionada" class="input-container-label fw-bold">Introduce una descripcion de la nueva predicción</label>
@@ -525,7 +524,7 @@ Vue.component('fase4', {
 					</div>
 					<div v-else class="row justify-content-around">
 						<div v-if="descripciones.length > 0">
-							<form @submit.prevent="seleccionarPrediccion">
+							<form @submit.prevent="seleccionarPrediccion('/admin/procesamientos/noSecuencial/getPrediccion')">
 								<div class="form-group mb-3">
 									<div class="input-container">
 										<label for="descripcionSeleccionada" class="input-container-label fw-bold">Seleccione una descripción existente</label>

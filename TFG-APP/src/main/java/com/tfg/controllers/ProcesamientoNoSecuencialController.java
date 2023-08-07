@@ -230,72 +230,23 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 		return new ResponseEntity<>(prediccionesService.getDescripciones(), HttpStatus.OK);
 	}
 
-	@PostMapping("/createOrUpdatePrediction")
-	public ResponseEntity<?> createOrFindPrediction(@RequestParam("crearPrediccion") boolean crearPrediccion,
-			@RequestParam("descripcion") String descripcion) throws UnsupportedEncodingException {
+	@PostMapping("/getPrediccion")
+	public ResponseEntity<?> modificarPrediccion(@RequestParam("descripcion") String descripcion)
+			throws UnsupportedEncodingException {
 
 		if (descripcion == null || descripcion.isEmpty()) {
-			String errorDescripcionVacía = "";
-
-			if (crearPrediccion) {
-				errorDescripcionVacía = "Por favor, escriba una descripción para la predicción";
-			} else {
-				errorDescripcionVacía = "Por favor, escoja una predicción válida";
-			}
-			return new ResponseEntity<>(errorDescripcionVacía, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, escoja una predicción", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
-		if (crearPrediccion) {
-
-			if (prediccion == null) {
-
-				prediccion = prediccionesService.guardarPrediccion(descripcion);
-
-				if (!this.crearCarpetaPrediccion(prediccion)) {
-					return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
-							HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-
-				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>("Ya existe una predicción con esa descripción", HttpStatus.BAD_REQUEST);
-			}
-		} else {
-			if (prediccion != null) {
-				if (!this.crearCarpetaPrediccion(prediccion)) {
-					return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
-							HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-
-				return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>("Escoja una predicción válida", HttpStatus.BAD_REQUEST);
-			}
+		if (prediccion == null) {
+			return new ResponseEntity<>("La predicción seleccionada no es válida", HttpStatus.BAD_REQUEST);
+		}
+		else {
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
 		}
 
-	}
-
-	private boolean crearCarpetaPrediccion(Predicciones prediccion) {
-
-		File carpetaClusters = new File(rutaImagenesClusters);
-
-		if (!carpetaClusters.exists()) {
-			if (!carpetaClusters.mkdirs()) {
-				return false;
-			}
-		}
-
-		String nombreCarpetaPrediccion = "prediccion" + prediccion.getId();
-		File carpetaPrediccion = new File(rutaImagenesClusters + File.separator + nombreCarpetaPrediccion);
-
-		if (!carpetaPrediccion.exists()) {
-			if (!carpetaPrediccion.mkdirs()) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	@PostMapping(value = "/createPopulationAndCurves", consumes = "multipart/form-data")

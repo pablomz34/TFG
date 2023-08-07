@@ -1,5 +1,7 @@
 package com.tfg.controllers;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,9 @@ public class AdminController {
 
 	@Value("${myapp.rutasSecuenciales}")
 	private List<String> rutasSecuenciales;
+	
+	@Value("${myapp.imagenesClusters.ruta}")
+	protected String rutaImagenesClusters;	
 	
 	@GetMapping("/procesamientos")
 	public String procesamientos() {
@@ -187,6 +192,56 @@ public class AdminController {
 	public String exportar() {
 		return "exportarBBDD";
 	}
+	
+	
+	@PostMapping("/crearPrediccion")
+	public ResponseEntity<?> createOrFindPrediction(@RequestParam("descripcion") String descripcion)
+			throws UnsupportedEncodingException {
+
+		if (descripcion == null || descripcion.isEmpty()) {
+			return new ResponseEntity<>("Por favor, escriba una descripción para la predicción",
+					HttpStatus.BAD_REQUEST);
+		}
+
+		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
+
+		if (prediccion == null) {
+
+			prediccion = prediccionesService.guardarPrediccion(descripcion);
+
+			if (!this.crearCarpetaPrediccion(prediccion)) {
+				return new ResponseEntity<>("El sistema de gestión de archivos ha fallado",
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			return new ResponseEntity<>(prediccion.getId(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("Ya existe una predicción con esa descripción", HttpStatus.BAD_REQUEST);
+		}
+
+	}
+	
+	private boolean crearCarpetaPrediccion(Predicciones prediccion) {
+
+		File carpetaClusters = new File(rutaImagenesClusters);
+
+		if (!carpetaClusters.exists()) {
+			if (!carpetaClusters.mkdirs()) {
+				return false;
+			}
+		}
+
+		String nombreCarpetaPrediccion = "prediccion" + prediccion.getId();
+		File carpetaPrediccion = new File(rutaImagenesClusters + File.separator + nombreCarpetaPrediccion);
+
+		if (!carpetaPrediccion.exists()) {
+			if (!carpetaPrediccion.mkdirs()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 
 	@PostMapping("/crearAlgoritmo")
 	public ResponseEntity<?> crearAlgoritmo(@RequestParam("nombreAlgoritmo") String nombreAlgoritmo) {

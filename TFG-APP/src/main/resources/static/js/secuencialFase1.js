@@ -82,8 +82,7 @@ new Vue({
 		            <img id="cargando" src="/images/cargando.gif" style="top: 50%; left: 50%; position: fixed; transform: translate(-50%, -50%); z-index: 9999;"/>
 		        </div>
 		    </span>
-		    
-		    
+		    	    
 		    <div class="row justify-content-center mt-3">
 				<div v-if="errorMessage != ''" class="col-md-5">
 					<div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -91,8 +90,7 @@ new Vue({
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				</div>
-			</div>
-		    		    
+			</div>	    		    
 		    
 		    <div class="row col-md-6 offset-md-3">
 		        <div class="card rounded-4 p-0 mb-2 shadow">

@@ -67,8 +67,7 @@ new Vue({
 		crearPrediccion() {
 			const THIZ = this;
 
-			fetch(window.location.origin + "/admin/fases/createOrUpdatePrediction?crearPrediccion=" + true +
-				"&descripcion=" + this.crearPrediccionDescripcion, {
+			fetch(window.location.origin + "/admin/crearPrediccion?descripcion=" + this.crearPrediccionDescripcion, {
 				method: "POST",
 			})
 				.then(async res => {
