@@ -1,5 +1,5 @@
 
-import {mixinFase1} from './abstractMixinsFases.js';
+import { mixinFase1 } from './abstractMixinsFases.js';
 
 
 new Vue({
@@ -47,7 +47,7 @@ new Vue({
 				.catch(error => console.error(error))
 		},
 		siguienteFase() {
-			
+
 			const THIZ = this;
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {
@@ -66,9 +66,9 @@ new Vue({
 
 				})
 				.then(nextUrl => {
-					
+
 					window.location.href = nextUrl;
-					
+
 				})
 				.catch(error => console.error(error))
 

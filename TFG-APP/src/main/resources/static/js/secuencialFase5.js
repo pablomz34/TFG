@@ -1,5 +1,5 @@
 
-import {mixinFase5} from './abstractMixinsFases.js';
+import { mixinFase5 } from './abstractMixinsFases.js';
 
 new Vue({
 	el: "#secuencialFase5",
@@ -10,11 +10,11 @@ new Vue({
 			algoritmoOptimo: ''
 		}
 	},
-	
+
 	created() {
-		
-		 const THIZ = this;
-		
+
+		const THIZ = this;
+
 		fetch(window.location.origin + "/admin/procesamientos/secuencial/getAlgoritmoOptimo", {
 			method: "GET"
 		})
@@ -42,13 +42,13 @@ new Vue({
 	methods: {
 
 		getModelPerformance() {
-			
+
 			const THIZ = this;
-			
+
 			THIZ.datosCargados = false;
-			
+
 			THIZ.errorMessage = '';
-			
+
 			THIZ.mostrarCargando = true;
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/getModelPerformance", {
@@ -71,12 +71,12 @@ new Vue({
 				})
 				.catch(error => console.error(error));
 		},
-		
+
 		terminarProceso() {
 			const THIZ = this;
 
 			THIZ.errorMessage = '';
-			
+
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/terminarProceso", {
 				method: "POST"

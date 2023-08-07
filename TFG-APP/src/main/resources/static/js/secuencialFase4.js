@@ -1,5 +1,5 @@
 
-import {mixinFase4} from './abstractMixinsFases.js';
+import { mixinFase4 } from './abstractMixinsFases.js';
 
 new Vue({
 	el: "#secuencialFase4",
@@ -12,31 +12,26 @@ new Vue({
 	},
 
 	created() {
-		
-		 const THIZ = this;
-		
+		const THIZ = this;
+
 		fetch(window.location.origin + "/admin/procesamientos/secuencial/getAlgoritmoOptimo", {
 			method: "GET"
 		})
 			.then(async res => {
-
 				if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 					const errorMessage = await res.text();
 					THIZ.errorMessage1 = errorMessage;
 					THIZ.mostrarCargando = false;
 					throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 				}
-
 				return res.text();
-
 			})
 			.then(algoritmoOptimo => {
-
 				THIZ.algoritmoOptimo = algoritmoOptimo;
-
 			})
 			.catch(error => console.error(error))
 	},
+
 	computed: {
 		nClustersRange() {
 			return Array.from({ length: this.nClusters }, (_, index) => index);
@@ -44,15 +39,13 @@ new Vue({
 	},
 
 	methods: {
-
 		createPopulationAndCurves: function() {
 			const THIZ = this;
-
 			THIZ.curvasCargadas = false;
 			THIZ.perfilCargado = false;
 			THIZ.errorMessage1 = '';
+			THIZ.errorMessage2 = '';
 			THIZ.curvasAndPerfilesCreados = false;
-
 			THIZ.mostrarCargando = true;
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/createPopulationAndCurves", {
@@ -65,81 +58,12 @@ new Vue({
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
-
 					return res.text();
-
 				})
 				.then(data => {
-
 					THIZ.nClusters = data;
 					THIZ.curvasAndPerfilesCreados = true;
 					THIZ.continueButton = true;
-					THIZ.mostrarCargando = false;
-				})
-				.catch(error => console.error(error));
-
-
-		},
-
-		mostrarClusterSurvivalCurve: function() {
-			const THIZ = this;
-			THIZ.mostrarCargando = true;
-			THIZ.curvasCargadas = false;
-
-			
-			THIZ.errorMessage2 = '';
-
-			fetch(window.location.origin + "/admin/procesamientos/secuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves, {
-				method: "GET",
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						THIZ.errorMessage2 = errorMessage;
-						THIZ.mostrarCargando = false;
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.text();
-				})
-				.then(data => {
-					THIZ.curvasUrl = data;
-					THIZ.nombreDescargaCurvas = 'cluster' + this.clusterSeleccionadoCurves + '.png';
-					THIZ.curvasCargadas = true;
-					THIZ.mostrarCargando = false;
-				})
-				.catch(error => console.error(error));
-		},
-
-		mostrarClusterProfile: function() {
-			const THIZ = this;
-			THIZ.mostrarCargando = true;
-			
-			THIZ.errorMessage3 = '';
-			
-			THIZ.perfilCargado = false;
-
-			fetch(window.location.origin + "/admin/procesamientos/secuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile, {
-				method: "GET",
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						THIZ.errorMessage3 = errorMessage;
-						THIZ.mostrarCargando = false;
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.json();
-				})
-				.then(data => {
-					THIZ.datasetStatistics[0].valor = data.id_prediction;
-					THIZ.datasetStatistics[1].valor = data.number_of_variables;
-					THIZ.datasetStatistics[2].valor = data.number_of_observations;
-					THIZ.datasetStatistics[3].valor = data.target_median;
-					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
-
-					THIZ.variables = data.features;
-
-					THIZ.perfilCargado = true;
 					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
@@ -147,7 +71,6 @@ new Vue({
 
 		siguienteFase() {
 			const THIZ = this;
-
 			THIZ.errorMessage1 = '';
 			THIZ.errorMessage2 = '';
 			THIZ.errorMessage3 = '';
@@ -156,25 +79,21 @@ new Vue({
 				method: "POST"
 			})
 				.then(async res => {
-
 					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
 						const errorMessage = await res.text();
 						THIZ.errorMessage1 = errorMessage;
 						THIZ.mostrarCargando = false;
 						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
 					}
-
 					return res.text();
-
 				})
 				.then(nextUrl => {
-
 					window.location.href = nextUrl;
-
 				})
 				.catch(error => console.error(error))
 		}
 	},
+
 	template: `
 		<div class="container mb-5 mt-5">
 		    <span>
@@ -241,7 +160,7 @@ new Vue({
 		                <h2 class="text-center text-white">Curva de cluster</h2>
 		            </div>
 		            <div class="card-body">
-		                <form @submit.prevent="mostrarClusterSurvivalCurve">
+		                <form @submit.prevent="mostrarClusterSurvivalCurve(true)">
 		                    <div class="form-group mb-3">
 		                    	<div class="input-container">	                 
 		                    		<label for="clusterSeleccionadoCurves" class="input-container-label fw-bold">Número de cluster</label>
@@ -269,7 +188,7 @@ new Vue({
 		                <h2 class="text-center text-white">Perfil de cluster</h2>
 		            </div>
 		            <div class="card-body">
-		                <form @submit.prevent="mostrarClusterProfile">
+		                <form @submit.prevent="mostrarClusterProfile(true)">
 		                    <div class="form-group mb-3">
 		                    	<div class="input-container">
 			                        <label for="clusterSeleccionadoProfile" class="input-container-label fw-bold">Número de cluster</label>

@@ -1,5 +1,5 @@
 
-import {mixinFase3} from './abstractMixinsFases.js';
+import { mixinFase3 } from './abstractMixinsFases.js';
 
 new Vue({
 	el: "#secuencialFase3",
@@ -31,7 +31,7 @@ new Vue({
 				})
 				.then(data => {
 
-					for (let i = 0, j = 1; j < data.lista.length; i++, j++) THIZ.lista[i] = data.lista[j]			
+					for (let i = 0, j = 1; j < data.lista.length; i++, j++) THIZ.lista[i] = data.lista[j]
 
 					THIZ.algoritmoOptimo = data.algoritmoOptimo;
 					THIZ.datosCargados = true;

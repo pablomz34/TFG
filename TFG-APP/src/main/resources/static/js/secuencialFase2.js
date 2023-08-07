@@ -66,7 +66,7 @@ new Vue({
 		siguienteFase() {
 
 			const THIZ = this;
-			
+
 			THIZ.errorMessage = '';
 
 			fetch(window.location.origin + "/admin/procesamientos/secuencial/siguienteFase", {

@@ -292,7 +292,75 @@ export const mixinFase4 = {
 		nClustersRange() {
 			return Array.from({ length: this.nClusters }, (_, index) => index);
 		}
-	}
+	},
+	methods: {
+		mostrarClusterSurvivalCurve: function(secuencial, idPrediccion) {
+			const THIZ = this;
+			THIZ.mostrarCargando = true;
+			THIZ.curvasCargadas = false;
+			THIZ.errorMessage2 = '';
+			var url;
+			
+			if(secuencial) url = "/admin/procesamientos/secuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves ;
+			else url = "/admin/procesamientos/noSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + idPrediccion;
+			
+			fetch(window.location.origin + url, {
+				method: "GET",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.errorMessage2 = errorMessage;
+						THIZ.mostrarCargando = false;
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.text();
+				})
+				.then(data => {
+					THIZ.curvasUrl = data;
+					THIZ.nombreDescargaCurvas = 'cluster' + this.clusterSeleccionadoCurves + '.png';
+					THIZ.curvasCargadas = true;
+					THIZ.mostrarCargando = false;
+				})
+				.catch(error => console.error(error));
+		},
+		
+		mostrarClusterProfile: function(secuencial, idPrediccion) {
+			const THIZ = this;
+			THIZ.mostrarCargando = true;
+			THIZ.errorMessage3 = '';
+			THIZ.perfilCargado = false;
+			var url;
+
+			if(secuencial) url = "/admin/procesamientos/secuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile ;
+			else url = "/admin/procesamientos/noSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + idPrediccion;
+
+			fetch(window.location.origin + url, {
+				method: "GET",
+			})
+				.then(async res => {
+					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
+						const errorMessage = await res.text();
+						THIZ.errorMessage3 = errorMessage;
+						THIZ.mostrarCargando = false;
+						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
+					}
+					return res.json();
+				})
+				.then(data => {
+					THIZ.datasetStatistics[0].valor = data.id_prediction;
+					THIZ.datasetStatistics[1].valor = data.number_of_variables;
+					THIZ.datasetStatistics[2].valor = data.number_of_observations;
+					THIZ.datasetStatistics[3].valor = data.target_median;
+					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
+					THIZ.variables = data.features;
+					THIZ.perfilCargado = true;
+					THIZ.mostrarCargando = false;
+				})
+				.catch(error => console.error(error));
+		}
+	},
+	
 };
 
 export const mixinFase5 = {

@@ -1,13 +1,13 @@
 
-import {mixinFase1} from './abstractMixinsFases.js';
+import { mixinFase1 } from './abstractMixinsFases.js';
 
-import {mixinFase2} from './abstractMixinsFases.js';
+import { mixinFase2 } from './abstractMixinsFases.js';
 
-import {mixinFase3} from './abstractMixinsFases.js';
+import { mixinFase3 } from './abstractMixinsFases.js';
 
-import {mixinFase4} from './abstractMixinsFases.js';
+import { mixinFase4 } from './abstractMixinsFases.js';
 
-import {mixinFase5} from './abstractMixinsFases.js';
+import { mixinFase5 } from './abstractMixinsFases.js';
 
 Vue.component('fase1', {
 	mixins: [mixinFase1],
@@ -16,7 +16,7 @@ Vue.component('fase1', {
 			csvFile: ''
 		}
 	},
-	
+
 	methods: {
 		getOptimalNClusters() {
 			const THIZ = this;
@@ -25,7 +25,7 @@ Vue.component('fase1', {
 			formData.append('max_clusters', this.maxClusters);
 			formData.append('file', this.$refs.csvFile.files[0]);
 			THIZ.errorMessage = '';
-			
+
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getOptimalNClusters", {
 				method: "POST",
 				body: formData
@@ -125,15 +125,15 @@ Vue.component('fase2', {
 			csvFile: ''
 		}
 	},
-	
+
 	created() {
 		this.getAlgoritmosObligatorios();
 	},
 
 	methods: {
 		getSubPopulations: function() {
-			const THIZ = this;			
-			THIZ.mostrarCargando = true;		
+			const THIZ = this;
+			THIZ.mostrarCargando = true;
 			THIZ.errorMessage = '';
 			const formData = new FormData();
 			const algoritmosSeleccionadosJson = JSON.stringify(this.algoritmosSeleccionados);
@@ -384,7 +384,7 @@ Vue.component('fase4', {
 	methods: {
 		getDescripciones: function() {
 			const THIZ = this;
-			
+
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getDescripcionesPredicciones", {
 				method: "GET",
 			})
@@ -399,7 +399,7 @@ Vue.component('fase4', {
 				})
 				.then(data => {
 					for (let i = 0; i < data.length; i++) {
-						THIZ.descripciones.push(data[i]);
+						this.descripciones.push(data[i]);
 					}
 					THIZ.mostrarCargando = false;
 				})
@@ -437,6 +437,7 @@ Vue.component('fase4', {
 			THIZ.curvasCargadas = false;
 			THIZ.perfilCargado = false;
 			THIZ.errorMessage1 = '';
+			THIZ.errorMessage2 = '';
 			THIZ.curvasAndPerfilesCreados = false;
 			const formData = new FormData();
 			THIZ.mostrarCargando = true;
@@ -459,64 +460,6 @@ Vue.component('fase4', {
 				.then(data => {
 					THIZ.nClusters = data;
 					THIZ.curvasAndPerfilesCreados = true;
-					THIZ.mostrarCargando = false;
-				})
-				.catch(error => console.error(error));
-		},
-
-		mostrarClusterSurvivalCurve: function() {
-			const THIZ = this;
-			THIZ.mostrarCargando = true;
-			THIZ.curvasCargadas = false;
-			THIZ.errorMessage2 = '';
-	
-			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + this.idPrediccion, {
-				method: "GET",
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						THIZ.errorMessage2 = errorMessage;
-						THIZ.mostrarCargando = false;
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.text();
-				})
-				.then(data => {
-					THIZ.curvasUrl = data;
-					THIZ.nombreDescargaCurvas = 'prediccion' + this.idPrediccion + 'cluster' + this.clusterSeleccionadoCurves + '.png';
-					THIZ.curvasCargadas = true;
-					THIZ.mostrarCargando = false;
-				})
-				.catch(error => console.error(error));
-		},
-
-		mostrarClusterProfile: function() {
-			const THIZ = this;
-			THIZ.mostrarCargando = true;
-			THIZ.errorMessage3 = '';
-			THIZ.perfilCargado = false;
-
-			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + this.idPrediccion, {
-				method: "GET",
-			})
-				.then(async res => {
-					if (!res.ok) { // Verificar si la respuesta no es exitosa (código de estado HTTP diferente de 200)
-						const errorMessage = await res.text();
-						THIZ.errorMessage3 = errorMessage;
-						THIZ.mostrarCargando = false;
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-					return res.json();
-				})
-				.then(data => {
-					THIZ.datasetStatistics[0].valor = data.id_prediction;
-					THIZ.datasetStatistics[1].valor = data.number_of_variables;
-					THIZ.datasetStatistics[2].valor = data.number_of_observations;
-					THIZ.datasetStatistics[3].valor = data.target_median;
-					THIZ.datasetStatistics[4].valor = data.target_third_quantile;
-					THIZ.variables = data.features;
-					THIZ.perfilCargado = true;
 					THIZ.mostrarCargando = false;
 				})
 				.catch(error => console.error(error));
@@ -666,7 +609,7 @@ Vue.component('fase4', {
 	                <h2 class="text-center text-white">Curva de cluster</h2>
 	            </div>
 	            <div class="card-body">
-	                <form @submit.prevent="mostrarClusterSurvivalCurve">
+	                <form @submit.prevent="mostrarClusterSurvivalCurve(false, idPrediccion)">
 	                    <div class="form-group mb-3">
 	                    	<div class="input-container">	                 
 	                    		<label for="clusterSeleccionadoCurves" class="input-container-label fw-bold">Número de cluster</label>
@@ -691,7 +634,7 @@ Vue.component('fase4', {
 	                <h2 class="text-center text-white">Perfil de cluster</h2>
 	            </div>
 	            <div class="card-body">
-	                <form @submit.prevent="mostrarClusterProfile">
+	                <form @submit.prevent="mostrarClusterProfile(false, idPrediccion)">
 	                    <div class="form-group mb-3">
 	                    	<div class="input-container">
 		                        <label for="clusterSeleccionadoProfile" class="input-container-label fw-bold">Número de cluster</label>
@@ -765,12 +708,12 @@ Vue.component('fase5', {
 	methods: {
 		getModelPerformance() {
 			const THIZ = this;
-			const formData = new FormData();			
+			const formData = new FormData();
 			THIZ.datosCargados = false;
 			THIZ.errorMessage = '';
 			THIZ.mostrarCargando = true;
 			formData.append('file', this.$refs.csvFile.files[0]);
-			
+
 			fetch(window.location.origin + "/admin/procesamientos/noSecuencial/getModelPerformance", {
 				method: "POST",
 				body: formData
@@ -882,7 +825,7 @@ new Vue({
 					THIZ.faseSeleccionada = fase;
 					break;
 			}
-			
+
 			this.getColorFaseSeleccionada(event);
 		},
 
