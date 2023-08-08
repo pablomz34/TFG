@@ -242,14 +242,14 @@ public class AdminController {
 	public ResponseEntity<?> crearAlgoritmo(@RequestParam("nombreAlgoritmo") String nombreAlgoritmo) {
 
 		if (nombreAlgoritmo.equals("") || nombreAlgoritmo.isEmpty()) {
-			return new ResponseEntity("Por favor, escriba un nombre para el algoritmo", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, escriba un nombre para el algoritmo", HttpStatus.BAD_REQUEST);
 		}
 
 		if (algoritmosClusteringService.findAlgoritmoByNombreAlgoritmo(nombreAlgoritmo) != null) {
-			return new ResponseEntity("Ya existe un algoritmo con ese nombre", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Ya existe un algoritmo con ese nombre", HttpStatus.BAD_REQUEST);
 		} else {
 			algoritmosClusteringService.guardarAlgoritmo(nombreAlgoritmo);
-			return new ResponseEntity("Algoritmo creado correctamente", HttpStatus.OK);
+			return new ResponseEntity<>("Algoritmo creado correctamente", HttpStatus.OK);
 		}
 
 	}
@@ -262,7 +262,7 @@ public class AdminController {
 		if (!nombreAlgoritmo.equals("") && !nombreAlgoritmo.isEmpty()) {
 			algoritmos = algoritmosClusteringService.findAlgoritmosCoincidentes(nombreAlgoritmo);
 		}
-		return new ResponseEntity(algoritmos, HttpStatus.OK);
+		return new ResponseEntity<>(algoritmos, HttpStatus.OK);
 	}
 
 	@PostMapping("/borrarAlgoritmo")
@@ -272,9 +272,9 @@ public class AdminController {
 
 		if (algoritmo != null) {
 			algoritmosClusteringService.borrarAlgoritmo(algoritmo.getId());
-			return new ResponseEntity("El algoritmo se ha borrado correctamente", HttpStatus.OK);
+			return new ResponseEntity<>("El algoritmo se ha borrado correctamente", HttpStatus.OK);
 		} else {
-			return new ResponseEntity("El algoritmo seleccionado no existe", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("El algoritmo seleccionado no existe", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -302,7 +302,7 @@ public class AdminController {
 
 		}
 
-		return new ResponseEntity(columnasPrediccionesCoincidentes, HttpStatus.OK);
+		return new ResponseEntity<>(columnasPrediccionesCoincidentes, HttpStatus.OK);
 	}
 
 	@PostMapping("/borrarPrediccion")
@@ -312,9 +312,9 @@ public class AdminController {
 
 		if (prediccion != null) {
 			prediccionesService.borrarPrediccion(prediccion.getId());
-			return new ResponseEntity("La prediccion se ha borrado correctamente", HttpStatus.OK);
+			return new ResponseEntity<>("La prediccion se ha borrado correctamente", HttpStatus.OK);
 		} else {
-			return new ResponseEntity("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
 		}
 	}
 
