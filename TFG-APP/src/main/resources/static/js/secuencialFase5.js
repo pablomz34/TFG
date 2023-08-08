@@ -117,13 +117,25 @@ new Vue({
 				</div>
 			</div>
 		</div>
+		
+		<div class="row justify-content-center mb-4">
+		   	<div class="algoritmo-optimo-component text-center">
+						
+				<span class="text-center mb-1">Algoritmo Óptimo</span>
+				
+				<i class="fa-solid fa-arrow-down fs-4 text-center" style="color: rgb(220, 227, 250)"></i>
+							
+				<span class="text-center" style="color: rgb(63, 103, 224);">{{this.algoritmoOptimo}}</span>			
+				
+		    </div>
+	    </div>
 	
 	    <div class="row col-md-6 offset-md-3 text-center">
 	       
 	        <div class="card rounded-4 p-0 mb-2 shadow">
 	           
 	            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-	                <h2 class="text-center text-white">Rendimiento del modelo con algoritmo {{this.algoritmoOptimo}}</h2>
+	                <h2 class="text-center text-white">Rendimiento del modelo</h2>
 	            </div>
 	            <div class="card-body">
 	                <form @submit.prevent="getModelPerformance">
@@ -153,8 +165,8 @@ new Vue({
 	        </div>
 	    </div>
 	    
-	    <div v-if="terminarProcesoButton" class="row justify-content-center mt-2">	
-			<button type="button" @click="terminarProceso" class="next-button">Terminar</button>	
+	    <div v-if="terminarProcesoButton" class="row justify-content-center my-4">	
+			<button type="button" @click="terminarProceso" class="next-button" style="justify-content: center;">Terminar</button>	
 		</div>
 	</div>
 

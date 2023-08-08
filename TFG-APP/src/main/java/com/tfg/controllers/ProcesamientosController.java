@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,7 +41,7 @@ import com.tfg.services.IProfilesService;
 
 @RequestMapping("/admin/procesamientos")
 public abstract class ProcesamientosController {
-	
+
 	protected static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
 	protected static final String UrlMock = "http://localhost:8090/";
 
@@ -57,9 +58,10 @@ public abstract class ProcesamientosController {
 	protected IAlgoritmosClusteringService algoritmosClusteringService;
 
 	@Value("${myapp.imagenesClusters.ruta}")
-	protected String rutaImagenesClusters;	
-	
-	protected InputStream llamadaServidorNgrok(String url, File file, CloseableHttpClient httpClient) throws IOException {
+	protected String rutaImagenesClusters;
+
+	protected InputStream llamadaServidorNgrok(String url, File file, CloseableHttpClient httpClient)
+			throws IOException {
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
 		HttpPost httpPost = new HttpPost(url);
@@ -182,7 +184,7 @@ public abstract class ProcesamientosController {
 		prediccionesService.guardarMaxClusters(maxClusters, idPrediccion);
 
 	}
-	
+
 	protected String validarInputNumber(String numClusters, Integer minClusters, Integer maxClusters) {
 
 		if (numClusters == null || numClusters.isEmpty()) {
@@ -221,11 +223,72 @@ public abstract class ProcesamientosController {
 	}
 
 	protected String validarInputFile(MultipartFile multipartFile) {
+
 		String contentType = multipartFile.getContentType();
 		if (!contentType.equals("text/csv")) {
 			return "El tipo de archivo no es válido, seleccione un archivo con extensión .csv";
 		}
+		
+		if (multipartFile.isEmpty() || !this.validarContenidoArchivoEnBlanco(multipartFile)) {
+			return "El archivo debe contener datos, no puede estar vacío";
+		}
+
+		if (!this.validarFormatoArchivoCsv(multipartFile)) {
+			return "El formato de los datos no es correcto, el archivo debe tener formato csv delimitado por comas";
+		}
+
 		return "";
 	}
-	
+
+	private boolean validarContenidoArchivoEnBlanco(MultipartFile multipartFile) {
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
+
+			StringBuilder content = new StringBuilder();
+			String nextLine;
+			while ((nextLine = reader.readLine()) != null) {
+				content.append(nextLine).append("\n");
+			}
+
+			// Elimina cualquier carácter BOM o contenido en blanco
+			String cleanedContent = content.toString().trim();
+
+			return !cleanedContent.isEmpty();
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+	private boolean validarFormatoArchivoCsv(MultipartFile multipartFile) {
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
+
+			String nextLine;
+
+			while ((nextLine = reader.readLine()) != null) {
+
+				String[] nextLineSplit = nextLine.split(",");
+
+				if (nextLineSplit.length < 2) {
+					return false;
+				}
+
+			}
+
+			return true;
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
 }

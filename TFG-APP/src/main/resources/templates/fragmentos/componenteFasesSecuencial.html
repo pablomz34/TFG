@@ -1,0 +1,10 @@
+<div th:fragment="componente-fases-secuencial" class="flex-component">
+
+	<div th:each="fase, i: ${fases}" class="fase-container">
+		<div th:class="${i.index == indiceFase ? 'fase-border-component fase-border-component-dark' : 'fase-border-component'}"></div>
+		<div th:class="${i.index == indiceFase ? 'fase-component fase-component-dark' : 'fase-component'}">
+			<span class="text-fase-component" th:text="${fase}"></span>
+		</div>
+	</div>
+
+</div>

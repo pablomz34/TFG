@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,6 +59,22 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 
 	@Value("${myapp.rutasSecuenciales}")
 	private List<String> rutasSecuenciales;
+	
+	private List<String> fasesInfo = new ArrayList<String>();
+	
+	public ProcesamientoSecuencialController() {
+					
+		this.fasesInfo.add("NºOptimo de clusters");
+		
+		this.fasesInfo.add("Subpoblaciones");
+		
+		this.fasesInfo.add("Métricas de varianza");
+		
+		this.fasesInfo.add("Estadísticas de población");
+		
+		this.fasesInfo.add("Rendimiento del modelo");
+		
+	}
 
 	@GetMapping("/seleccionarPrediccionYPoblacion")
 	public String seleccionarPrediccionYPoblacion() {
@@ -90,53 +107,73 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	}
 
 	@GetMapping("/fase1")
-	public String fase1() {
+	public String fase1(Model model) {
 
 		List<String> atributosExtra = new ArrayList<String>();
 
 		atributosExtra.add("algoritmoOptimo");
 
 		this.borrarVariablesSesion(3, atributosExtra);
+		
+		model.addAttribute("indiceFase", 0);
+		
+		model.addAttribute("fases", this.fasesInfo);
 
 		return "secuencialFase1";
 	}
 
 	@GetMapping("/fase2")
-	public String fase2() {
+	public String fase2(Model model) {
 
 		List<String> atributosExtra = new ArrayList<String>();
 
 		atributosExtra.add("algoritmoOptimo");
 
 		this.borrarVariablesSesion(4, atributosExtra);
+		
+		model.addAttribute("indiceFase", 1);
+		
+		model.addAttribute("fases", this.fasesInfo);
 
 		return "secuencialFase2";
 	}
 
 	@GetMapping("/fase3")
-	public String fase3() {
+	public String fase3(Model model) {
 
 		List<String> atributosExtra = new ArrayList<String>();
 
 		atributosExtra.add("algoritmoOptimo");
 
 		this.borrarVariablesSesion(5, atributosExtra);
+		
+		model.addAttribute("indiceFase", 2);
+		
+		model.addAttribute("fases", this.fasesInfo);	
 
 		return "secuencialFase3";
 	}
 
 	@GetMapping("/fase4")
-	public String fase4() {
+	public String fase4(Model model) {
 
 		this.borrarVariablesSesion(6, new ArrayList<String>());
+		
+		model.addAttribute("indiceFase", 3);
+		
+		model.addAttribute("fases", this.fasesInfo);
 
 		return "secuencialFase4";
 	}
 
 	@GetMapping("/fase5")
-	public String fase5() {
+	public String fase5(Model model) {
 
 		this.borrarVariablesSesion(7, new ArrayList<String>());
+		
+		model.addAttribute("indiceFase", 4);
+		
+		model.addAttribute("fases", this.fasesInfo);
 
 		return "secuencialFase5";
 	}

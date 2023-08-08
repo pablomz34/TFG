@@ -499,12 +499,19 @@ Vue.component('fase4', {
 	                <h2 v-if="!crear" class="text-center text-white">Modificar predicción existente</h2>
 	            </div>
 				<div class="card-body" style="text-align: center;">
-					<button @click="cambiarSeleccion(true)" type="button" class="btn btn-custom-color btn-md-5 mb-3" :disabled="crear" style="border: 1px; width:40%">
-		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Crear</p>
-		            </button>
-		            <button @click="cambiarSeleccion(false)" type="button" class="btn btn-custom-color btn-md-5 mb-3" :disabled="!crear" style="border: 1px; width:40%">
-		                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Modificar</p>
-		            </button>            		
+				
+					<div class="row justify-content-around">
+						<div class="col-md-5">
+							<button @click="cambiarSeleccion(true)" type="button" class="btn btn-custom-color w-100 mb-3" :disabled="crear" style="border: 1px; width:40%">
+				                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Crear</p>
+				            </button>
+			            </div>
+			            <div class="col-md-5">
+				            <button @click="cambiarSeleccion(false)" type="button" class="btn btn-custom-color w-100 mb-3" :disabled="!crear" style="border: 1px; width:40%">
+				                <p style="text-overflow:ellipsis;  overflow: hidden; margin-bottom:0">Modificar</p>
+				            </button>    
+			            </div>
+		            </div>        		
 					<div v-if="crear" class="row justify-content-around">
 						<form @submit.prevent="seleccionarPrediccion('/admin/crearPrediccion')">
 							<div class="form-group mb-3">

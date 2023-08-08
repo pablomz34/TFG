@@ -117,7 +117,7 @@ new Vue({
 		        </div>
 		    </div>
 		    
-		    <div v-if="continuarButton" class="row justify-content-center m-2">	
+		    <div v-if="continuarButton" class="row justify-content-center my-4">	
 				<button type="button" @click="siguienteFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 			</div>
 		    

@@ -159,11 +159,6 @@ public class AdminController {
 		return "index";
 	}
 
-	@GetMapping("/fases")
-	public String fases() {
-		return "fases";
-	}
-
 	@GetMapping("/getAllPredicciones")
 	public ResponseEntity<?> getAllPredicciones() {
 		List<String> predicciones = prediccionesService.getDescripciones();

@@ -8,43 +8,7 @@
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 	
-	<div class="flex-component">
-		<div class="fase-container">
-			<div class="fase-border-component"></div>
-			<div class="fase-component">
-				<span class="text-fase-component">Nº Optimo de clusters</span>
-			</div>
-
-		</div>
-
-		<div class="fase-container">
-			<div class="fase-border-component"></div>
-			<div class="fase-component">
-				<span class="text-fase-component">Subpopulations</span>
-			</div>
-		</div>
-
-		<div class="fase-container">
-			<div class="fase-border-component"></div>
-			<div class="fase-component">
-				<span class="text-fase-component">Métricas de varianza</span>
-			</div>
-		</div>
-
-		<div class="fase-container">
-			<div class="fase-border-component fase-border-component-dark"></div>
-			<div class="fase-component fase-component-dark">
-				<span class="text-fase-component">Estadísticas de población</span>
-			</div>
-		</div>
-
-		<div class="fase-container">
-			<div class="fase-border-component"></div>
-			<div class="fase-component">
-				<span class="text-fase-component">Rendimiento del modelo</span>
-			</div>
-		</div>
-	</div>
+	<div th:replace="fragmentos/componenteFasesSecuencial :: componente-fases-secuencial"></div>
 
 	<div id="secuencialFase4"></div>
 	

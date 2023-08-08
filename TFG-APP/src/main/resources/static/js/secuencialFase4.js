@@ -110,12 +110,24 @@ new Vue({
 					</div>
 				</div>
 			</div>
+			
+			<div class="row justify-content-center mb-4">
+			   	<div class="algoritmo-optimo-component text-center">
+							
+					<span class="text-center mb-1">Algoritmo Óptimo</span>
+					
+					<i class="fa-solid fa-arrow-down fs-4 text-center" style="color: rgb(220, 227, 250)"></i>
+								
+					<span class="text-center" style="color: rgb(63, 103, 224);">{{this.algoritmoOptimo}}</span>			
+					
+			    </div>
+		    </div>
 		
 		    <div class="row justify-content-around">
 		        <div class="card col-7 rounded-4 p-0 mb-3 shadow">
 		            
 		            <div class="card-header rounded-4 rounded-bottom bg-custom-color bg-gradient bg-opacity-75">
-		                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población. Algoritmo óptimo: {{this.algoritmoOptimo}}</h2>
+		                <h2 class="text-center text-white">Crear curvas de supervivencia y perfil de población</h2>
 		            </div>
 		            <div class="card-body">
 		                <form @submit.prevent="createPopulationAndCurves">       
@@ -132,7 +144,7 @@ new Vue({
 		        </div>
 		    </div>
 		    
-		    <div v-if="continueButton" class="row justify-content-center m-2">	
+		    <div v-if="continueButton" class="row justify-content-center my-4">	
 				<button type="button" @click="siguienteFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 			</div>
 		    

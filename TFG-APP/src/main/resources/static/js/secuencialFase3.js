@@ -107,7 +107,7 @@ new Vue({
 		    </div>
 		    
 		    
-		    <div v-if="continueButton" class="row justify-content-center m-2">	
+		    <div v-if="continueButton" class="row justify-content-center my-4">	
 				<button type="button" @click="siguienteFase" class="next-button">Continuar <i class="fa-solid fa-arrow-right next-button-i"></i></button>	
 			</div>
 		
@@ -132,9 +132,18 @@ new Vue({
 		        </table>
 		    </div>
 		    
-		   	<div v-if="continueButton" class="col-md-4 offset-md-4 text-center mt-2 alert alert-success">
-				El algoritmo que se usará en fases siguientes es: {{this.algoritmoOptimo}}
+	    	<div class="row justify-content-center">
+			   	<div v-if="continueButton" class="algoritmo-optimo-component text-center mt-5">
+							
+					<span class="text-center mb-1">Algoritmo Óptimo</span>
+					
+					<i class="fa-solid fa-arrow-down fs-4 text-center" style="color: rgb(220, 227, 250)"></i>
+								
+					<span class="text-center" style="color: rgb(63, 103, 224);">{{this.algoritmoOptimo}}</span>			
+					
+			    </div>
 		    </div>
+		        
 		</div>
 	`
 })
