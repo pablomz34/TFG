@@ -132,7 +132,7 @@ public class AuthController {
 		Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
 
 		if (id.longValue() != sessionIdUsuario.longValue()) {
-			return new ResponseEntity("No puedes obtener datos de otro usuario", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>("No puedes obtener datos de otro usuario", HttpStatus.FORBIDDEN);
 		}
 
 		Usuarios usuario = usuariosService.findUsuarioById(id);
@@ -162,7 +162,7 @@ public class AuthController {
 		Long sessionIdUsuario = (Long) session.getAttribute("idUsuario");
 
 		if (id.longValue() != sessionIdUsuario.longValue()) {
-			return new ResponseEntity("No puedes modificar datos de otro usuario", HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>("No puedes modificar datos de otro usuario", HttpStatus.FORBIDDEN);
 		}
 
 		String dato = (String) json.get("dato");
@@ -174,7 +174,7 @@ public class AuthController {
 		String error = validarDatoaModificar(dato, columnName, repeatPassword);
 
 		if (!error.isEmpty()) {
-			return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
 		if (columnName.equals("nombre")) {
@@ -193,7 +193,7 @@ public class AuthController {
 			usuariosService.updateDatoPerfilUsuario(id, dato, columnName);
 		}
 
-		return new ResponseEntity("", HttpStatus.OK);
+		return new ResponseEntity<>("", HttpStatus.OK);
 	}
 
 	private String validarDatoaModificar(String dato, String columnName, String repeatPassword) {

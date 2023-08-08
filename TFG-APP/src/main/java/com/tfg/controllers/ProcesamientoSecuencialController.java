@@ -322,20 +322,20 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
 
 		if(!this.validarAccesoEndpoint(1)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		
 		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (p == null) {
-			return new ResponseEntity("La prediccion seleccionada no existe", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("La prediccion seleccionada no existe", HttpStatus.BAD_REQUEST);
 		} else {
-			return new ResponseEntity(p.getPacientes().size(), HttpStatus.OK);
+			return new ResponseEntity<>(p.getPacientes().size(), HttpStatus.OK);
 		}
 
 	}
@@ -346,11 +346,11 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			throws IllegalStateException, IOException {
 
 		if(!this.validarAccesoEndpoint(1)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
@@ -399,7 +399,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getMaximoVariablesClinicas() {
 		
 		if(!this.validarAccesoEndpoint(2)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 
 		String idPrediccionProcesamientoSecuencial = (String) session
@@ -418,7 +418,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			throws JsonMappingException, JsonProcessingException {
 
 		if(!this.validarAccesoEndpoint(2)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
@@ -430,14 +430,14 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 					nombreVariableClinica, idPrediccion, variablesClinicasSeleccionadas);
 		}
 
-		return new ResponseEntity(variablesClinicasCoincidentes, HttpStatus.OK);
+		return new ResponseEntity<>(variablesClinicasCoincidentes, HttpStatus.OK);
 	}
 
 	@GetMapping("/getAllVariablesClinicas")
 	public ResponseEntity<?> getAllVariablesClinicas() {
 		
 		if(!this.validarAccesoEndpoint(2)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
@@ -451,7 +451,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> procesarVariablesClinicasSeleccionadas(@RequestBody List<String> variablesSeleccionadas) {
 
 		if(!this.validarAccesoEndpoint(2)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
@@ -477,7 +477,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			throws IllegalStateException, IOException {
 		
 		if(!this.validarAccesoEndpoint(3)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 
 		String error = this.validarInputNumber(maxClusters, 2, 20);
@@ -514,7 +514,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getAlgoritmosObligatorios() {
 		
 		if(!this.validarAccesoEndpoint(4)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		return new ResponseEntity<>(algoritmosClusteringService.findAlgoritmosObligatorios(), HttpStatus.OK);
@@ -527,7 +527,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			throws JsonMappingException, JsonProcessingException {
 
 		if(!this.validarAccesoEndpoint(4)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		List<AlgoritmosClustering> algoritmosCoincidentes = new ArrayList<AlgoritmosClustering>();
@@ -545,7 +545,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getSubPopulations(@RequestBody List<Map<String, Object>> algoritmos) throws IOException {
 
 		if(!this.validarAccesoEndpoint(4)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 			
 		if (algoritmos.size() == 0) {
@@ -603,7 +603,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getVarianceMetrics() throws IllegalStateException, IOException {
 
 		if(!this.validarAccesoEndpoint(5)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 			
 		String urlVarianceMetrics = UrlMock + "clustering/getVarianceMetrics";
@@ -673,7 +673,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getAlgoritmoOptimo(){
 		
 		if(!this.validarAccesoEndpoint(6)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		String algoritmoOptimo = (String) session.getAttribute("algoritmoOptimo");
@@ -691,7 +691,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			throws IllegalStateException, IOException, ClassNotFoundException {
 		
 		if(!this.validarAccesoEndpoint(6)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
@@ -738,7 +738,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getRutaCluster(@RequestParam("clusterNumber") String clusterNumber) throws IllegalStateException, IOException {
 
 		if(!this.validarAccesoEndpoint(6)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
@@ -767,7 +767,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	public ResponseEntity<?> getClusterProfile(@RequestParam("clusterNumber") String clusterNumber) throws IllegalStateException, IOException {
 
 		if(!this.validarAccesoEndpoint(6)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");
@@ -798,7 +798,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			throws IllegalStateException, IOException {
 		
 		if(!this.validarAccesoEndpoint(7)) {
-			return new ResponseEntity("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 		
 		String idPrediccion = (String) session.getAttribute("idPrediccionProcesamientoSecuencial");

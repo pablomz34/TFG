@@ -107,15 +107,15 @@ public class FasesController {
 	public ResponseEntity<?> getPacientesPrediccion(@RequestParam("descripcion") String descripcion) {
 
 		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones p = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (p == null) {
-			return new ResponseEntity("No existe ninguna predicción con esa descripción", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("No existe ninguna predicción con esa descripción", HttpStatus.BAD_REQUEST);
 		} else {
-			return new ResponseEntity(p.getPacientes().size(), HttpStatus.OK);
+			return new ResponseEntity<>(p.getPacientes().size(), HttpStatus.OK);
 		}
 
 	}
@@ -316,9 +316,9 @@ public class FasesController {
 		String error = this.validarInputFile(multipartFile);
 
 		if (!error.isEmpty()) {
-			return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		} else {
-			return new ResponseEntity("", HttpStatus.OK);
+			return new ResponseEntity<>("", HttpStatus.OK);
 		}
 
 	}
@@ -342,7 +342,7 @@ public class FasesController {
 					nombreAlgoritmo, algoritmosSeleccionados, algoritmosPreSeleccionados);
 		}
 
-		return new ResponseEntity(algoritmosCoincidentes, HttpStatus.OK);
+		return new ResponseEntity<>(algoritmosCoincidentes, HttpStatus.OK);
 	}
 
 	/*@PostMapping("/buscarVariablesClinicasCoincidentes")
@@ -359,7 +359,7 @@ public class FasesController {
 					idPrediccionPoblacion, variablesClinicasSeleccionadas);
 		}
 
-		return new ResponseEntity(variablesClinicas, HttpStatus.OK);
+		return new ResponseEntity<>(variablesClinicas, HttpStatus.OK);
 	}*/
 
 	@GetMapping("/getMaximoVariablesClinicas")
@@ -380,7 +380,7 @@ public class FasesController {
 			throws IllegalStateException, IOException {
 
 		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
 		}
 		
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
