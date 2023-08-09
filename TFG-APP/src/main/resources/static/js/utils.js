@@ -1,33 +1,14 @@
-Vue.component('utils', {
+
+new Vue({
+	el: "#utils",
 	data: function() {
 		return {
-			predicciones: [],
-			prediccionErrorMessage: '',
-			prediccionSuccessMessage: '',
 			columnaNombreOrdenada: false,
 			columnaApellidosOrdenada: false,
 			columnaCorreoOrdenada: false,
 			columnaDniOrdenada: false,
 			columnaPrediccionesOrdenada: false
 		}
-	},
-
-	mounted() {
-
-		const THIZ = this;
-		
-		let isPrediccionesTemplate = this.$el.getAttribute("data-isPrediccionesTemplte");
-
-		if (isPrediccionesTemplate) {
-			for (let i = 0; i < predicciones.length; i++) {
-				let dict = {};
-
-				dict["descripcion"] = predicciones[i].descripcion;
-				dict["id"] = predicciones[i].id;
-				THIZ.predicciones.push(dict);
-			}
-		}
-
 	},
 
 	methods: {
@@ -210,42 +191,8 @@ Vue.component('utils', {
 			else {
 				icono.setAttribute("class", "fa-solid fa-arrow-up-z-a fs-5");
 			}
-		},
-
-		eliminar(id) {
-
-			const THIZ = this;
-
-			THIZ.prediccionErrorMessage = '';
-			THIZ.prediccionSuccessMessage = '';
-
-			if (confirm("¿Estás seguro de que quieres borrar este elemento?")) {
-
-				fetch(window.location.origin + "/admin/borrarPrediccion?idPrediccion=" + id, {
-					method: "POST"
-				}).then(async res => {
-
-					if (!res.ok) {
-						const errorMessage = await res.text();
-						THIZ.prediccionErrorMessage = errorMessage;
-						throw new Error("Error: " + res.status + " " + res.statusText + " - " + errorMessage);
-					}
-
-					return res.text();
-
-				})
-					.then(successMessage => {
-						THIZ.prediccionSuccessMessage = successMessage;
-					})
-					.catch(err => console.log(err));
-
-
-			}
-
 		}
-	},
-
-
+	}
 })
 
 Vue.component('overview', {
@@ -403,7 +350,6 @@ Vue.component('graphic', {
 			this.generarGrafica();
 		}
 	},
-
 
 	template: `
 	<div class="col-12">	
