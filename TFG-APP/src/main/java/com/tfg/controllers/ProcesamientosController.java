@@ -232,9 +232,11 @@ public abstract class ProcesamientosController {
 		if (multipartFile.isEmpty() || !this.validarContenidoArchivoEnBlanco(multipartFile)) {
 			return "El archivo debe contener datos, no puede estar vacío";
 		}
+		
+		String validarFormatoError = this.validarFormatoArchivoCsv(multipartFile);
 
-		if (!this.validarFormatoArchivoCsv(multipartFile)) {
-			return "El formato de los datos no es correcto, el archivo debe tener formato csv delimitado por comas";
+		if (!validarFormatoError.isEmpty()) {
+			return validarFormatoError;
 		}
 
 		return "";
@@ -264,31 +266,38 @@ public abstract class ProcesamientosController {
 		return false;
 	}
 
-	private boolean validarFormatoArchivoCsv(MultipartFile multipartFile) {
+	private String validarFormatoArchivoCsv(MultipartFile multipartFile) {
 
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream()));
 
-			String nextLine;
+			String nextLine = reader.readLine();
 
+			int linesLength = nextLine.split(",").length;
+			
 			while ((nextLine = reader.readLine()) != null) {
 
 				String[] nextLineSplit = nextLine.split(",");
 
 				if (nextLineSplit.length < 2) {
-					return false;
+					return "Los datos deben tener formato csv delimitado por comas";
+				}
+				
+				if(linesLength != nextLineSplit.length){
+					return "Las filas de los datos del archivo."
+							+ ". deben tener la misma cantidad de variables separadas por comas";
 				}
 
 			}
 
-			return true;
+			return "";
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		return false;
+		return "La lectura del archivo salió mal";
 	}
 
 }

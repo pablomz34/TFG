@@ -1,5 +1,5 @@
 new Vue({
-	el: "#index_medico",
+	el: "#herramientaPredictiva",
 	data: function() {
 		return {
 			herramientaPredictivaInputs: [],

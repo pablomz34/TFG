@@ -50,7 +50,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 			response.sendRedirect("admin/procesamientos");
 		}
 		else if(rolesNames.contains("ROLE_MEDICO")){
-			response.sendRedirect("medico");
+			response.sendRedirect("medico/herramientaPredictiva");
 		}
 		
 	}

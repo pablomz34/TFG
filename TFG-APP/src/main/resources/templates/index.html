@@ -8,34 +8,95 @@
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
 
-	<style type="text/css">
-		.zoom {
-			transition: transform .4s;
-		}
-
-		.zoom:hover {
-			transform: scale(1.25);
-		}
-
-		.text-center {
-			transition: transform .3s;
-		}
-
-		.text-center:hover {
-			transform: scale(1.1);
-		}
-
+	<style>
+		
 	</style>
 
-	<div class="container">
-		<div class="row">
-			<h1 class="text-center pb-5 pt-2"> ¡Bienvenido a la aplicación! </h1>
-			<div align="center">
-				<img class="zoom" src="images/favicon.png" style="max-height: 50%;max-width:50%;">
+	<script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+
+	<script>
+
+		document.addEventListener("DOMContentLoaded", function () {
+
+			let typedTitulo = new Typed('#textTitulo', {
+				strings: ['¡Le damos la bienvenida a nuestra aplicación!'],
+				typeSpeed: 30,
+				fadeOut: true,
+				showCursor: true, // Mostrar cursor de escritura
+				cursorChar: "|", // Carácter del cursor
+				contentType: "html",
+				cursorCharStyle: "color: red; font-size: 40px;",
+			});
+
+
+			let typed1 = new Typed('#text1', {
+				strings: ['Descubra nuestra herramienta predictiva para consultar la probabilidad de supervivencia de sus pacientes'],
+				typeSpeed: 30,
+				fadeOut: true,
+				showCursor: true, // Mostrar cursor de escritura
+				cursorChar: "|", // Carácter del cursor
+				contentType: "html",
+			});
+
+			let typed2 = new Typed('#text2', {
+				strings: ['Descargue un informe con los resultados de los pacientes devueltos por la herramienta predictiva'],
+				typeSpeed: 30,
+				fadeOut: true,
+				showCursor: true, // Mostrar cursor de escritura
+				cursorChar: "|", // Carácter del cursor
+				contentType: "html",
+			});
+
+			let typed3 = new Typed('#text3', {
+				strings: ['Añada la información de los pacientes a la Base de Datos para mejorar la precisión de la herramienta'],
+				typeSpeed: 30,
+				fadeOut: true,
+				showCursor: true, // Mostrar cursor de escritura
+				cursorChar: "|", // Carácter del cursor
+				contentType: "html",
+			});
+		});
+
+	</script>
+
+	<div class="row justify-content-center mt-5">
+		<div class="col-md-8 text-center titulo-container">
+			<span id="textTitulo" class="titulo-index"></span>
+		</div>
+	</div>
+
+	<div class="row justify-content-around mt-5">
+		<div class="index-card">
+			<div class="index-card-icon-container">
+				<a th:href="@{/medico/herramientaPredictiva}">
+					<i class="fa-solid fa-arrow-right index-card-icon"></i>
+				</a>
 			</div>
+			<span id="text1" class="index-card-text"></span>
 		</div>
 
+		<div class="index-card">
+			<div class="index-card-icon-container">
+				<a th:href="@{/medico/herramientaPredictiva}">
+					<i class="fa-solid fa-arrow-right index-card-icon"></i>
+				</a>
+			</div>
+			<span id="text2" class="index-card-text"></span>
+		</div>
+
+		<div class="index-card">
+			<div class="index-card-icon-container">
+				<a th:href="@{/medico/herramientaPredictiva}">
+					<i class="fa-solid fa-arrow-right index-card-icon"></i>
+				</a>
+			</div>
+			<span id="text3" class="index-card-text"></span>
+		</div>
 	</div>
+
+
+
+
 
 </body>
 

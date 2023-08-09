@@ -170,7 +170,7 @@ public class AdminController {
 	public String medicosRegistrados(Model model) {
 		List<UsuariosDto> medicos = usuariosService.findAllMedicos();
 		model.addAttribute("medicos", medicos);
-		return "medicos_registrados";
+		return "medicosRegistrados";
 	}
 
 	@GetMapping("/predicciones")

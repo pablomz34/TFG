@@ -22,7 +22,7 @@
 
 					<!-- Usuario logueado-->
 					<li th:if="${session.usuario != null and session.rol == 'ROLE_ADMIN'}" class="nav-item">
-						<a class="nav-link" aria-current="page" th:href="@{/admin/procesamientos}">Fases</a>
+						<a class="nav-link" aria-current="page" th:href="@{/admin/procesamientos}">Procesamientos</a>
 					</li>
 					<li th:if="${session.usuario != null and session.rol == 'ROLE_ADMIN'}" class="nav-item">
 						<a class="nav-link" aria-current="page" th:href="@{/admin/medicosRegistrados}">Médicos
@@ -30,7 +30,7 @@
 					</li>
 
 					<li th:if="${session.usuario}" class="nav-item">
-						<a class="nav-link" aria-current="page" th:href="@{/medico}">Herramienta predictiva</a>
+						<a class="nav-link" aria-current="page" th:href="@{/medico/herramientaPredictiva}">Herramienta predictiva</a>
 					</li>
 					<li th:if="${session.usuario != null and session.rol == 'ROLE_ADMIN'}" class="nav-item">
 						<a class="nav-link" aria-current="page" th:href="@{/admin/predicciones}">Predicciones</a>

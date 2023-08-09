@@ -65,7 +65,6 @@ public class AccessInterceptor implements HandlerInterceptor {
     }
 	
 	
-	
 	private String getPreviousPath(String currentPath) {
 		
 		int indice = this.rutasSecuenciales.indexOf(currentPath);

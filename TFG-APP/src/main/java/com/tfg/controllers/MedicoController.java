@@ -57,9 +57,9 @@ public class MedicoController {
 	@Autowired
 	private IPacientesService pacientesService;
 
-	@GetMapping
-	public String indexMedico() {
-		return "index_medico";
+	@GetMapping("/herramientaPredictiva")
+	public String herramientaPredictiva() {
+		return "herramientaPredictiva";
 	}
 
 	@PostMapping(value = "/getNewPatientClassification", consumes = "application/json")
