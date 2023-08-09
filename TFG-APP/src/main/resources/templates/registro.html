@@ -103,7 +103,7 @@
 									<input class="input-container-input" id="password" name="password"
 										:style="{color: inputs.password.inputTextColor}"
 										th:field="*{password}" type="password" v-model="inputs.password.text"
-										v-on:keyup="comprobarValidacionPassword" aria-describedby="button-password" />
+										v-on:keyup="() => {comprobarValidacionPassword(); comprobarValidacionRepeatPassword()}" aria-describedby="button-password" />
 									<i v-if="inputs.password.validationIconClass != ''"
 										:class="inputs.password.validationIconClass" class="input-container-i fs-5"></i>
 

@@ -64,7 +64,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	
 	public ProcesamientoSecuencialController() {
 					
-		this.fasesInfo.add("NºOptimo de clusters");
+		this.fasesInfo.add("Nº Óptimo de clusters");
 		
 		this.fasesInfo.add("Subpoblaciones");
 		
