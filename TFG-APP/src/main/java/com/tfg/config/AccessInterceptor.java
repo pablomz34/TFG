@@ -25,6 +25,25 @@ public class AccessInterceptor implements HandlerInterceptor {
 	@Value("${myapp.rutasSecuenciales}")
 	private List<String> rutasSecuenciales;
 	
+	private List<String> erroresRutasSecuenciales = new ArrayList<String>();
+	
+	public AccessInterceptor() {
+
+		this.erroresRutasSecuenciales.add("Es necesario seleccionar el procesamiento secuencial y automatizado");
+		
+		this.erroresRutasSecuenciales.add("Es necesario escoger una predicción y los datos de la población correspondientes");
+		
+		this.erroresRutasSecuenciales.add("Es necesario seleccionar las variables clínicas que desee utilizar");
+		
+		this.erroresRutasSecuenciales.add("Es necesario ejecutar el endpoint Nº Óptimo de clusters");
+		
+		this.erroresRutasSecuenciales.add("Es necesario ejecutar el endpoint Subpoblaciones");
+		
+		this.erroresRutasSecuenciales.add("Es necesario ejecutar el endpoint Métricas de varianza");
+		
+		this.erroresRutasSecuenciales.add("Es necesario ejecutar el endpoint Estadísticas de población");
+	}
+	
 	@Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // Aquí realizamos la lógica para verificar si el usuario ha accedido previamente a la ruta requerida.
@@ -43,27 +62,30 @@ public class AccessInterceptor implements HandlerInterceptor {
         		
         		Boolean fasePreviaExecuted = (Boolean) session.getAttribute(previousPath + "_executed");
         		
-        		if(fasePreviaExecuted == null || !fasePreviaExecuted) {
+        		if(fasePreviaExecuted == null) {
         			response.sendRedirect(previousPath);
+        			session.setAttribute("accesoDenegadoMessage", this.erroresRutasSecuenciales.get(this.rutasSecuenciales.indexOf(previousPath)));		  			
         			return false;
         		}
         	}
         	
         	Boolean sessionPreviousPathHasPassed = (Boolean) session.getAttribute(previousPath + "_passed");
         	
-    		if(sessionPreviousPathHasPassed == null || !sessionPreviousPathHasPassed) {
+    		if(sessionPreviousPathHasPassed == null) {
         		response.sendRedirect(previousPath);
-        		return false;
+        		session.setAttribute("accesoDenegadoMessage", this.erroresRutasSecuenciales.get(this.rutasSecuenciales.indexOf(previousPath)));		  			
+    			return false;
         	}
         	else {
+        		
         		return true;
         	}	   	
         }
         else {
+        	
         	 return true;
         }     
     }
-	
 	
 	private String getPreviousPath(String currentPath) {
 		

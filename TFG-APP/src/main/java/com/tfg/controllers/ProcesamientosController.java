@@ -39,12 +39,17 @@ import com.tfg.services.IImagenesService;
 import com.tfg.services.IPrediccionesService;
 import com.tfg.services.IProfilesService;
 
+import jakarta.servlet.http.HttpSession;
+
 @RequestMapping("/admin/procesamientos")
 public abstract class ProcesamientosController {
 
 	protected static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
 	protected static final String UrlMock = "http://localhost:8090/";
 
+	@Autowired
+	protected HttpSession session;
+	
 	@Autowired
 	protected IImagenesService imagenesService;
 
@@ -59,6 +64,9 @@ public abstract class ProcesamientosController {
 
 	@Value("${myapp.imagenesClusters.ruta}")
 	protected String rutaImagenesClusters;
+	
+	@Value("${myapp.rutasSecuenciales}")
+	protected List<String> rutasSecuenciales;
 
 	protected InputStream llamadaServidorNgrok(String url, File file, CloseableHttpClient httpClient)
 			throws IOException {

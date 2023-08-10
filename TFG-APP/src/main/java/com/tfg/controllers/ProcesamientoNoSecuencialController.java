@@ -32,13 +32,22 @@ import com.tfg.entities.Predicciones;
 import com.tfg.entities.Profiles;
 
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/admin/procesamientos/noSecuencial")
 public class ProcesamientoNoSecuencialController extends ProcesamientosController {
 
 	@GetMapping("/fases")
-	public String fases() {
+	public String fases(HttpServletResponse response) throws IOException {
+		
+		Boolean hasPassedSeleccionProcesamiento = (Boolean) session.getAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
+		
+		if(hasPassedSeleccionProcesamiento == null) {
+			session.setAttribute("accesoDenegadoMessage", "Es necesario seleccionar el procesamiento no secuencial y manual");
+			response.sendRedirect(this.rutasSecuenciales.get(0));
+		}	
+		
 		return "noSecuencialFases";
 	}
 

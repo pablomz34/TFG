@@ -1,0 +1,8 @@
+ <div th:fragment="acceso-denegado-component" th:if="${accesoDenegadoMessage != null}" class="row justify-content-center mt-5">
+	<div class="col-md-5">
+		<div class="alert alert-danger alert-dismissible fade show" role="alert">
+			<span th:text="${accesoDenegadoMessage}"></span>
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+	</div>
+</div>	

@@ -880,7 +880,7 @@ new Vue({
 			<div class="fase-container" @click="cambiarFase(2)" style="cursor: pointer;">
 				<div :class="getColorBorde(2)" id="fase1" style="border:none;"></div>
 				<div :class="getColorBoton(2)">
-					<span class="text-fase-component">Subpopulations</span>
+					<span class="text-fase-component">Subpoblaciones</span>
 				</div>			
 			</div>
 	

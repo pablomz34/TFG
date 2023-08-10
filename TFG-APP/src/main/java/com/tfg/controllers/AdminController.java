@@ -3,6 +3,7 @@ package com.tfg.controllers;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -60,23 +61,31 @@ public class AdminController {
 	protected String rutaImagenesClusters;	
 	
 	@GetMapping("/procesamientos")
-	public String procesamientos() {
+	public String procesamientos(Model model) {
 
-		List<String> atributosExtra = new ArrayList<String>();
-
-		atributosExtra.add("idPrediccionProcesamientoSecuencial");
-
-		atributosExtra.add("indicesVariablesSeleccionadas");
-
-		atributosExtra.add("algoritmoOptimo");
-
-		this.borrarVariablesSesion(0, atributosExtra);
+		String accesoDenegadoMessage = (String) session.getAttribute("accesoDenegadoMessage");
+		
+		if(accesoDenegadoMessage != null) {
+			model.addAttribute("accesoDenegadoMessage", accesoDenegadoMessage);
+			session.removeAttribute("accesoDenegadoMessage");
+		}
+	
+		this.borrarVariablesSesion(0, Arrays.asList("idPrediccionProcesamientoSecuencial",
+		                                             "indicesVariablesSeleccionadas",
+		                                             "algoritmoOptimo"));
 
 		return "procesamientos";
 	}
 	
 	
 	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
+		
+		Boolean hasPassedNoSecuencial = (Boolean) session.getAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
+		
+		if(hasPassedNoSecuencial != null) {
+			session.removeAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
+		}
+		
 		for (int i = 0; i < atributosExtra.size(); i++) {
 
 			String nombreAtributo = atributosExtra.get(i);
@@ -125,6 +134,9 @@ public class AdminController {
 
 			session.setAttribute(this.rutasSecuenciales.get(0) + "_passed", true);
 		} else {
+			
+			session.setAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed", true);
+			
 			redirectUrl = "/admin/procesamientos/noSecuencial/fases";
 		}
 

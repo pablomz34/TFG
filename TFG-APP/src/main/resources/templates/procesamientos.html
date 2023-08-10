@@ -7,6 +7,8 @@
 <body>
 
 	<header th:insert="~{fragmentos/nav.html}"></header>
+	
+	<div th:replace="~{fragmentos/errorAccesoDenegado :: acceso-denegado-component}"></div>
 
 	<div id="procesamientos"></div>
 
