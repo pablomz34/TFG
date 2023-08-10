@@ -397,13 +397,13 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 		}
 
 		if (descripcion == null || descripcion.isEmpty()) {
-			return new ResponseEntity<>("Por favor, seleccione una descripción", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Por favor, seleccione una predicción", HttpStatus.BAD_REQUEST);
 		}
 
 		Predicciones prediccion = prediccionesService.findPrediccionByDescripcion(descripcion);
 
 		if (prediccion == null) {
-			return new ResponseEntity<>("La prediccion seleccionada no existe", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
 		}
 
 		if (prediccion.getPacientes().size() == 0 && multipartFile == null) {

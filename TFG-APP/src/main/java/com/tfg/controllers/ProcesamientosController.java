@@ -288,12 +288,11 @@ public abstract class ProcesamientosController {
 				String[] nextLineSplit = nextLine.split(",");
 
 				if (nextLineSplit.length < 2) {
-					return "Los datos deben tener formato csv delimitado por comas";
+					return "Los datos deben estar delimitado por comas";
 				}
 				
 				if(linesLength != nextLineSplit.length){
-					return "Las filas de los datos del archivo."
-							+ ". deben tener la misma cantidad de variables separadas por comas";
+					return "Las filas de los datos del archivo deben tener la misma cantidad de variables separadas por comas";
 				}
 
 			}

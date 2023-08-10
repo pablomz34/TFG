@@ -73,19 +73,12 @@ public class AdminController {
 		this.borrarVariablesSesion(0, Arrays.asList("idPrediccionProcesamientoSecuencial",
 		                                             "indicesVariablesSeleccionadas",
 		                                             "algoritmoOptimo"));
-
 		return "procesamientos";
 	}
 	
 	
 	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
-		
-		Boolean hasPassedNoSecuencial = (Boolean) session.getAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
-		
-		if(hasPassedNoSecuencial != null) {
-			session.removeAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
-		}
-		
+			
 		for (int i = 0; i < atributosExtra.size(); i++) {
 
 			String nombreAtributo = atributosExtra.get(i);
@@ -110,6 +103,12 @@ public class AdminController {
 				session.removeAttribute(rutaSecuencial + "_passed");
 			}
 
+		}
+		
+		Boolean hasPassedNoSecuencial = (Boolean) session.getAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
+		
+		if(hasPassedNoSecuencial != null) {
+			session.removeAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
 		}
 
 	}
@@ -146,7 +145,7 @@ public class AdminController {
 	private String validarModoProcesamiento(String modoProcesamiento) {
 
 		if (modoProcesamiento == null || modoProcesamiento.isEmpty()) {
-			return "Por favor, seleccione un método de procesamiento";
+			return "Por favor, seleccione un procesamiento";
 		}
 
 		int numProcesamiento = -1;
@@ -155,16 +154,15 @@ public class AdminController {
 			numProcesamiento = Integer.parseInt(modoProcesamiento);
 
 		} catch (NumberFormatException e) {
-			return "Formato de url inválido";
+			return "No se cumple el formato válido de selección de procesamiento";
 		}
 
 		if (numProcesamiento < 0 || numProcesamiento > 1) {
-			return "Modo de procesamiento inválido";
+			return "El procesamiento seleccionado no es válido";
 		}
 
 		return "";
 	}
-	
 
 	@GetMapping()
 	public String adminIndex() {
