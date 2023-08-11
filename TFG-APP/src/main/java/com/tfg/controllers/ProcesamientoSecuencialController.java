@@ -80,9 +80,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			session.removeAttribute("accesoDenegadoMessage");
 		}
 
-		this.borrarVariablesSesion(1, Arrays.asList("idPrediccionProcesamientoSecuencial",
-				"indicesVariablesSeleccionadas", "algoritmoOptimo"));
-
 		return "seleccionarPrediccionYPoblacion";
 	}
 
@@ -96,8 +93,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			session.removeAttribute("accesoDenegadoMessage");
 		}
 
-		this.borrarVariablesSesion(2, Arrays.asList("indicesVariablesSeleccionadas", "algoritmoOptimo"));
-
 		return "seleccionarVariablesClinicas";
 	}
 
@@ -110,8 +105,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			model.addAttribute("accesoDenegadoMessage", accesoDenegadoMessage);
 			session.removeAttribute("accesoDenegadoMessage");
 		}
-
-		this.borrarVariablesSesion(3, Arrays.asList("algoritmoOptimo"));
 
 		model.addAttribute("indiceFase", 0);
 
@@ -130,8 +123,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			session.removeAttribute("accesoDenegadoMessage");
 		}
 
-		this.borrarVariablesSesion(4, Arrays.asList("algoritmoOptimo"));
-
 		model.addAttribute("indiceFase", 1);
 
 		model.addAttribute("fases", this.fasesInfo);
@@ -148,8 +139,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			model.addAttribute("accesoDenegadoMessage", accesoDenegadoMessage);
 			session.removeAttribute("accesoDenegadoMessage");
 		}
-
-		this.borrarVariablesSesion(5, Arrays.asList("algoritmoOptimo"));
 
 		model.addAttribute("indiceFase", 2);
 
@@ -168,8 +157,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			session.removeAttribute("accesoDenegadoMessage");
 		}
 
-		this.borrarVariablesSesion(6, new ArrayList<String>());
-
 		model.addAttribute("indiceFase", 3);
 
 		model.addAttribute("fases", this.fasesInfo);
@@ -180,8 +167,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	@GetMapping("/fase5")
 	public String fase5(Model model) {
 
-		this.borrarVariablesSesion(7, new ArrayList<String>());
-
 		model.addAttribute("indiceFase", 4);
 
 		model.addAttribute("fases", this.fasesInfo);
@@ -189,35 +174,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 		return "secuencialFase5";
 	}
 
-	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
-
-		for (int i = 0; i < atributosExtra.size(); i++) {
-
-			String nombreAtributo = atributosExtra.get(i);
-
-			if (session.getAttribute(nombreAtributo) != null) {
-				session.removeAttribute(nombreAtributo);
-			}
-
-		}
-
-		for (int i = indiceRuta; i < this.rutasSecuenciales.size(); i++) {
-
-			String rutaSecuencial = this.rutasSecuenciales.get(i);
-
-			if (i >= 3) {
-				if (session.getAttribute(rutaSecuencial + "_executed") != null) {
-					session.removeAttribute(rutaSecuencial + "_executed");
-				}
-			}
-
-			if (session.getAttribute(rutaSecuencial + "_passed") != null) {
-				session.removeAttribute(rutaSecuencial + "_passed");
-			}
-
-		}
-
-	}
 
 	private File llamadaBBDDPoblacion(String idPrediccionPoblacion, String fase, String algoritmoOptimo,
 			List<Integer> indices) throws IOException {
@@ -917,16 +873,6 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			return new ResponseEntity<>("Es necesario ejecutar el endpoint Rendimiento del modelo",
 					HttpStatus.BAD_REQUEST);
 		} else {
-
-			List<String> atributosExtra = new ArrayList<String>();
-
-			atributosExtra.add("idPrediccionProcesamientoSecuencial");
-
-			atributosExtra.add("indicesVariablesSeleccionadas");
-
-			atributosExtra.add("algoritmoOptimo");
-
-			this.borrarVariablesSesion(0, atributosExtra);
 
 			return new ResponseEntity<>(this.rutasSecuenciales.get(0), HttpStatus.OK);
 		}

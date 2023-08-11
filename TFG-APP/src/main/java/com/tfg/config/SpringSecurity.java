@@ -58,7 +58,7 @@ public class SpringSecurity implements CommandLineRunner, WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
     	
         registry.addInterceptor(this.accessInterceptor)
-                .addPathPatterns(this.rutasSecuenciales);
+                .addPathPatterns("/**");
     }
 
     @Bean

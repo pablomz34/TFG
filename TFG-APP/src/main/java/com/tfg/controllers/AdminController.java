@@ -69,50 +69,9 @@ public class AdminController {
 			model.addAttribute("accesoDenegadoMessage", accesoDenegadoMessage);
 			session.removeAttribute("accesoDenegadoMessage");
 		}
-	
-		this.borrarVariablesSesion(0, Arrays.asList("idPrediccionProcesamientoSecuencial",
-		                                             "indicesVariablesSeleccionadas",
-		                                             "algoritmoOptimo"));
+		
 		return "procesamientos";
 	}
-	
-	
-	private void borrarVariablesSesion(int indiceRuta, List<String> atributosExtra) {
-			
-		for (int i = 0; i < atributosExtra.size(); i++) {
-
-			String nombreAtributo = atributosExtra.get(i);
-
-			if (session.getAttribute(nombreAtributo) != null) {
-				session.removeAttribute(nombreAtributo);
-			}
-
-		}
-
-		for (int i = indiceRuta; i < this.rutasSecuenciales.size(); i++) {
-
-			String rutaSecuencial = this.rutasSecuenciales.get(i);
-
-			if (i >= 3) {
-				if (session.getAttribute(rutaSecuencial + "_executed") != null) {
-					session.removeAttribute(rutaSecuencial + "_executed");
-				}
-			}
-
-			if (session.getAttribute(rutaSecuencial + "_passed") != null) {
-				session.removeAttribute(rutaSecuencial + "_passed");
-			}
-
-		}
-		
-		Boolean hasPassedNoSecuencial = (Boolean) session.getAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
-		
-		if(hasPassedNoSecuencial != null) {
-			session.removeAttribute(this.rutasSecuenciales.get(0) + "noSecuencial_passed");
-		}
-
-	}
-	
 
 	@PostMapping("/redigirAProcesamiento")
 	public ResponseEntity<String> redigirAProcesamiento(@RequestParam("modoProcesamiento") String modoProcesamiento) {
