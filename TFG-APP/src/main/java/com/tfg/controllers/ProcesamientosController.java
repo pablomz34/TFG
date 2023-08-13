@@ -288,7 +288,7 @@ public abstract class ProcesamientosController {
 				String[] nextLineSplit = nextLine.split(",");
 
 				if (nextLineSplit.length < 2) {
-					return "Los datos deben estar delimitado por comas";
+					return "Los datos deben estar delimitados por comas";
 				}
 				
 				if(linesLength != nextLineSplit.length){

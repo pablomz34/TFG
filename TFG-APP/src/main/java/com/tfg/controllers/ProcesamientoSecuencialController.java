@@ -551,7 +551,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 
-		if (algoritmos.size() == 0) {
+		if (algoritmos.isEmpty()) {
 			return new ResponseEntity<>("Por favor, los algoritmos kmodes y agglomerative son obligatorios",
 					HttpStatus.BAD_REQUEST);
 		}

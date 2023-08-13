@@ -74,33 +74,22 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 		// Verificar el tipo de contenido del archivo
-		if (multipartFile != null) {
-			error = this.validarInputFile(multipartFile);
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-			}
+		
+		error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-
+		
 		String urlOptimalNClusters = UrlMock + "clustering/getOptimalNClusters?max_clusters="
 				+ Integer.parseInt(max_clusters);
 
-		InputStream inputStream;
-
-		File file;
-
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		if (multipartFile != null) {
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+		multipartFile.transferTo(file);
 
-			multipartFile.transferTo(file);
-
-			inputStream = llamadaServidorNgrok(urlOptimalNClusters, file, httpClient);
-
-		} else {
-			return new ResponseEntity<>("La llamada a getOptimalNClusters salió mal", HttpStatus.BAD_REQUEST);
-		}
+		InputStream inputStream = llamadaServidorNgrok(urlOptimalNClusters, file, httpClient);
 
 		byte[] imageBytes = inputStream.readAllBytes();
 
@@ -112,7 +101,7 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 	}
 
 	@PostMapping(value = "/getSubPopulations", consumes = "multipart/form-data")
-	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") @Nullable String algoritmosJsonString,
+	public ResponseEntity<?> getSubPopulations(@RequestParam("algoritmos") String algoritmosJsonString,
 			@RequestPart(name = "file") MultipartFile multipartFile) throws IOException {
 
 		List<Map<String, Object>> algoritmos;
@@ -138,37 +127,26 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 			}
 
 			// Verificar el tipo de contenido del archivo
-			if (multipartFile != null) {
-				error = this.validarInputFile(multipartFile);
-				if (!error.isEmpty()) {
-					return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-				}
-			}
+			
+			error = this.validarInputFile(multipartFile);
+			if (!error.isEmpty()) {
+				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+			}		
 
 			String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
 					+ algoritmos.get(0).get("nClusters") + "&n_kmodes=" + algoritmos.get(1).get("nClusters");
-
-			InputStream inputStream;
-
-			File file;
 
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 
 			byte[] csvBytes;
 
-			if (multipartFile != null) {
+			File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-				file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+			multipartFile.transferTo(file);
 
-				multipartFile.transferTo(file);
+			InputStream inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
 
-				inputStream = llamadaServidorNgrok(urlSubPopulations, file, httpClient);
-
-				csvBytes = inputStream.readAllBytes();
-
-			} else {
-				return new ResponseEntity<>("La llamada a getSubPopulations salió mal", HttpStatus.BAD_REQUEST);
-			}
+			csvBytes = inputStream.readAllBytes();
 
 			httpClient.close();
 
@@ -186,33 +164,21 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 	@PostMapping(value = "/getVarianceMetrics", consumes = "multipart/form-data")
 	public ResponseEntity<?> getVarianceMetrics(@RequestPart(name = "file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
-
-		if (multipartFile != null) {
-			String error = this.validarInputFile(multipartFile);
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-			}
+		
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-
+		
 		String urlVarianceMetrics = UrlMock + "clustering/getVarianceMetrics";
-
-		InputStream inputStream;
-
-		File file;
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		if (multipartFile != null) {
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+		multipartFile.transferTo(file);
 
-			multipartFile.transferTo(file);
-
-			inputStream = llamadaServidorNgrok(urlVarianceMetrics, file, httpClient);
-
-		} else {
-			return new ResponseEntity<>("La llamada a getVarianceMetrics salió mal", HttpStatus.BAD_REQUEST);
-		}
+		InputStream inputStream = llamadaServidorNgrok(urlVarianceMetrics, file, httpClient);
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
@@ -267,17 +233,17 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 		idPrediccionPoblacion = StringEscapeUtils.escapeJava(idPrediccionPoblacion);
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccionPoblacion));
-
-		if (multipartFile != null) {
-			String error = this.validarInputFile(multipartFile);
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-			}
+	
+		if(prediccion == null) {
+			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
 		}
-
-		File file;
-
-		file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+		
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+		}
+		
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
 		multipartFile.transferTo(file);
 
@@ -314,13 +280,17 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
 
+		if(prediccion == null) {
+			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
+		}
+		
 		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
 		Imagenes imagen = imagenesService.findClusterImage(Integer.parseInt(clusterNumber),
-				Long.parseLong(idPrediccion));
+				prediccion.getId());
 
 		if (imagen != null) {
 			return new ResponseEntity<>(imagen.getRuta(), HttpStatus.OK);
@@ -336,13 +306,17 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 
 		Predicciones prediccion = prediccionesService.findPrediccionById(Long.parseLong(idPrediccion));
 
+		if(prediccion == null) {
+			return new ResponseEntity<>("La predicción seleccionada no existe", HttpStatus.BAD_REQUEST);
+		}
+		
 		String error = this.validarInputNumber(clusterNumber, -1, prediccion.getMaxClusters());
 		if (!error.isEmpty()) {
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
 		Profiles profile = profilesService.findClusterProfile(Integer.parseInt(clusterNumber),
-				Long.parseLong(idPrediccion));
+				prediccion.getId());
 
 		if (profile != null) {
 			HashMap<String, Object> map = null;
@@ -359,32 +333,20 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 	public ResponseEntity<?> getModelPerformance(@RequestPart("file") MultipartFile multipartFile)
 			throws IllegalStateException, IOException {
 
-		if (multipartFile != null) {
-			String error = this.validarInputFile(multipartFile);
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-			}
+		String error = this.validarInputFile(multipartFile);
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
-
+		
 		String urlModelPerformance = UrlMock + "survivalAndProfiling/getModelPerformance";
-
-		InputStream inputStream;
-
-		File file;
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
-		if (multipartFile != null) {
+		File file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
 
-			file = File.createTempFile("tempfile", multipartFile.getOriginalFilename());
+		multipartFile.transferTo(file);
 
-			multipartFile.transferTo(file);
-
-			inputStream = llamadaServidorNgrok(urlModelPerformance, file, httpClient);
-
-		} else {
-			return new ResponseEntity<>("La llamada a getModelPerformance salió mal", HttpStatus.BAD_REQUEST);
-		}
+		InputStream inputStream = llamadaServidorNgrok(urlModelPerformance, file, httpClient);
 
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
