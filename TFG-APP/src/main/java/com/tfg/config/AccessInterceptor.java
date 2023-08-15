@@ -48,20 +48,22 @@ public class AccessInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		// Aquí realizamos la lógica para verificar si el usuario ha accedido
-		// previamente a la ruta requerida.
-		// Por ejemplo, podrías comprobar si existe una sesión o si el usuario ha
-		// realizado algún paso necesario.
-		// Si la condición no se cumple, puedes redirigir al usuario a otra página o
-		// mostrar un mensaje de error.
 
 		HttpSession session = request.getSession();
 
 		String currentPath = request.getRequestURI();
 
 		String previousPath = this.getPreviousPath(currentPath);
-
+				
 		if (this.rutasSecuenciales.contains(currentPath)) {
+			
+			String lastValidSecuencialUrl = (String) session.getAttribute("lastValidSecuencialUrl");
+			
+			int lastValidSecuencialUrlIndex = -1;
+					
+			if(lastValidSecuencialUrl != null) {
+				lastValidSecuencialUrlIndex = this.rutasSecuenciales.indexOf(lastValidSecuencialUrl);
+			}
 
 			if (previousPath != null) {
 
@@ -87,14 +89,22 @@ public class AccessInterceptor implements HandlerInterceptor {
 				} else {
 					
 					int currentPathIndex = this.rutasSecuenciales.indexOf(currentPath);
-
-					this.borrarVariablesSesion(request.getSession(), currentPathIndex, this.getAtributosExtra(currentPathIndex));
-			
+					
+					if(lastValidSecuencialUrlIndex != -1 && lastValidSecuencialUrlIndex > currentPathIndex) {
+						this.borrarVariablesSesion(request.getSession(), currentPathIndex, lastValidSecuencialUrlIndex, this.getAtributosExtra(currentPathIndex, lastValidSecuencialUrlIndex));
+					}
+				
+					session.setAttribute("lastValidSecuencialUrl", currentPath);
+					
 					return true;
 				}
 			} else {
+								
+				if(lastValidSecuencialUrlIndex != -1 && lastValidSecuencialUrlIndex > 0) {
+					this.borrarVariablesSesion(request.getSession(), 0, lastValidSecuencialUrlIndex, this.getAtributosExtra(0, lastValidSecuencialUrlIndex));				
+				}			
 				
-				this.borrarVariablesSesion(request.getSession(), 0, this.getAtributosExtra(0));	
+				session.setAttribute("lastValidSecuencialUrl", currentPath);
 				
 				return true;
 			}
@@ -124,10 +134,16 @@ public class AccessInterceptor implements HandlerInterceptor {
 		HttpSession session = request.getSession();
 		
 		String currentPath = request.getRequestURI();
+			
+		String lastValidSecuencialUrl = (String) session.getAttribute("lastValidSecuencialUrl");
 		
-		if (!this.rutasSecuenciales.contains(currentPath) && modelAndView != null) {
+		if (!this.rutasSecuenciales.contains(currentPath) && lastValidSecuencialUrl != null && modelAndView != null) {
 
-			this.borrarVariablesSesion(session, 0, this.getAtributosExtra(0));
+			int lastValidSecuencialUrlIndex = this.rutasSecuenciales.indexOf(lastValidSecuencialUrl);
+			
+			this.borrarVariablesSesion(session, 0, lastValidSecuencialUrlIndex, this.getAtributosExtra(0, lastValidSecuencialUrlIndex));
+			
+			session.removeAttribute("lastValidSecuencialUrl");
 
 		}
 		
@@ -141,28 +157,27 @@ public class AccessInterceptor implements HandlerInterceptor {
 		
 	}
 
-	private List<String> getAtributosExtra(int primerIndiceRutaTrue) {
+	private List<String> getAtributosExtra(int firstIndexValidUrl, int lastIndexValidUrl) {
 
 		List<String> atributosExtra = new ArrayList<String>();
 
-		if (primerIndiceRutaTrue < 2) {
+		if (firstIndexValidUrl < 2 && lastIndexValidUrl >= 2) {
 			atributosExtra.add("idPrediccionProcesamientoSecuencial");
 		}
 
-		if (primerIndiceRutaTrue < 3) {
+		if (firstIndexValidUrl < 3 && lastIndexValidUrl >= 3) {
 			atributosExtra.add("indicesVariablesSeleccionadas");
 		}
 
-		if (primerIndiceRutaTrue < 6) {
+		if (firstIndexValidUrl < 6 && lastIndexValidUrl >=6) {
 			atributosExtra.add("algoritmoOptimo");
 		}
 
 		return atributosExtra;
 	}
 
-	private void borrarVariablesSesion(HttpSession session, int primerIndiceRutaTrue, List<String> atributosExtra) {
+	private void borrarVariablesSesion(HttpSession session, int currentIndexUrl, int lastIndexValidUrl, List<String> atributosExtra) {
 
-		
 		
 		for (int i = 0; i < atributosExtra.size(); i++) {
 
@@ -174,7 +189,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 
 		}
 
-		for (int i = primerIndiceRutaTrue; i < this.rutasSecuenciales.size(); i++) {
+		for (int i = currentIndexUrl; i <= lastIndexValidUrl; i++) {
 
 			String rutaSecuencial = this.rutasSecuenciales.get(i);
 
@@ -189,7 +204,7 @@ public class AccessInterceptor implements HandlerInterceptor {
 			}
 
 		}
-
+		
 	}
 
 }
