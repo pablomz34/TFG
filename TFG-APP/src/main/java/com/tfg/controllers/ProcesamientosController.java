@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -210,23 +213,69 @@ public abstract class ProcesamientosController {
 		}
 		return "";
 	}
-
-	protected String validarNClustersAlgoritmo(String numClusters, Integer minClusters, Integer maxClusters,
-			String nombreAlgoritmo) {
-
-		if (numClusters == null || numClusters.isEmpty()) {
-			return "Por favor, escoja un número de clusters para el algoritmo " + nombreAlgoritmo;
-
+	
+	protected String validarAlgoritmos(List<Map<String,Object>> algoritmos) {		
+		
+		if(algoritmos.isEmpty()) {
+			return "La lista de algoritmos no puede ser vacía";
+		}	
+		
+		boolean valoresValidos = algoritmos.stream()
+		           .allMatch(algoritmo -> 
+		           algoritmo.values().stream().allMatch(valor -> valor instanceof String && valor != null)
+		           );
+		
+		if(!valoresValidos) {
+			return "La lista de algoritmos introducida contiene datos inválidos o nulos";
 		}
-		try {
-			Integer n = Integer.parseInt(numClusters);
-			if (n < minClusters || n > maxClusters) {
-				return "El número de clusters del algoritmo " + nombreAlgoritmo + " no está dentro del rango permitido";
-			}
-		} catch (NumberFormatException e) {
-			return "El número de clusters del algoritmo " + nombreAlgoritmo + " no es válido";
+		
+		Optional<String> errorLista = algoritmos.stream()
+	            .map(algoritmo -> {
+	                if (!algoritmo.keySet().containsAll(List.of("nombreAlgoritmo", "nClusters")) || algoritmo.size() != 2) {
+	                    return "La lista de algoritmos debe incluir únicamente, los algoritmos con su correspondiente nombre y valor óptimo de clusters";
+	                }
+	                
+	                String nombreAlgoritmo = (String) algoritmo.get("nombreAlgoritmo");
+	                
+	                AlgoritmosClustering algoritmoExiste = this.algoritmosClusteringService.findAlgoritmoByNombreAlgoritmo(nombreAlgoritmo);
+	                
+	                if (algoritmoExiste==null) {
+	                    return "El algoritmo " + nombreAlgoritmo + " no está registrado en la base de datos";
+	                }
+	                
+	                String nClustersAlgoritmo = (String) algoritmo.get("nClusters");
+	                
+	                if(nClustersAlgoritmo.isEmpty()) {
+	                	return "Por favor, escoja un número de clusters para el algoritmo " + nombreAlgoritmo;
+	                }
+	                
+	                try {
+	        			Integer n = Integer.parseInt(nClustersAlgoritmo);
+	        			if (n < 2 || n > 20) {
+	        				return "El número de clusters del algoritmo " + nombreAlgoritmo + " no está dentro del rango permitido";
+	        			}
+	        		} catch (NumberFormatException e) {
+	        			return "El número de clusters del algoritmo " + nombreAlgoritmo + " debe ser un número";
 
+	        		}
+	                
+	                return null; // Todo está bien para este algoritmo
+	            })
+	            .filter(result -> result != null)
+	            .findFirst();
+		
+		if(errorLista.isPresent()) {
+			return errorLista.get();
+		}	
+				
+		List<String> allNombresAlgoritmos = algoritmos.stream()
+	            .map(mapa -> (String) mapa.get("nombreAlgoritmo"))
+	            .collect(Collectors.toList());			
+		
+		if(!allNombresAlgoritmos.containsAll(List.of("agglomerative", "kmodes"))) {		
+			return "Por favor, los algoritmos agglomerative y kmodes son obligatorios";
 		}
+		
 		return "";
 	}
 

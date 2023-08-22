@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -550,26 +551,24 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 		if (!this.validarAccesoEndpoint(4)) {
 			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
+		
+		String error = this.validarAlgoritmos(algoritmos);
 
-		if (algoritmos.isEmpty()) {
-			return new ResponseEntity<>("Por favor, los algoritmos kmodes y agglomerative son obligatorios",
+		if (!error.isEmpty()) {
+			return new ResponseEntity<>(error,
 					HttpStatus.BAD_REQUEST);
 		}
-
-		String error = "";
-
-		for (int i = 0; i < algoritmos.size(); i++) {
-
-			error = this.validarNClustersAlgoritmo((String) algoritmos.get(i).get("nClusters"), 2, 20,
-					(String) algoritmos.get(i).get("nombreAlgoritmo"));
-
-			if (!error.isEmpty()) {
-				return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-			}
-		}
+		
+		Optional<Map<String, Object>> agglomerative = algoritmos.stream()
+	            .filter(mapa -> "agglomerative".equals(mapa.get("nombreAlgoritmo")))
+	            .findFirst();
+		
+		Optional<Map<String, Object>> kmodes = algoritmos.stream()
+	            .filter(mapa -> "kmodes".equals(mapa.get("nombreAlgoritmo")))
+	            .findFirst();
 
 		String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
-				+ algoritmos.get(0).get("nClusters") + "&n_kmodes=" + algoritmos.get(1).get("nClusters");
+				+ agglomerative.get().get("nClusters") + "&n_kmodes=" + kmodes.get().get("nClusters");
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 

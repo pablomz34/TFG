@@ -162,7 +162,7 @@ export const mixinFase2 = {
 			}
 
 		},
-		
+
 		addAlgoritmos() {
 
 			const THIZ = this;
@@ -236,7 +236,17 @@ export const mixinFase2 = {
 
 					if (res.length > 0) {
 
-						THIZ.algoritmosCoincidentes = res;
+						for (let i = 0; i < res.length; i++) {
+
+							let algoritmo = {};
+
+							algoritmo["nombreAlgoritmo"] = res[i].nombreAlgoritmo;
+
+							algoritmo["nClusters"] = '';
+
+							THIZ.algoritmosCoincidentes.push(algoritmo);
+
+						}
 
 						this.crearAlgoritmosCoincidentesRowComponents(algoritmosCoincidentesRow, res);
 					}
@@ -300,10 +310,10 @@ export const mixinFase4 = {
 			THIZ.curvasCargadas = false;
 			THIZ.errorMessage2 = '';
 			var url;
-			
-			if(secuencial) url = "/admin/procesamientos/secuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves ;
+
+			if (secuencial) url = "/admin/procesamientos/secuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves;
 			else url = "/admin/procesamientos/noSecuencial/getRutaCluster?clusterNumber=" + this.clusterSeleccionadoCurves + "&idPrediccion=" + idPrediccion;
-			
+
 			fetch(window.location.origin + url, {
 				method: "GET",
 			})
@@ -324,7 +334,7 @@ export const mixinFase4 = {
 				})
 				.catch(error => console.error(error));
 		},
-		
+
 		mostrarClusterProfile: function(secuencial, idPrediccion) {
 			const THIZ = this;
 			THIZ.mostrarCargando = true;
@@ -332,7 +342,7 @@ export const mixinFase4 = {
 			THIZ.perfilCargado = false;
 			var url;
 
-			if(secuencial) url = "/admin/procesamientos/secuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile ;
+			if (secuencial) url = "/admin/procesamientos/secuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile;
 			else url = "/admin/procesamientos/noSecuencial/getClusterProfile?clusterNumber=" + this.clusterSeleccionadoProfile + "&idPrediccion=" + idPrediccion;
 
 			fetch(window.location.origin + url, {
@@ -360,7 +370,7 @@ export const mixinFase4 = {
 				.catch(error => console.error(error));
 		}
 	},
-	
+
 };
 
 export const mixinFase5 = {

@@ -114,9 +114,7 @@ public class HeadersPacientesService implements IHeadersPacientesService {
 		String allVariablesClinicasString = repos.findByPrediccionId(Long.parseLong(idPrediccionPoblacion)).getHeadersVariablesClinicas().toLowerCase();
 		
 		List<String> allVariablesClinicas = Arrays.asList(allVariablesClinicasString.split(","));
-		
-		//List<String> variablesClinicasSeleccionadas = new ObjectMapper().readValue(variablesClinicasSeleccionadasString, List.class);
-		
+			
 		List<String> variablesClinicasFiltradas = new ArrayList<String>();
 		
 		for(int i=0; i < allVariablesClinicas.size(); i++) {
