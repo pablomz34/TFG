@@ -205,7 +205,7 @@ new Vue({
 		                    	<div class="input-container">
 			                        <label for="clusterSeleccionadoProfile" class="input-container-label fw-bold">Número de cluster</label>
 									<select class="input-container-select" name="nCluster" v-model="clusterSeleccionadoProfile" id="clusterSeleccionadoProfile" required>
-			                       		<option class="input-container-select-option" value="-1">Todas las curvas</option>
+			                       		<option class="input-container-select-option" value="-1">Todos los perfiles</option>
 			                       		<option class="input-container-select-option" v-for="i in nClustersRange" :value="i">{{i}}</option>
 			                    	</select>
 		                    	</div>
