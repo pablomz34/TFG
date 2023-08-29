@@ -38,45 +38,51 @@ public class ReportController {
 	private IReportService repSer;
 
 	@PostMapping("/download")
-	public ResponseEntity<Resource> download(@RequestBody Map<String, Object> json, @RequestParam("nCluster") String nCluster)
-			throws JRException, IOException, SQLException {
-		Map<String,Object> params = new HashMap<>();
-		
+	public ResponseEntity<Resource> download(@RequestBody Map<String, Object> json,
+			@RequestParam("nCluster") String nCluster) throws JRException, IOException, SQLException {
+		Map<String, Object> params = new HashMap<>();
+
 		List<StatisticsDto> statistics = new ArrayList<>();
 		List<VariablesDto> variables = new ArrayList<>();
-		Map<String,Object> statisticsMap = (Map<String, Object>) json.get("statistics");
-		Map<String,Object> variablesMap = (Map<String, Object>) json.get("variables");
-		String idPrediccion = (String) json.get("idPrediccion");
 		
-		for(Map.Entry<String, Object> i : statisticsMap.entrySet()) {
+		Map<String, Object> statisticsMap = (Map<String, Object>) json.get("statistics");
+		Map<String, Object> variablesMap = (Map<String, Object>) json.get("variables");
+		
+		String idPrediccion = (String) json.get("idPrediccion");
+
+		for (Map.Entry<String, Object> i : statisticsMap.entrySet()) {
 			StatisticsDto f = new StatisticsDto();
 			f.setKey(StringUtils.capitalize(i.getKey().replace("_", " ").toLowerCase()));
 			f.setValue(i.getValue().toString());
 			statistics.add(f);
 		}
-		
-		for(Map.Entry<String, Object> i : variablesMap.entrySet()) {
+
+		for (Map.Entry<String, Object> i : variablesMap.entrySet()) {
 			VariablesDto f = new VariablesDto();
 			f.setKey(i.getKey().replace("_", " "));
 			f.setValue(i.getValue().toString().replace("{", "").replace("}", "").replace("[", "").replace("]", ""));
 			variables.add(f);
 		}
 		
-		String titulo = (Integer.parseInt(nCluster) != -1) ? ("Reporte - Cluster " + nCluster) : ("Reporte - All Clusters");
-		
-		ClassPathResource resource = (Integer.parseInt(nCluster) != -1) ? new ClassPathResource("static/clustersImages/prediccion" + idPrediccion + "/cluster" + nCluster + ".png") : new ClassPathResource("static/clustersImages/prediccion" + idPrediccion + "/allClusters.png");
-		InputStream inputStream = resource.getInputStream();
-		byte[] clusterImage = inputStream.readAllBytes();
-		
 		JRBeanCollectionDataSource statParam = new JRBeanCollectionDataSource(statistics);
 		JRBeanCollectionDataSource varParam = new JRBeanCollectionDataSource(variables);
 
+		String titulo = (Integer.parseInt(nCluster) != -1) ? ("Reporte - Cluster " + nCluster)
+				: ("Reporte - All Clusters");
+
+		ClassPathResource resource = (Integer.parseInt(nCluster) != -1)
+				? new ClassPathResource(
+						"static/clustersImages/prediccion" + idPrediccion + "/cluster" + nCluster + ".png")
+				: new ClassPathResource("static/clustersImages/prediccion" + idPrediccion + "/allClusters.png");
 		
+		InputStream inputStream = resource.getInputStream();
+		byte[] clusterImage = inputStream.readAllBytes();
+
 		params.put("titulo", titulo);
 		params.put("statistics", statParam);
 		params.put("variables", varParam);
 		params.put("clusterImage", new ByteArrayInputStream(clusterImage));
-		
+
 		ReportDto dto = repSer.getReport(params);
 
 		InputStreamResource stream = new InputStreamResource(dto.getStream());
@@ -86,4 +92,3 @@ public class ReportController {
 				.contentLength(dto.getLength()).contentType(media).body(stream);
 	}
 }
- 

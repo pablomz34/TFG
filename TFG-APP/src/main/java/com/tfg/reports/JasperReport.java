@@ -22,8 +22,7 @@ public class JasperReport {
 
 	private static final String JASPER = ".jasper";
 
-	public ByteArrayOutputStream export(String fileName, Map<String, Object> params)
-			throws JRException, IOException {
+	public ByteArrayOutputStream export(String fileName, Map<String, Object> params) throws JRException, IOException {
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 		ClassPathResource resource = new ClassPathResource(REPORT_FOLDER + File.separator + fileName + JASPER);
