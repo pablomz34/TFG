@@ -230,9 +230,11 @@ export const mixinFase2 = {
 
 					const THIZ = this;
 
-					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");
+					let algoritmosCoincidentesRow = document.getElementById("algoritmosCoincidentesRow");					
 
 					this.resetearModalBodyRow(algoritmosCoincidentesRow);
+					
+					THIZ.algoritmosCoincidentes = [];
 
 					if (res.length > 0) {
 
