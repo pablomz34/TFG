@@ -47,10 +47,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		}
 	
 		if(rolesNames.contains("ROLE_ADMIN")) {
-			response.sendRedirect("admin/procesamientos");
+			response.sendRedirect("index");
 		}
 		else if(rolesNames.contains("ROLE_MEDICO")){
-			response.sendRedirect("medico/herramientaPredictiva");
+			response.sendRedirect("index");
 		}
 		
 	}

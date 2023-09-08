@@ -101,7 +101,7 @@ Vue.component('fase1', {
 	        </div>
 	    </div>    
 	    <div class="row justify-content-around">
-	        <div v-if="imagenCreada" class="card col-10 rounded-4 p-0 shadow">
+	        <div v-if="imagenCreada" class="card col-5 rounded-4 p-0 shadow">
 	            <div class="card-body">
 					<p><em>¡Imagen creada correctamente! Haz clic sobre ella para descargarla</em></p>
 	                <a v-bind:href="imagenUrl" download="maxClustersImagen.png">
