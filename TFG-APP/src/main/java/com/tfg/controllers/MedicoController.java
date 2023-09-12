@@ -42,7 +42,7 @@ import com.tfg.services.IProfilesService;
 @RequestMapping("/medico")
 public class MedicoController {
 
-	static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
+	static final String UrlServidor = "http://localhost:8090/";
 
 	@Autowired
 	private IPrediccionesService prediccionesService;

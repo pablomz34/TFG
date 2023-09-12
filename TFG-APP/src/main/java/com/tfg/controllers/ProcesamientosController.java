@@ -47,7 +47,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/admin/procesamientos")
 public abstract class ProcesamientosController {
 
-	protected static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
+	protected static final String UrlServidor = "http://localhost:8090/";
 
 	@Autowired
 	protected HttpSession session;

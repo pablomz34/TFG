@@ -164,7 +164,7 @@
 			},
 			"response": {
 				"status": 200,
-				"bodyFileName": "cluster2.png",
+				"bodyFileName": "clusterImagen.png",
 				"headers": {
 					"access-control-allow-credentials": "true",
 					"access-control-allow-origin": "*",
