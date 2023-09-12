@@ -81,7 +81,7 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 		
-		String urlOptimalNClusters = UrlMock + "clustering/getOptimalNClusters?max_clusters="
+		String urlOptimalNClusters = UrlServidor + "clustering/getOptimalNClusters?max_clusters="
 				+ Integer.parseInt(max_clusters);
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -132,7 +132,7 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 		            .filter(mapa -> "kmodes".equals(mapa.get("nombreAlgoritmo")))
 		            .findFirst();
 
-			String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
+			String urlSubPopulations = UrlServidor + "clustering/getSubpopulations?n_agglomerative="
 					+ agglomerative.get().get("nClusters") + "&n_kmodes=" + kmodes.get().get("nClusters");		
 			
 			CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -169,7 +169,7 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 		
-		String urlVarianceMetrics = UrlMock + "clustering/getVarianceMetrics";
+		String urlVarianceMetrics = UrlServidor + "clustering/getVarianceMetrics";
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -337,7 +337,7 @@ public class ProcesamientoNoSecuencialController extends ProcesamientosControlle
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 		
-		String urlModelPerformance = UrlMock + "survivalAndProfiling/getModelPerformance";
+		String urlModelPerformance = UrlServidor + "survivalAndProfiling/getModelPerformance";
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 

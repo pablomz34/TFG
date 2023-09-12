@@ -489,7 +489,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 		}
 
-		String urlOptimalNClusters = UrlMock + "clustering/getOptimalNClusters?max_clusters="
+		String urlOptimalNClusters = UrlServidor + "clustering/getOptimalNClusters?max_clusters="
 				+ Integer.parseInt(maxClusters);
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -567,7 +567,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 	            .filter(mapa -> "kmodes".equals(mapa.get("nombreAlgoritmo")))
 	            .findFirst();
 
-		String urlSubPopulations = UrlMock + "clustering/getSubpopulations?n_agglomerative="
+		String urlSubPopulations = UrlServidor + "clustering/getSubpopulations?n_agglomerative="
 				+ agglomerative.get().get("nClusters") + "&n_kmodes=" + kmodes.get().get("nClusters");
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -608,7 +608,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 			return new ResponseEntity<>("No puedes acceder todavía a este endpoint", HttpStatus.BAD_REQUEST);
 		}
 
-		String urlVarianceMetrics = UrlMock + "clustering/getVarianceMetrics";
+		String urlVarianceMetrics = UrlServidor + "clustering/getVarianceMetrics";
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -808,7 +808,7 @@ public class ProcesamientoSecuencialController extends ProcesamientosController 
 
 		String algoritmoOptimo = (String) session.getAttribute("algoritmoOptimo");
 
-		String urlModelPerformance = UrlMock + "survivalAndProfiling/getModelPerformance";
+		String urlModelPerformance = UrlServidor + "survivalAndProfiling/getModelPerformance";
 
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 

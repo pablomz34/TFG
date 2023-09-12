@@ -48,7 +48,6 @@ import jakarta.servlet.http.HttpSession;
 public abstract class ProcesamientosController {
 
 	protected static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
-	protected static final String UrlMock = "http://localhost:8090/";
 
 	@Autowired
 	protected HttpSession session;
@@ -126,7 +125,7 @@ public abstract class ProcesamientosController {
 	protected void guardarImagenes(File file, String url, String rutaImagenServidor, String rutaImagenBDD,
 			Integer numCluster, String idPrediccionPoblacion) throws IOException {
 
-		String urlImagenCluster = UrlMock + url;
+		String urlImagenCluster = UrlServidor + url;
 
 		InputStream inputStream = null;
 
@@ -149,7 +148,7 @@ public abstract class ProcesamientosController {
 	protected void guardarFeatures(File file, String url, Integer numCluster, String idPrediccionPoblacion)
 			throws ClientProtocolException, IOException {
 
-		String urlPerfilCluster = UrlMock + url;
+		String urlPerfilCluster = UrlServidor + url;
 
 		InputStream inputStream = null;
 

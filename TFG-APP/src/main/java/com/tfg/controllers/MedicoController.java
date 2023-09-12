@@ -43,7 +43,6 @@ import com.tfg.services.IProfilesService;
 public class MedicoController {
 
 	static final String UrlServidor = "https://1dd6-83-61-231-12.ngrok-free.app/";
-	static final String UrlMock = "http://localhost:8090/";
 
 	@Autowired
 	private IPrediccionesService prediccionesService;
@@ -76,7 +75,7 @@ public class MedicoController {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 
 		// Crear un objeto HttpPost con la URL a la que se va a enviar la petición
-		HttpPost httpPost = new HttpPost(UrlMock + "survivalAndProfiling/getNewPatientClassification");
+		HttpPost httpPost = new HttpPost(UrlServidor + "survivalAndProfiling/getNewPatientClassification");
 
 		// Serializar el HashMap a formato JSON
 		Gson gson = new Gson();
